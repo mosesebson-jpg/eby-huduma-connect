@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="sw">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0757a6">
+  <meta name="description" content="EBY HUDUMA CONNECT inaunganisha watu na biashara, huduma, elimu na fursa Tanzania.">
+  <title>EBY HUDUMA CONNECT | EBY MEDIA TZ</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="config.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="EBY HUDUMA CONNECT mwanzo">
+      <span class="brand-mark">EBY</span>
+      <span><strong>HUDUMA CONNECT</strong><small>BY EBY MEDIA TZ</small></span>
+    </a>
+    <button id="menuBtn" class="menu-btn" aria-label="Fungua menyu">☰</button>
+    <nav id="nav">
+      <a href="#huduma">Huduma</a><a href="#biashara">Biashara</a><a href="#fursa">Fursa</a>
+      <button id="authOpen" class="nav-cta">Ingia / Jisajili</button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <span class="eyebrow">JUKWAA LA HUDUMA NA FURSA TANZANIA</span>
+        <h1>Unatafuta huduma?<br><em>Anza hapa.</em></h1>
+        <p>Tafuta biashara, wataalamu, bidhaa, mafunzo na fursa. EBY HUDUMA CONNECT inakuunganisha na watoa huduma sehemu mbalimbali za Tanzania.</p>
+        <div class="hero-actions">
+          <a class="btn primary" href="#biashara">Tafuta huduma</a>
+          <button class="btn ghost" id="providerOpen">Sajili biashara yako</button>
+        </div>
+      </div>
+      <div class="hero-card">
+        <div class="spark">✦</div>
+        <span class="eyebrow">EBY MEDIA TZ</span>
+        <h2>Huduma zote.<br>Sehemu moja.</h2>
+        <p>Rahisisha kutafuta na kutoa huduma kwa njia ya kidijitali.</p>
+        <div class="hero-tags"><span>Biashara</span><span>Elimu</span><span>Ajira</span><span>Wataalamu</span></div>
+      </div>
+    </section>
+
+    <section class="search-panel" id="huduma">
+      <div><span class="eyebrow">TAFUTA KWA URAHISI</span><h2>Unahitaji nini leo?</h2></div>
+      <form id="searchForm" class="search-form">
+        <input id="searchInput" type="search" placeholder="Mfano: fundi umeme, poster, website..." aria-label="Tafuta huduma">
+        <select id="categoryFilter" aria-label="Chagua kundi">
+          <option value="">Makundi yote</option><option>Biashara</option><option>Matangazo</option><option>Ufundi</option><option>Elimu</option><option>Teknolojia</option><option>Nyaraka</option><option>Afya</option><option>Usafiri</option><option>Nyingine</option>
+        </select>
+        <button class="btn primary" type="submit">Tafuta</button>
+      </form>
+    </section>
+
+    <section class="section" id="biashara">
+      <div class="section-heading"><div><span class="eyebrow">SOKO LA HUDUMA</span><h2>Biashara na watoa huduma</h2></div><span id="businessCount" class="muted">Inapakia...</span></div>
+      <div id="businessList" class="card-grid"><div class="empty">Taarifa za biashara zitaonekana hapa baada ya kuunganisha database.</div></div>
+    </section>
+
+    <section class="section split-section" id="fursa">
+      <div><span class="eyebrow">FURSA</span><h2>Fursa na matangazo</h2><p>Sehemu ya ajira, vikundi na matangazo yaliyoidhinishwa itaongezwa hatua kwa hatua.</p></div>
+      <div class="feature-list">
+        <div><span class="feature-icon">⌕</span><span><strong>Tafuta kwa eneo</strong><small>Chagua mkoa na wilaya ili kupata huduma karibu nawe.</small></span></div>
+        <div><span class="feature-icon">✓</span><span><strong>Watoa huduma waliokaguliwa</strong><small>Biashara zitapitia ukaguzi kabla ya kuonyeshwa kama zimethibitishwa.</small></span></div>
+        <div><span class="feature-icon">✦</span><span><strong>EBY AI</strong><small>Msaidizi wa kidijitali utaongezwa baada ya hatua ya kwanza.</small></span></div>
+      </div>
+    </section>
+
+    <section class="cta-band">
+      <div><span class="eyebrow">WEWE NI MTOA HUDUMA?</span><h2>Wafikie wateja wapya.</h2><p>Sajili biashara au huduma yako kwenye EBY HUDUMA CONNECT.</p></div>
+      <button id="providerOpen2" class="btn light">Sajili biashara</button>
+    </section>
+  </main>
+
+  <footer><div class="brand footer-brand"><span class="brand-mark">EBY</span><span><strong>HUDUMA CONNECT</strong><small>BY EBY MEDIA TZ</small></span></div><p>© <span id="year"></span> EBY MEDIA TZ. Haki zote zimehifadhiwa.</p><small>Jukwaa la kuwaunganisha wateja na watoa huduma Tanzania.</small></footer>
+
+  <dialog id="authDialog">
+    <button class="dialog-close" data-close="authDialog" aria-label="Funga">×</button>
+    <span class="eyebrow">KARIBU EBY HUDUMA CONNECT</span><h2 id="authTitle">Ingia kwenye akaunti</h2>
+    <div class="tabs"><button id="loginTab" class="active">Ingia</button><button id="signupTab">Jisajili</button></div>
+    <form id="authForm" class="stack">
+      <label id="nameWrap" class="hidden">Jina kamili<input id="fullName" autocomplete="name" placeholder="Jina lako"></label>
+      <label>Barua pepe<input id="email" type="email" autocomplete="email" required placeholder="barua@mfano.com"></label>
+      <label>Nenosiri<input id="password" type="password" autocomplete="current-password" minlength="8" required placeholder="Angalau herufi 8"></label>
+      <button class="btn primary full" type="submit" id="authSubmit">Ingia</button>
+    </form>
+    <p id="authMessage" class="form-message" aria-live="polite"></p>
+  </dialog>
+
+  <dialog id="providerDialog">
+    <button class="dialog-close" data-close="providerDialog" aria-label="Funga">×</button>
+    <span class="eyebrow">JIUNGE NA MTANDAO WETU</span><h2>Sajili biashara au huduma</h2>
+    <p class="muted">Ingia kwanza. Usajili utatumwa kwa ukaguzi wa msimamizi kabla ya kuonekana hadharani.</p>
+    <form id="businessForm" class="stack">
+      <label>Jina la biashara / mtoa huduma<input id="businessName" required maxlength="120"></label>
+      <label>Kundi la huduma<select id="businessCategory" required><option value="">Chagua kundi</option><option>Biashara</option><option>Matangazo</option><option>Ufundi</option><option>Elimu</option><option>Teknolojia</option><option>Nyaraka</option><option>Afya</option><option>Usafiri</option><option>Nyingine</option></select></label>
+      <label>Namba ya simu<input id="businessPhone" type="tel" placeholder="Mfano: 07XXXXXXXX"></label>
+      <label>Mkoa<input id="businessRegion" required placeholder="Mfano: Pwani"></label>
+      <label>Wilaya<input id="businessDistrict" placeholder="Mfano: Bagamoyo"></label>
+      <label>Maelezo<textarea id="businessDescription" rows="3" maxlength="1000" placeholder="Eleza huduma unazotoa"></textarea></label>
+      <button class="btn primary full" type="submit">Tuma kwa ukaguzi</button>
+    </form>
+    <p id="businessMessage" class="form-message" aria-live="polite"></p>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
