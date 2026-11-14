@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>EBY MEDIA TZ | Admin Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,sans-serif;background:#f1f5fb;color:#17243b}
@@ -15,7 +16,8 @@ header small{color:#b9dafa}
 button{cursor:pointer;border:0;border-radius:9px;padding:12px;font-weight:bold}
 .logout{background:white;color:#07518d}
 .login{max-width:420px;margin:50px auto;background:white;padding:25px;border-radius:16px;box-shadow:0 5px 25px #0001}
-input{width:100%;padding:14px;margin:10px 0 18px;border:1px solid #ddd;border-radius:9px;font-size:16px}
+input,textarea,select{width:100%;padding:13px;margin:8px 0 15px;border:1px solid #ddd;border-radius:9px;font-size:15px;font-family:inherit}
+textarea{min-height:90px;resize:vertical}
 .primary{background:#07518d;color:white;width:100%;padding:15px}
 .layout{display:none;max-width:1300px;margin:auto;padding:18px}
 nav{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0}
@@ -26,13 +28,29 @@ nav button.active{background:#07518d;color:white}
 .stat strong{display:block;font-size:28px;color:#07518d;margin-top:12px}
 .stat small{color:#64748b}
 .panel{margin-top:18px;overflow-x:auto}
-table{border-collapse:collapse;width:100%;min-width:500px}
+table{border-collapse:collapse;width:100%;min-width:550px}
 td,th{padding:12px;border-bottom:1px solid #eee;text-align:left;font-size:13px}
 th{background:#edf4fb}
 #message{color:#c0392b;font-size:14px}
-@media(max-width:600px){.layout{padding:12px}.login{margin:25px 12px}}
+.ad-form{max-width:700px;margin-bottom:25px}
+.ad-form h3{color:#07518d}
+.ad-actions{display:flex;gap:7px;flex-wrap:wrap}
+.edit{background:#e5efff;color:#07518d}
+.delete{background:#fee2e2;color:#b91c1c}
+.status{background:#e0f2fe;color:#075985}
+.cancel{background:#64748b;color:white}
+.preview{width:65px;height:55px;object-fit:cover;border-radius:7px}
+.notice{padding:12px;background:#edf4fb;border-radius:8px;margin:10px 0;color:#07518d}
+.form-buttons{display:flex;gap:10px}
+.form-buttons button{flex:1}
+@media(max-width:600px){
+.layout{padding:12px}
+.login{margin:25px 12px}
+.panel{padding:14px}
+}
 </style>
 </head>
+
 <body>
 
 <header>
@@ -87,6 +105,67 @@ th{background:#edf4fb}
 <div id="tableContent"></div>
 </div>
 </section>
+
+<!-- ADVERTISEMENTS MANAGEMENT -->
+<section id="adsSection" style="display:none">
+
+<div class="panel ad-form">
+<h2 id="adFormTitle">➕ Ongeza Tangazo Jipya</h2>
+<p>Jaza taarifa za tangazo lako.</p>
+
+<form id="adForm">
+
+<label>Kichwa cha tangazo *</label>
+<input id="adTitle" type="text" required
+placeholder="Mfano: Tangazo la biashara">
+
+<label>Maelezo ya tangazo</label>
+<textarea id="adDescription"
+placeholder="Andika maelezo ya tangazo..."></textarea>
+
+<label>Link ya picha (Image URL)</label>
+<input id="adImage" type="url"
+placeholder="https://example.com/image.jpg">
+
+<label>Link ya kuelekea (Target URL)</label>
+<input id="adTarget" type="url"
+placeholder="https://example.com">
+
+<label>Tarehe ya kuanza</label>
+<input id="adStart" type="date">
+
+<label>Tarehe ya kumalizika</label>
+<input id="adEnd" type="date">
+
+<label>Hali ya tangazo</label>
+<select id="adStatus">
+<option value="active">Active</option>
+<option value="pending">Pending</option>
+<option value="paused">Paused</option>
+</select>
+
+<div class="form-buttons">
+<button type="submit" class="primary" id="saveAd">
+HIFADHI TANGAZO
+</button>
+<button type="button" class="cancel" id="cancelEdit" hidden>
+GHAIRI
+</button>
+</div>
+
+<p id="adMessage"></p>
+</form>
+</div>
+
+<div class="panel">
+<h2>📢 Matangazo Yaliyopo</h2>
+<button class="edit" id="refreshAds">↻ Refresh</button>
+<p id="adsLoading"></p>
+<div id="adsList"></div>
+</div>
+
+</section>
+
 </main>
 
 <script>
@@ -117,11 +196,14 @@ const dashboard=document.getElementById("dashboard");
 const message=document.getElementById("message");
 
 let checking=false;
+let currentUser=null;
+let editingAd=null;
 
 function showLogin(){
 loginBox.style.display="block";
 dashboard.style.display="none";
 document.getElementById("logout").hidden=true;
+currentUser=null;
 }
 
 async function checkAdmin(session){
@@ -147,9 +229,12 @@ message.textContent="Akaunti hii haina ruhusa za Admin.";
 return;
 }
 
+currentUser=session.user;
+
 loginBox.style.display="none";
 dashboard.style.display="block";
 document.getElementById("logout").hidden=false;
+
 document.getElementById("welcome").textContent=
 "Karibu "+(data.full_name||session.user.email);
 
@@ -214,6 +299,8 @@ stats.appendChild(card);
 async function loadTable(table){
 document.getElementById("overview").style.display="none";
 document.getElementById("records").style.display="block";
+document.getElementById("adsSection").style.display="none";
+
 document.getElementById("tableTitle").textContent=tables[table];
 document.getElementById("loading").textContent="Inapakia...";
 document.getElementById("tableContent").innerHTML="";
@@ -272,6 +359,280 @@ t.appendChild(tbody);
 document.getElementById("tableContent").appendChild(t);
 }
 
+// -----------------------------
+// ADVERTISEMENTS MANAGEMENT
+// -----------------------------
+
+const adForm=document.getElementById("adForm");
+const adMessage=document.getElementById("adMessage");
+
+function adMsg(text,color="#07518d"){
+adMessage.textContent=text;
+adMessage.style.color=color;
+}
+
+function resetAdForm(){
+editingAd=null;
+adForm.reset();
+
+document.getElementById("adFormTitle").textContent=
+"➕ Ongeza Tangazo Jipya";
+
+document.getElementById("saveAd").textContent=
+"HIFADHI TANGAZO";
+
+document.getElementById("cancelEdit").hidden=true;
+adMsg("");
+}
+
+async function loadAds(){
+const list=document.getElementById("adsList");
+const loading=document.getElementById("adsLoading");
+
+list.innerHTML="";
+loading.textContent="Inapakia matangazo...";
+
+const {data,error}=await db
+.from("advertisements")
+.select("id,owner_id,title,description,image_url,target_url,status,start_date,end_date,created_at")
+.order("created_at",{ascending:false})
+.limit(100);
+
+loading.textContent="";
+
+if(error){
+list.textContent="Hitilafu: "+error.message;
+return;
+}
+
+if(!data || data.length===0){
+list.textContent="Bado hakuna matangazo. Ongeza tangazo lako la kwanza.";
+return;
+}
+
+const table=document.createElement("table");
+const thead=document.createElement("thead");
+const head=document.createElement("tr");
+
+["Picha","Kichwa","Hali","Tarehe ya kuanza","Mwisho","Vitendo"]
+.forEach(label=>{
+const th=document.createElement("th");
+th.textContent=label;
+head.appendChild(th);
+});
+
+thead.appendChild(head);
+table.appendChild(thead);
+
+const tbody=document.createElement("tbody");
+
+data.forEach(ad=>{
+const tr=document.createElement("tr");
+
+const imageCell=document.createElement("td");
+if(ad.image_url){
+const img=document.createElement("img");
+img.src=ad.image_url;
+img.alt=ad.title||"Tangazo";
+img.className="preview";
+img.loading="lazy";
+imageCell.appendChild(img);
+}else{
+imageCell.textContent="-";
+}
+tr.appendChild(imageCell);
+
+const titleCell=document.createElement("td");
+titleCell.textContent=ad.title||"-";
+tr.appendChild(titleCell);
+
+const statusCell=document.createElement("td");
+statusCell.textContent=ad.status||"-";
+tr.appendChild(statusCell);
+
+const startCell=document.createElement("td");
+startCell.textContent=ad.start_date||"-";
+tr.appendChild(startCell);
+
+const endCell=document.createElement("td");
+endCell.textContent=ad.end_date||"-";
+tr.appendChild(endCell);
+
+const actionCell=document.createElement("td");
+actionCell.className="ad-actions";
+
+const editBtn=document.createElement("button");
+editBtn.className="edit";
+editBtn.textContent="Hariri";
+editBtn.addEventListener("click",()=>editAd(ad));
+
+const deleteBtn=document.createElement("button");
+deleteBtn.className="delete";
+deleteBtn.textContent="Futa";
+deleteBtn.addEventListener("click",()=>deleteAd(ad.id));
+
+const statusBtn=document.createElement("button");
+statusBtn.className="status";
+statusBtn.textContent=
+ad.status==="active"?"Simamisha":"Washa";
+
+statusBtn.addEventListener("click",()=>toggleAd(ad));
+
+actionCell.append(editBtn,deleteBtn,statusBtn);
+tr.appendChild(actionCell);
+
+tbody.appendChild(tr);
+});
+
+table.appendChild(tbody);
+list.appendChild(table);
+}
+
+adForm.addEventListener("submit",async(e)=>{
+e.preventDefault();
+
+if(!currentUser){
+adMsg("Ingia tena kwenye akaunti ya Admin.","#c0392b");
+return;
+}
+
+const title=document.getElementById("adTitle").value.trim();
+const description=document.getElementById("adDescription").value.trim();
+const image_url=document.getElementById("adImage").value.trim();
+const target_url=document.getElementById("adTarget").value.trim();
+const start_date=document.getElementById("adStart").value||null;
+const end_date=document.getElementById("adEnd").value||null;
+const status=document.getElementById("adStatus").value;
+
+if(!title){
+adMsg("Tafadhali weka kichwa cha tangazo.","#c0392b");
+return;
+}
+
+if(start_date && end_date && end_date<start_date){
+adMsg("Tarehe ya mwisho haiwezi kuwa kabla ya tarehe ya kuanza.","#c0392b");
+return;
+}
+
+const payload={
+title,
+description:description||null,
+image_url:image_url||null,
+target_url:target_url||null,
+start_date,
+end_date,
+status
+};
+
+const saveBtn=document.getElementById("saveAd");
+saveBtn.disabled=true;
+saveBtn.textContent="Inahifadhi...";
+
+try{
+let result;
+
+if(editingAd){
+result=await db
+.from("advertisements")
+.update(payload)
+.eq("id",editingAd);
+}else{
+result=await db
+.from("advertisements")
+.insert({
+...payload,
+owner_id:currentUser.id
+});
+}
+
+if(result.error)throw result.error;
+
+adMsg(
+editingAd?"Tangazo limehaririwa kikamilifu!":"Tangazo limehifadhiwa kikamilifu!",
+"#16803c"
+);
+
+resetAdForm();
+await loadAds();
+await loadStats();
+
+}catch(error){
+adMsg("Imeshindikana: "+error.message,"#c0392b");
+}finally{
+saveBtn.disabled=false;
+saveBtn.textContent="HIFADHI TANGAZO";
+}
+});
+
+function editAd(ad){
+editingAd=ad.id;
+
+document.getElementById("adTitle").value=ad.title||"";
+document.getElementById("adDescription").value=ad.description||"";
+document.getElementById("adImage").value=ad.image_url||"";
+document.getElementById("adTarget").value=ad.target_url||"";
+document.getElementById("adStart").value=ad.start_date||"";
+document.getElementById("adEnd").value=ad.end_date||"";
+document.getElementById("adStatus").value=ad.status||"active";
+
+document.getElementById("adFormTitle").textContent=
+"✏️ Hariri Tangazo";
+
+document.getElementById("saveAd").textContent=
+"HIFADHI MABADILIKO";
+
+document.getElementById("cancelEdit").hidden=false;
+
+adMsg("Unahariri tangazo lililochaguliwa.");
+document.getElementById("adFormTitle").scrollIntoView({
+behavior:"smooth",
+block:"start"
+});
+}
+
+async function deleteAd(id){
+if(!confirm("Una uhakika unataka kufuta tangazo hili?"))return;
+
+const {error}=await db
+.from("advertisements")
+.delete()
+.eq("id",id);
+
+if(error){
+alert("Imeshindikana kufuta: "+error.message);
+return;
+}
+
+alert("Tangazo limefutwa.");
+await loadAds();
+await loadStats();
+}
+
+async function toggleAd(ad){
+const newStatus=ad.status==="active"?"paused":"active";
+
+const {error}=await db
+.from("advertisements")
+.update({status:newStatus})
+.eq("id",ad.id);
+
+if(error){
+alert("Imeshindikana kubadilisha hali: "+error.message);
+return;
+}
+
+await loadAds();
+await loadStats();
+}
+
+document.getElementById("cancelEdit").onclick=resetAdForm;
+
+document.getElementById("refreshAds").onclick=loadAds;
+
+// -----------------------------
+// NAVIGATION
+// -----------------------------
+
 document.getElementById("navigation")
 .addEventListener("click",async(e)=>{
 const btn=e.target.closest("button");
@@ -282,14 +643,29 @@ document.querySelectorAll("nav button")
 
 btn.classList.add("active");
 
-if(btn.dataset.table==="overview"){
+const table=btn.dataset.table;
+
+if(table==="overview"){
 document.getElementById("overview").style.display="block";
 document.getElementById("records").style.display="none";
+document.getElementById("adsSection").style.display="none";
 await loadStats();
+
+}else if(table==="advertisements"){
+document.getElementById("overview").style.display="none";
+document.getElementById("records").style.display="none";
+document.getElementById("adsSection").style.display="block";
+resetAdForm();
+await loadAds();
+
 }else{
-await loadTable(btn.dataset.table);
+await loadTable(table);
 }
 });
+
+// -----------------------------
+// AUTH
+// -----------------------------
 
 db.auth.onAuthStateChange((event,session)=>{
 if(event==="SIGNED_OUT"){
@@ -301,6 +677,8 @@ showLogin();
 const {data}=await db.auth.getSession();
 await checkAdmin(data.session);
 })();
+
 </script>
 </body>
 </html>
+
