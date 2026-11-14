@@ -19,24 +19,28 @@
       padding: 24px;
       margin: 25px 0;
     }
+
     .ad-prices {
       display: grid;
       grid-template-columns: repeat(auto-fit,minmax(145px,1fr));
       gap: 12px;
       margin: 20px 0;
     }
+
     .ad-price {
       background: white;
       border: 1px solid #dce8f5;
       border-radius: 14px;
       padding: 16px;
     }
+
     .ad-price strong {
       display: block;
       color: #0757a6;
       font-size: 22px;
       margin-top: 8px;
     }
+
     .ad-action {
       background: #0757a6;
       color: white;
@@ -46,6 +50,7 @@
       font-weight: 700;
       cursor: pointer;
     }
+
     .ad-dialog {
       width: min(95%,520px);
       max-height: 90vh;
@@ -54,14 +59,17 @@
       border-radius: 18px;
       padding: 25px;
     }
+
     .ad-dialog::backdrop {
       background: rgba(0,0,0,.65);
     }
+
     .ad-dialog label {
       display: block;
       font-weight: 600;
       margin: 12px 0;
     }
+
     .ad-dialog input,
     .ad-dialog select,
     .ad-dialog textarea {
@@ -73,85 +81,199 @@
       border-radius: 9px;
       box-sizing: border-box;
     }
+
+    /* SEHEMU YA MALIPO */
     .ad-payment {
-      background: #f1f6fd;
-      border: 1px solid #d8e6f5;
-      border-radius: 18px;
+      background: linear-gradient(145deg,#eaf3ff,#ffffff);
+      border: 1px solid #c8dcf5;
+      border-radius: 20px;
       padding: 18px;
       margin: 20px 0;
+      box-shadow: 0 8px 25px rgba(7,87,166,.10);
     }
+
     .ad-payment h3 {
       color: #0757a6;
       font-size: 21px;
+      text-align: center;
       margin: 0 0 8px;
       line-height: 1.4;
+      font-weight: 900;
     }
+
     .ad-payment .payment-intro {
       font-size: 14px;
-      color: #64748b;
+      color: #53677f;
       line-height: 1.6;
+      text-align: center;
       margin: 0 0 18px;
     }
+
     .payment-network {
-      background: #fff;
-      border: 1px solid #dce7f3;
-      border-radius: 13px;
-      padding: 15px;
-      margin-bottom: 12px;
+      border-radius: 16px;
+      padding: 17px;
+      margin-bottom: 13px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 5px 14px rgba(0,0,0,.13);
     }
+
     .payment-network strong {
       display: block;
-      color: #26384b;
-      font-size: 14px;
-      letter-spacing: .3px;
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: .5px;
+      margin-bottom: 12px;
     }
-    .payment-number {
+
+    .payment-brand {
       display: block;
-      font-size: clamp(23px, 6vw, 28px);
+      font-size: 25px;
+      line-height: 1.1;
+      font-weight: 1000;
+      margin-bottom: 5px;
+      letter-spacing: -.5px;
+    }
+
+    .payment-brand small {
+      display: block;
+      font-size: 13px;
       font-weight: 800;
       letter-spacing: 1px;
-      color: #0757a6;
-      margin-top: 8px;
-      overflow-wrap: anywhere;
+      margin-top: 4px;
     }
-    .payment-label {
-      display: inline-block;
-      color: #64748b;
-      font-size: 11px;
-      font-weight: 700;
-      margin-top: 5px;
+
+    .payment-number-box {
+      background: #fff;
+      border-radius: 11px;
+      padding: 11px 13px;
+      margin-top: 13px;
+    }
+
+    .payment-number {
+      display: block;
+      font-size: clamp(23px, 6vw, 29px);
+      font-weight: 1000;
       letter-spacing: 1px;
+      overflow-wrap: anywhere;
+      text-align: center;
     }
+
+    .payment-label {
+      display: block;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+      margin-top: 8px;
+    }
+
+    /* MIXX BY YAS */
+    .payment-mixx {
+      background: linear-gradient(135deg,#ffdf00,#ffc400);
+      color: #092c57;
+      border: 2px solid #f0b900;
+    }
+
+    .payment-mixx .payment-number {
+      color: #082d59;
+    }
+
+    .payment-mixx .payment-label {
+      display: inline-block;
+      background: #092d59;
+      color: #ffe000;
+      border-radius: 30px;
+      padding: 7px 15px;
+      margin-top: 12px;
+    }
+
+    /* AIRTEL MONEY */
+    .payment-airtel {
+      background: linear-gradient(135deg,#ed1b2f,#b90020);
+      color: #fff;
+      border: 2px solid #c90020;
+    }
+
+    .payment-airtel .payment-number {
+      color: #d00022;
+    }
+
+    .payment-airtel .payment-label {
+      display: inline-block;
+      background: #ffdf00;
+      color: #a60019;
+      border-radius: 30px;
+      padding: 7px 15px;
+      margin-top: 12px;
+    }
+
+    /* VODACOM M-PESA */
+    .payment-vodacom {
+      background: linear-gradient(135deg,#e60019,#a90016);
+      color: #fff;
+      border: 2px solid #bd0018;
+    }
+
+    .payment-vodacom .payment-number {
+      color: #c9001d;
+    }
+
+    .payment-vodacom .payment-label {
+      display: inline-block;
+      background: #fff;
+      color: #bd0018;
+      border-radius: 30px;
+      padding: 7px 15px;
+      margin-top: 12px;
+    }
+
+    /* JINA LA MPOKEAJI */
     .payment-recipient {
-      background: #0757a6;
-      border-radius: 13px;
-      padding: 16px;
+      background: linear-gradient(120deg,#052b59,#0757a6);
+      border: 2px solid #1686ff;
+      border-radius: 15px;
+      padding: 18px;
       color: white;
-      margin-top: 15px;
+      margin-top: 17px;
+      text-align: center;
+      box-shadow: 0 5px 18px rgba(7,87,166,.25);
     }
+
     .payment-recipient small {
       display: block;
-      color: #dbeafe;
+      color: #ffdf00;
       font-size: 12px;
-      letter-spacing: 1px;
+      font-weight: 900;
+      letter-spacing: 1.5px;
     }
+
     .payment-recipient strong {
       display: block;
-      color: white;
-      font-size: 22px;
-      margin-top: 5px;
+      color: #fff !important;
+      font-size: clamp(23px,6vw,29px);
+      font-weight: 1000;
+      margin-top: 7px;
+      letter-spacing: 1px;
     }
+
     .payment-instructions {
+      background: #fff;
+      border-left: 4px solid #0757a6;
+      border-radius: 10px;
+      padding: 13px;
       font-size: 14px;
       line-height: 1.7;
-      color: #475569;
-      margin: 15px 0 0;
+      color: #334155;
+      margin: 16px 0 0;
     }
+
     .ad-note {
       font-size: 13px;
       color: #5d6b7b;
       line-height: 1.6;
     }
+
     .ad-close {
       float: right;
       border: 0;
@@ -159,6 +281,7 @@
       font-size: 26px;
       cursor: pointer;
     }
+
     .ad-featured {
       color: #b77900;
       font-weight: 700;
@@ -185,7 +308,6 @@
   </header>
 
   <main>
-
     <!-- UKURASA WA MWANZO -->
     <section class="hero">
       <div class="hero-copy">
@@ -364,7 +486,6 @@
       </div>
       <button id="providerOpen2" class="btn light">Sajili biashara</button>
     </section>
-
   </main>
 
   <!-- FOOTER -->
@@ -574,27 +695,36 @@
 
       <!-- MALIPO KWA LIPA NAMBA -->
       <div class="ad-payment">
-        <h3>MALIPO KWA LIPA NAMBA</h3>
+        <h3>💳 MALIPO KWA LIPA NAMBA</h3>
 
         <p class="payment-intro">
           Chagua mtandao wako na tumia Lipa Namba husika kulipia tangazo.
         </p>
 
-        <div class="payment-network">
-          <strong>TIGO PESA / MIXX BY YAS</strong>
-          <span class="payment-number">22 121 530</span>
+        <div class="payment-network payment-mixx">
+          <span class="payment-brand">Mixx <small>by Yas</small></span>
+          <strong>MIXX BY YAS</strong>
+          <div class="payment-number-box">
+            <span class="payment-number">22 121 530</span>
+          </div>
           <span class="payment-label">LIPA NAMBA</span>
         </div>
 
-        <div class="payment-network">
+        <div class="payment-network payment-airtel">
+          <span class="payment-brand">airtel <small>money</small></span>
           <strong>AIRTEL MONEY</strong>
-          <span class="payment-number">130317855</span>
+          <div class="payment-number-box">
+            <span class="payment-number">130317855</span>
+          </div>
           <span class="payment-label">LIPA NAMBA</span>
         </div>
 
-        <div class="payment-network">
+        <div class="payment-network payment-vodacom">
+          <span class="payment-brand">vodacom <small>m-pesa</small></span>
           <strong>VODACOM M-PESA</strong>
-          <span class="payment-number">68278229</span>
+          <div class="payment-number-box">
+            <span class="payment-number">68278229</span>
+          </div>
           <span class="payment-label">LIPA NAMBA</span>
         </div>
 
@@ -604,10 +734,11 @@
         </div>
 
         <p class="payment-instructions">
+          <strong>Maelekezo ya malipo:</strong><br>
           Fungua huduma ya Lipa kwa Simu kwenye mtandao wako,
           chagua Lipa Namba na ingiza namba husika.
-          Hakikisha jina la mpokeaji ni EBSON SANYA kabla
-          ya kuthibitisha malipo.
+          Hakikisha jina la mpokeaji ni <strong>EBSON SANYA</strong>
+          kabla ya kuthibitisha malipo.
         </p>
       </div>
 
