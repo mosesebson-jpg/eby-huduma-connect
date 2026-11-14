@@ -74,20 +74,83 @@
       box-sizing: border-box;
     }
     .ad-payment {
-      background: #f0f6ff;
-      border-radius: 12px;
-      padding: 15px;
-      margin: 15px 0;
+      background: #f1f6fd;
+      border: 1px solid #d8e6f5;
+      border-radius: 18px;
+      padding: 18px;
+      margin: 20px 0;
     }
-    .ad-payment p {
-      margin: 8px 0;
-    }
-    .ad-payment strong {
+    .ad-payment h3 {
       color: #0757a6;
+      font-size: 21px;
+      margin: 0 0 8px;
+      line-height: 1.4;
+    }
+    .ad-payment .payment-intro {
+      font-size: 14px;
+      color: #64748b;
+      line-height: 1.6;
+      margin: 0 0 18px;
+    }
+    .payment-network {
+      background: #fff;
+      border: 1px solid #dce7f3;
+      border-radius: 13px;
+      padding: 15px;
+      margin-bottom: 12px;
+    }
+    .payment-network strong {
+      display: block;
+      color: #26384b;
+      font-size: 14px;
+      letter-spacing: .3px;
+    }
+    .payment-number {
+      display: block;
+      font-size: clamp(23px, 6vw, 28px);
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: #0757a6;
+      margin-top: 8px;
+      overflow-wrap: anywhere;
+    }
+    .payment-label {
+      display: inline-block;
+      color: #64748b;
+      font-size: 11px;
+      font-weight: 700;
+      margin-top: 5px;
+      letter-spacing: 1px;
+    }
+    .payment-recipient {
+      background: #0757a6;
+      border-radius: 13px;
+      padding: 16px;
+      color: white;
+      margin-top: 15px;
+    }
+    .payment-recipient small {
+      display: block;
+      color: #dbeafe;
+      font-size: 12px;
+      letter-spacing: 1px;
+    }
+    .payment-recipient strong {
+      display: block;
+      color: white;
+      font-size: 22px;
+      margin-top: 5px;
+    }
+    .payment-instructions {
+      font-size: 14px;
+      line-height: 1.7;
+      color: #475569;
+      margin: 15px 0 0;
     }
     .ad-note {
       font-size: 13px;
       color: #5d6b7b;
+      line-height: 1.6;
     }
     .ad-close {
       float: right;
@@ -222,17 +285,14 @@
             <span>Siku 7</span>
             <strong>TSh 5,000</strong>
           </div>
-
           <div class="ad-price">
             <span>Siku 14</span>
             <strong>TSh 8,000</strong>
           </div>
-
           <div class="ad-price">
             <span>Siku 30</span>
             <strong>TSh 15,000</strong>
           </div>
-
           <div class="ad-price">
             <span class="ad-featured">Featured siku 30</span>
             <strong>TSh 25,000</strong>
@@ -278,7 +338,6 @@
             <small>Chagua mkoa na wilaya ili kupata huduma karibu nawe.</small>
           </span>
         </div>
-
         <div>
           <span class="feature-icon">✓</span>
           <span>
@@ -286,7 +345,6 @@
             <small>Biashara zitapitia ukaguzi kabla ya kuonyeshwa kama zimethibitishwa.</small>
           </span>
         </div>
-
         <div>
           <span class="feature-icon">✦</span>
           <span>
@@ -514,39 +572,43 @@
         </select>
       </label>
 
-      <!-- MAELEZO YA LIPA NAMBA -->
+      <!-- MALIPO KWA LIPA NAMBA -->
       <div class="ad-payment">
-        <div class="payment-info">
-          <h3>MAELEZO YA MALIPO KWA LIPA NAMBA</h3>
+        <h3>MALIPO KWA LIPA NAMBA</h3>
 
-          <p>
-            Tigo Pesa / Mixx by Yas Lipa Namba:
-            <strong>22 121 530</strong>
-          </p>
+        <p class="payment-intro">
+          Chagua mtandao wako na tumia Lipa Namba husika kulipia tangazo.
+        </p>
 
-          <p>
-            Airtel Money Lipa Namba:
-            <strong>130317855</strong>
-          </p>
-
-          <p>
-            Vodacom M-Pesa Lipa Namba:
-            <strong>68278229</strong>
-          </p>
-
-          <p>
-            Jina la mpokeaji:
-            <strong>Ebson Sanya</strong>
-          </p>
-
-          <p>
-            MALIPO YANAFANYIKA KWA LIPA NAMBA.
-            Fungua huduma ya Lipa kwa Simu kwenye mtandao wako,
-            chagua Lipa Namba, ingiza namba husika na fuata
-            maelekezo ya malipo. Hakikisha jina la mpokeaji
-            ni Ebson Sanya kabla ya kuthibitisha malipo.
-          </p>
+        <div class="payment-network">
+          <strong>TIGO PESA / MIXX BY YAS</strong>
+          <span class="payment-number">22 121 530</span>
+          <span class="payment-label">LIPA NAMBA</span>
         </div>
+
+        <div class="payment-network">
+          <strong>AIRTEL MONEY</strong>
+          <span class="payment-number">130317855</span>
+          <span class="payment-label">LIPA NAMBA</span>
+        </div>
+
+        <div class="payment-network">
+          <strong>VODACOM M-PESA</strong>
+          <span class="payment-number">68278229</span>
+          <span class="payment-label">LIPA NAMBA</span>
+        </div>
+
+        <div class="payment-recipient">
+          <small>JINA LA MPOKEAJI</small>
+          <strong>EBSON SANYA</strong>
+        </div>
+
+        <p class="payment-instructions">
+          Fungua huduma ya Lipa kwa Simu kwenye mtandao wako,
+          chagua Lipa Namba na ingiza namba husika.
+          Hakikisha jina la mpokeaji ni EBSON SANYA kabla
+          ya kuthibitisha malipo.
+        </p>
       </div>
 
       <label>
@@ -595,3 +657,4 @@
 
 </body>
 </html>
+
