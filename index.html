@@ -83,7 +83,16 @@
     <div class="tabs"><button id="loginTab" class="active">Ingia</button><button id="signupTab">Jisajili</button></div>
     <form id="authForm" class="stack">
       <label id="nameWrap" class="hidden">Jina kamili<input id="fullName" autocomplete="name" placeholder="Jina lako"></label>
-      <label>Barua pepe<input id="email" type="email" autocomplete="email" required placeholder="barua@mfano.com"></label>
+      <label>Njia ya kutumia akaunti
+        <select id="authMethod">
+          <option value="email">Barua pepe</option>
+          <option value="phone">Namba ya simu</option>
+        </select>
+      </label>
+      <label id="identifierLabel">Barua pepe
+        <input id="identifier" type="email" autocomplete="email" required placeholder="barua@mfano.com">
+      </label>
+      <small id="identifierHint" class="muted">Tumia barua pepe unayoweza kuifikia.</small>
       <label>Nenosiri<input id="password" type="password" autocomplete="current-password" minlength="8" required placeholder="Angalau herufi 8"></label>
       <button class="btn primary full" type="submit" id="authSubmit">Ingia</button>
     </form>

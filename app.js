@@ -27,6 +27,20 @@
   $("menuBtn").addEventListener("click", () => $("nav").classList.toggle("open"));
   $("year").textContent = new Date().getFullYear();
 
+  function updateAuthIdentifier() {
+    const method = $("authMethod").value;
+    const isPhone = method === "phone";
+    $("identifierLabel").childNodes[0].textContent = isPhone ? "Namba ya simu" : "Barua pepe";
+    $("identifier").type = isPhone ? "tel" : "email";
+    $("identifier").autocomplete = isPhone ? "tel" : "email";
+    $("identifier").placeholder = isPhone ? "+2557XXXXXXXX" : "barua@mfano.com";
+    $("identifierHint").textContent = isPhone
+      ? "Tumia mfumo wa kimataifa, mfano +255712345678. Usajili kwa simu unahitaji SMS Auth kuwashwa Supabase."
+      : "Tumia barua pepe unayoweza kuifikia.";
+  }
+  $("authMethod").addEventListener("change", updateAuthIdentifier);
+  updateAuthIdentifier();
+
   function setAuthMode(mode) {
     authMode = mode;
     const signup = mode === "signup";
@@ -49,23 +63,33 @@
       $("authMessage").textContent = "Kwanza unganisha Supabase kwa kujaza config.js.";
       return;
     }
-    const email = $("email").value.trim();
+    const method = $("authMethod").value;
+    const identifier = $("identifier").value.trim();
     const password = $("password").value;
     const button = $("authSubmit");
+    if (method === "phone" && !/^\\+[1-9]\\d{7,14}$/.test(identifier)) {
+      $("authMessage").textContent = "Weka namba kwa mfumo wa kimataifa, mfano +255712345678.";
+      return;
+    }
     button.disabled = true;
     try {
       let result;
+      const credentials = method === "phone"
+        ? { phone: identifier, password }
+        : { email: identifier, password };
       if (authMode === "signup") {
         result = await supabaseClient.auth.signUp({
-          email, password,
+          ...credentials,
           options: { data: { full_name: $("fullName").value.trim() } }
         });
       } else {
-        result = await supabaseClient.auth.signInWithPassword({ email, password });
+        result = await supabaseClient.auth.signInWithPassword(credentials);
       }
       if (result.error) throw result.error;
       $("authMessage").textContent = authMode === "signup"
-        ? "Usajili umetumwa. Angalia barua pepe yako ikiwa uthibitishaji wa email umewashwa."
+        ? (method === "phone"
+            ? "Ombi la usajili limetumwa. Ikiwa Phone Auth na SMS provider vimewashwa, fuata msimbo wa uthibitishaji uliotumwa kwa simu."
+            : "Usajili umetumwa. Angalia barua pepe yako ikiwa uthibitishaji wa email umewashwa.")
         : "Umeingia kikamilifu.";
       if (authMode === "login") {
         $("authDialog").close();
