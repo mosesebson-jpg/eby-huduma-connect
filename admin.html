@@ -1,0 +1,306 @@
+
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EBY MEDIA TZ | Admin Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f1f5fb;color:#17243b}
+header{background:#06345e;color:white;padding:18px;display:flex;justify-content:space-between;align-items:center}
+header h2{margin:0;font-size:20px}
+header small{color:#b9dafa}
+button{cursor:pointer;border:0;border-radius:9px;padding:12px;font-weight:bold}
+.logout{background:white;color:#07518d}
+.login{max-width:420px;margin:50px auto;background:white;padding:25px;border-radius:16px;box-shadow:0 5px 25px #0001}
+input{width:100%;padding:14px;margin:10px 0 18px;border:1px solid #ddd;border-radius:9px;font-size:16px}
+.primary{background:#07518d;color:white;width:100%;padding:15px}
+.layout{display:none;max-width:1300px;margin:auto;padding:18px}
+nav{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0}
+nav button{background:white;color:#07518d;border:1px solid #ddd}
+nav button.active{background:#07518d;color:white}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:14px}
+.stat,.panel{background:white;padding:20px;border-radius:13px;box-shadow:0 3px 12px #0001}
+.stat strong{display:block;font-size:28px;color:#07518d;margin-top:12px}
+.stat small{color:#64748b}
+.panel{margin-top:18px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:500px}
+td,th{padding:12px;border-bottom:1px solid #eee;text-align:left;font-size:13px}
+th{background:#edf4fb}
+#message{color:#c0392b;font-size:14px}
+@media(max-width:600px){.layout{padding:12px}.login{margin:25px 12px}}
+</style>
+</head>
+<body>
+
+<header>
+<div>
+<h2>EBY MEDIA TZ</h2>
+<small>Kisima cha Burudani | Admin Center</small>
+</div>
+<button class="logout" id="logout" hidden>Toka</button>
+</header>
+
+<section class="login" id="loginBox">
+<h2>Admin Login</h2>
+<p>Ingia kwenye mfumo wa usimamizi.</p>
+<form id="loginForm">
+<label>Barua pepe</label>
+<input id="email" type="email" required placeholder="Admin email">
+<label>Nenosiri</label>
+<input id="password" type="password" required placeholder="Nenosiri">
+<button class="primary" type="submit">INGIA ADMIN</button>
+</form>
+<p id="message"></p>
+</section>
+
+<main class="layout" id="dashboard">
+<h2>Karibu EBY MEDIA TZ 👋</h2>
+<p id="welcome">Admin Dashboard</p>
+
+<nav id="navigation">
+<button class="active" data-table="overview">Dashboard</button>
+<button data-table="profiles">Wanachama</button>
+<button data-table="advertisements">Matangazo</button>
+<button data-table="businesses">Biashara</button>
+<button data-table="community_groups">Vikundi</button>
+<button data-table="jobs">Ajira</button>
+<button data-table="products">Bidhaa</button>
+<button data-table="services">Huduma</button>
+<button data-table="service_inquiries">Maombi</button>
+</nav>
+
+<section id="overview">
+<div class="grid" id="stats"></div>
+<div class="panel">
+<h3>EBY MEDIA TZ Control Center</h3>
+<p>Simamia taarifa za mfumo wako hapa.</p>
+</div>
+</section>
+
+<section id="records" style="display:none">
+<div class="panel">
+<h3 id="tableTitle"></h3>
+<p id="loading"></p>
+<div id="tableContent"></div>
+</div>
+</section>
+</main>
+
+<script>
+const SUPABASE_URL =
+"https://noruvqqesdzlwfijxerq.supabase.co";
+
+const SUPABASE_ANON_KEY =
+"sb_publishable__3ThPNKCLJghRDsCCL_4ig_9ZfFUKHD";
+
+const db = window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_ANON_KEY
+);
+
+const tables = {
+profiles:"Wanachama",
+advertisements:"Matangazo",
+businesses:"Biashara",
+community_groups:"Vikundi",
+jobs:"Ajira",
+products:"Bidhaa",
+services:"Huduma",
+service_inquiries:"Maombi ya huduma"
+};
+
+const loginBox=document.getElementById("loginBox");
+const dashboard=document.getElementById("dashboard");
+const message=document.getElementById("message");
+
+let checking=false;
+
+function showLogin(){
+loginBox.style.display="block";
+dashboard.style.display="none";
+document.getElementById("logout").hidden=true;
+}
+
+async function checkAdmin(session){
+if(checking)return;
+checking=true;
+
+try{
+if(!session){
+showLogin();
+return;
+}
+
+const {data,error}=await db
+.from("profiles")
+.select("id,full_name,role")
+.eq("id",session.user.id)
+.maybeSingle();
+
+if(error || !data || data.role!=="admin"){
+await db.auth.signOut();
+showLogin();
+message.textContent="Akaunti hii haina ruhusa za Admin.";
+return;
+}
+
+loginBox.style.display="none";
+dashboard.style.display="block";
+document.getElementById("logout").hidden=false;
+document.getElementById("welcome").textContent=
+"Karibu "+(data.full_name||session.user.email);
+
+await loadStats();
+
+}catch(e){
+showLogin();
+message.textContent=e.message;
+}finally{
+checking=false;
+}
+}
+
+document.getElementById("loginForm")
+.addEventListener("submit",async(e)=>{
+e.preventDefault();
+message.textContent="Inakagua akaunti...";
+
+const email=document.getElementById("email").value.trim();
+const password=document.getElementById("password").value;
+
+const {data,error}=await db.auth.signInWithPassword({
+email,password
+});
+
+if(error){
+message.textContent=error.message;
+return;
+}
+
+await checkAdmin(data.session);
+});
+
+document.getElementById("logout").onclick=async()=>{
+await db.auth.signOut();
+showLogin();
+};
+
+async function loadStats(){
+const stats=document.getElementById("stats");
+stats.innerHTML="";
+
+for(const [table,name] of Object.entries(tables)){
+const {count,error}=await db
+.from(table)
+.select("*",{count:"exact",head:true});
+
+const card=document.createElement("div");
+card.className="stat";
+
+const label=document.createElement("small");
+label.textContent=name;
+
+const number=document.createElement("strong");
+number.textContent=error?"--":(count??0);
+
+card.append(label,number);
+stats.appendChild(card);
+}
+}
+
+async function loadTable(table){
+document.getElementById("overview").style.display="none";
+document.getElementById("records").style.display="block";
+document.getElementById("tableTitle").textContent=tables[table];
+document.getElementById("loading").textContent="Inapakia...";
+document.getElementById("tableContent").innerHTML="";
+
+const {data,error}=await db
+.from(table)
+.select("*")
+.limit(50);
+
+document.getElementById("loading").textContent="";
+
+if(error){
+document.getElementById("tableContent").textContent=
+"Hitilafu: "+error.message;
+return;
+}
+
+if(!data || data.length===0){
+document.getElementById("tableContent").textContent=
+"Hakuna taarifa zilizopatikana.";
+return;
+}
+
+const t=document.createElement("table");
+const head=document.createElement("tr");
+
+Object.keys(data[0]).forEach(key=>{
+const th=document.createElement("th");
+th.textContent=key;
+head.appendChild(th);
+});
+
+const thead=document.createElement("thead");
+thead.appendChild(head);
+t.appendChild(thead);
+
+const tbody=document.createElement("tbody");
+
+data.forEach(record=>{
+const tr=document.createElement("tr");
+
+Object.keys(record).forEach(key=>{
+const td=document.createElement("td");
+const value=record[key];
+
+td.textContent=value===null?"-":
+typeof value==="object"?JSON.stringify(value):String(value);
+
+tr.appendChild(td);
+});
+
+tbody.appendChild(tr);
+});
+
+t.appendChild(tbody);
+document.getElementById("tableContent").appendChild(t);
+}
+
+document.getElementById("navigation")
+.addEventListener("click",async(e)=>{
+const btn=e.target.closest("button");
+if(!btn)return;
+
+document.querySelectorAll("nav button")
+.forEach(b=>b.classList.remove("active"));
+
+btn.classList.add("active");
+
+if(btn.dataset.table==="overview"){
+document.getElementById("overview").style.display="block";
+document.getElementById("records").style.display="none";
+await loadStats();
+}else{
+await loadTable(btn.dataset.table);
+}
+});
+
+db.auth.onAuthStateChange((event,session)=>{
+if(event==="SIGNED_OUT"){
+showLogin();
+}
+});
+
+(async()=>{
+const {data}=await db.auth.getSession();
+await checkAdmin(data.session);
+})();
+</script>
+</body>
+</html>
