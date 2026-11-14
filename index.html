@@ -82,7 +82,7 @@
       box-sizing: border-box;
     }
 
-    /* SEHEMU YA MALIPO */
+    /* SEHEMU KUU YA MALIPO */
     .ad-payment {
       background: linear-gradient(145deg,#eaf3ff,#ffffff);
       border: 1px solid #c8dcf5;
@@ -97,7 +97,6 @@
       font-size: 21px;
       text-align: center;
       margin: 0 0 8px;
-      line-height: 1.4;
       font-weight: 900;
     }
 
@@ -109,10 +108,13 @@
       margin: 0 0 18px;
     }
 
+    /* KADI ZA MITANDAO: UREFU MFUPI, UPANA ULEULE */
     .payment-network {
+      width: 100%;
+      box-sizing: border-box;
       border-radius: 16px;
-      padding: 17px;
-      margin-bottom: 13px;
+      padding: 10px 17px;
+      margin: 0 0 13px;
       position: relative;
       overflow: hidden;
       box-shadow: 0 5px 14px rgba(0,0,0,.13);
@@ -120,39 +122,39 @@
 
     .payment-network strong {
       display: block;
-      font-size: 16px;
+      font-size: 14px;
       font-weight: 900;
       letter-spacing: .5px;
-      margin-bottom: 12px;
+      margin: 4px 0 5px;
     }
 
     .payment-brand {
       display: block;
-      font-size: 25px;
-      line-height: 1.1;
+      font-size: 22px;
+      line-height: 1.05;
       font-weight: 1000;
-      margin-bottom: 5px;
+      margin: 0 0 3px;
       letter-spacing: -.5px;
     }
 
     .payment-brand small {
       display: block;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 800;
       letter-spacing: 1px;
-      margin-top: 4px;
+      margin-top: 2px;
     }
 
     .payment-number-box {
       background: #fff;
       border-radius: 11px;
-      padding: 11px 13px;
-      margin-top: 13px;
+      padding: 6px 12px;
+      margin-top: 7px;
     }
 
     .payment-number {
       display: block;
-      font-size: clamp(23px, 6vw, 29px);
+      font-size: clamp(22px,5.5vw,26px);
       font-weight: 1000;
       letter-spacing: 1px;
       overflow-wrap: anywhere;
@@ -160,12 +162,14 @@
     }
 
     .payment-label {
-      display: block;
+      display: inline-block;
       text-align: center;
       font-size: 11px;
       font-weight: 900;
       letter-spacing: 1.5px;
-      margin-top: 8px;
+      margin-top: 6px;
+      padding: 7px 15px;
+      border-radius: 30px;
     }
 
     /* MIXX BY YAS */
@@ -180,12 +184,8 @@
     }
 
     .payment-mixx .payment-label {
-      display: inline-block;
       background: #092d59;
       color: #ffe000;
-      border-radius: 30px;
-      padding: 7px 15px;
-      margin-top: 12px;
     }
 
     /* AIRTEL MONEY */
@@ -200,12 +200,8 @@
     }
 
     .payment-airtel .payment-label {
-      display: inline-block;
       background: #ffdf00;
       color: #a60019;
-      border-radius: 30px;
-      padding: 7px 15px;
-      margin-top: 12px;
     }
 
     /* VODACOM M-PESA */
@@ -220,12 +216,8 @@
     }
 
     .payment-vodacom .payment-label {
-      display: inline-block;
       background: #fff;
       color: #bd0018;
-      border-radius: 30px;
-      padding: 7px 15px;
-      margin-top: 12px;
     }
 
     /* JINA LA MPOKEAJI */
@@ -308,7 +300,6 @@
   </header>
 
   <main>
-    <!-- UKURASA WA MWANZO -->
     <section class="hero">
       <div class="hero-copy">
         <span class="eyebrow">JUKWAA LA HUDUMA NA FURSA TANZANIA</span>
@@ -338,7 +329,6 @@
       </div>
     </section>
 
-    <!-- TAFUTA HUDUMA -->
     <section class="search-panel" id="huduma">
       <div>
         <span class="eyebrow">TAFUTA KWA URAHISI</span>
@@ -346,9 +336,7 @@
       </div>
 
       <form id="searchForm" class="search-form">
-        <input
-          id="searchInput"
-          type="search"
+        <input id="searchInput" type="search"
           placeholder="Mfano: fundi umeme, poster, website..."
           aria-label="Tafuta huduma">
 
@@ -369,7 +357,6 @@
       </form>
     </section>
 
-    <!-- BIASHARA -->
     <section class="section" id="biashara">
       <div class="section-heading">
         <div>
@@ -386,7 +373,6 @@
       </div>
     </section>
 
-    <!-- MATANGAZO -->
     <section class="section" id="matangazo">
       <div class="section-heading">
         <div>
@@ -403,22 +389,10 @@
         </p>
 
         <div class="ad-prices">
-          <div class="ad-price">
-            <span>Siku 7</span>
-            <strong>TSh 5,000</strong>
-          </div>
-          <div class="ad-price">
-            <span>Siku 14</span>
-            <strong>TSh 8,000</strong>
-          </div>
-          <div class="ad-price">
-            <span>Siku 30</span>
-            <strong>TSh 15,000</strong>
-          </div>
-          <div class="ad-price">
-            <span class="ad-featured">Featured siku 30</span>
-            <strong>TSh 25,000</strong>
-          </div>
+          <div class="ad-price"><span>Siku 7</span><strong>TSh 5,000</strong></div>
+          <div class="ad-price"><span>Siku 14</span><strong>TSh 8,000</strong></div>
+          <div class="ad-price"><span>Siku 30</span><strong>TSh 15,000</strong></div>
+          <div class="ad-price"><span class="ad-featured">Featured siku 30</span><strong>TSh 25,000</strong></div>
         </div>
 
         <button class="ad-action" id="advertisementOpen" type="button">
@@ -441,7 +415,6 @@
       </div>
     </section>
 
-    <!-- FURSA -->
     <section class="section split-section" id="fursa">
       <div>
         <span class="eyebrow">FURSA</span>
@@ -477,7 +450,6 @@
       </div>
     </section>
 
-    <!-- CTA -->
     <section class="cta-band">
       <div>
         <span class="eyebrow">WEWE NI MTOA HUDUMA?</span>
@@ -488,7 +460,6 @@
     </section>
   </main>
 
-  <!-- FOOTER -->
   <footer>
     <div class="brand footer-brand">
       <span class="brand-mark">EBY</span>
@@ -498,9 +469,7 @@
       </span>
     </div>
 
-    <p>
-      © <span id="year"></span> EBY MEDIA TZ. Haki zote zimehifadhiwa.
-    </p>
+    <p>© <span id="year"></span> EBY MEDIA TZ. Haki zote zimehifadhiwa.</p>
     <small>Jukwaa la kuwaunganisha wateja na watoa huduma Tanzania.</small>
   </footer>
 
@@ -532,12 +501,8 @@
 
       <label id="identifierLabel">
         Barua pepe
-        <input
-          id="identifier"
-          type="email"
-          autocomplete="email"
-          required
-          placeholder="barua@mfano.com">
+        <input id="identifier" type="email" autocomplete="email"
+          required placeholder="barua@mfano.com">
       </label>
 
       <small id="identifierHint" class="muted">
@@ -546,18 +511,11 @@
 
       <label>
         Nenosiri
-        <input
-          id="password"
-          type="password"
-          autocomplete="current-password"
-          minlength="8"
-          required
-          placeholder="Angalau herufi 8">
+        <input id="password" type="password" autocomplete="current-password"
+          minlength="8" required placeholder="Angalau herufi 8">
       </label>
 
-      <button class="btn primary full" type="submit" id="authSubmit">
-        Ingia
-      </button>
+      <button class="btn primary full" type="submit" id="authSubmit">Ingia</button>
     </form>
 
     <p id="authMessage" class="form-message" aria-live="polite"></p>
@@ -614,12 +572,11 @@
 
       <label>
         Maelezo
-        <textarea id="businessDescription" rows="3" maxlength="1000" placeholder="Eleza huduma unazotoa"></textarea>
+        <textarea id="businessDescription" rows="3" maxlength="1000"
+          placeholder="Eleza huduma unazotoa"></textarea>
       </label>
 
-      <button class="btn primary full" type="submit">
-        Tuma kwa ukaguzi
-      </button>
+      <button class="btn primary full" type="submit">Tuma kwa ukaguzi</button>
     </form>
 
     <p id="businessMessage" class="form-message" aria-live="polite"></p>
@@ -638,39 +595,25 @@
     </p>
 
     <form id="advertisementForm" class="stack">
-
       <label>
         Kichwa cha tangazo
-        <input
-          id="advertisementTitle"
-          type="text"
-          maxlength="120"
-          required
-          placeholder="Mfano: Tunauza vifaa vya ujenzi">
+        <input id="advertisementTitle" type="text" maxlength="120"
+          required placeholder="Mfano: Tunauza vifaa vya ujenzi">
       </label>
 
       <label>
         Maelezo ya tangazo
-        <textarea
-          id="advertisementDescription"
-          rows="4"
-          maxlength="1500"
-          required
-          placeholder="Eleza bidhaa au huduma unayotangaza"></textarea>
+        <textarea id="advertisementDescription" rows="4" maxlength="1500"
+          required placeholder="Eleza bidhaa au huduma unayotangaza"></textarea>
       </label>
 
       <label>
         Picha ya tangazo
-        <input
-          id="advertisementImage"
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          required>
+        <input id="advertisementImage" type="file"
+          accept="image/jpeg,image/png,image/webp" required>
       </label>
 
-      <small class="ad-note">
-        Ruhusiwa: JPG, PNG au WEBP. Ukubwa wa juu ni MB 5.
-      </small>
+      <small class="ad-note">Ruhusiwa: JPG, PNG au WEBP. Ukubwa wa juu ni MB 5.</small>
 
       <label>
         Aina ya tangazo
@@ -744,31 +687,20 @@
 
       <label>
         Jina la aliyelipa
-        <input
-          id="advertisementPayerName"
-          type="text"
-          maxlength="120"
-          required
-          placeholder="Jina lililotumika kulipia">
+        <input id="advertisementPayerName" type="text" maxlength="120"
+          required placeholder="Jina lililotumika kulipia">
       </label>
 
       <label>
         Namba ya simu iliyotumika kulipia
-        <input
-          id="advertisementPayerPhone"
-          type="tel"
-          required
-          placeholder="Mfano: 07XXXXXXXX">
+        <input id="advertisementPayerPhone" type="tel"
+          required placeholder="Mfano: 07XXXXXXXX">
       </label>
 
       <label>
         Namba ya muamala / Transaction ID
-        <input
-          id="advertisementTransaction"
-          type="text"
-          maxlength="100"
-          required
-          placeholder="Weka namba ya muamala">
+        <input id="advertisementTransaction" type="text" maxlength="100"
+          required placeholder="Weka namba ya muamala">
       </label>
 
       <p class="ad-note">
@@ -785,33 +717,5 @@
   </dialog>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-
-<style>
-/* PUNGUZA UREFU WA KADI ZA MALIPO PEKEE */
-.ad-payment .payment-network {
-  padding-top: 10px !important;
-  padding-bottom: 10px !important;
-}
-
-.ad-payment .payment-brand {
-  margin-bottom: 3px !important;
-}
-
-.ad-payment .payment-network strong {
-  margin-bottom: 6px !important;
-}
-
-.ad-payment .payment-number-box {
-  padding-top: 7px !important;
-  padding-bottom: 7px !important;
-  margin-top: 7px !important;
-}
-
-.ad-payment .payment-label {
-  margin-top: 5px !important;
-}
-</style>
-
 </body>
 </html>
-
