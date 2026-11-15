@@ -1,721 +1,305 @@
-
 <!doctype html>
 <html lang="sw">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#0757a6">
-  <meta name="description" content="EBY HUDUMA CONNECT inaunganisha watu na biashara, huduma, elimu na fursa Tanzania.">
-  <title>EBY HUDUMA CONNECT | EBY MEDIA TZ</title>
-  <link rel="stylesheet" href="styles.css">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script defer src="config.js"></script>
-  <script defer src="app.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0757a6">
+<meta name="description" content="EBY HUDUMA CONNECT inaunganisha watu na biashara, huduma, elimu na fursa Tanzania.">
+<title>EBY HUDUMA CONNECT | EBY MEDIA TZ</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer src="config.js"></script>
+<script defer src="app.js"></script>
 
-  <style>
-    .ad-intro {
-      background: #edf5ff;
-      border-radius: 18px;
-      padding: 24px;
-      margin: 25px 0;
-    }
+<style>
+.ad-intro{background:#edf5ff;border-radius:18px;padding:24px;margin:25px 0}
+.ad-prices{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px;margin:20px 0}
+.ad-price{background:#fff;border:1px solid #dce8f5;border-radius:14px;padding:16px}
+.ad-price strong{display:block;color:#0757a6;font-size:22px;margin-top:8px}
+.ad-action,.photo-upload-btn{background:#0757a6;color:#fff;border:0;border-radius:10px;padding:13px 20px;font-weight:700;cursor:pointer}
+.ad-dialog,.photo-upload-dialog{width:min(95%,520px);max-height:90vh;overflow-y:auto;border:0;border-radius:18px;padding:24px}
+.ad-dialog::backdrop,.photo-upload-dialog::backdrop{background:#000a}
+.ad-dialog label,.photo-upload-dialog label{display:block;font-weight:600;margin:12px 0}
+.ad-dialog input,.ad-dialog select,.ad-dialog textarea,.photo-upload-dialog input,.photo-upload-dialog textarea{display:block;width:100%;padding:12px;margin-top:6px;border:1px solid #ccd8e5;border-radius:9px;box-sizing:border-box}
+.ad-payment{background:linear-gradient(145deg,#eaf3ff,#fff);border:1px solid #c8dcf5;border-radius:20px;padding:18px;margin:20px 0;box-shadow:0 8px 25px #0757a61a}
+.ad-payment h3{color:#0757a6;text-align:center}
+.payment-network{border-radius:15px;padding:12px 17px;margin:12px 0;box-shadow:0 5px 14px #0002}
+.payment-network strong{display:block}
+.payment-brand{font-size:22px;font-weight:900}
+.payment-brand small{display:block;font-size:12px}
+.payment-number-box{background:#fff;border-radius:10px;padding:7px;margin-top:7px}
+.payment-number{display:block;text-align:center;font-size:25px;font-weight:900;letter-spacing:1px}
+.payment-label{display:inline-block;margin-top:7px;padding:6px 13px;border-radius:20px;font-size:11px;font-weight:900}
+.payment-mixx{background:linear-gradient(135deg,#ffdf00,#ffc400);color:#092c57}
+.payment-mixx .payment-label{background:#092d59;color:#ffe000}
+.payment-airtel{background:linear-gradient(135deg,#ed1b2f,#b90020);color:#fff}
+.payment-airtel .payment-number{color:#c90020}
+.payment-airtel .payment-label{background:#ffdf00;color:#a60019}
+.payment-vodacom{background:linear-gradient(135deg,#e60019,#a90016);color:#fff}
+.payment-vodacom .payment-number{color:#c9001d}
+.payment-vodacom .payment-label{background:#fff;color:#bd0018}
+.payment-recipient{background:linear-gradient(120deg,#052b59,#0757a6);border:2px solid #1686ff;border-radius:15px;padding:17px;color:#fff;text-align:center}
+.payment-recipient small{display:block;color:#ffdf00;font-weight:900}
+.payment-recipient strong{display:block;font-size:27px;margin-top:7px}
+.payment-instructions{background:#fff;border-left:4px solid #0757a6;border-radius:10px;padding:13px;line-height:1.7}
+.ad-note{font-size:13px;color:#5d6b7b;line-height:1.6}
+.ad-close{float:right;border:0;background:transparent;font-size:26px;cursor:pointer}
+.ad-featured{color:#b77900;font-weight:700}
 
-    .ad-prices {
-      display: grid;
-      grid-template-columns: repeat(auto-fit,minmax(145px,1fr));
-      gap: 12px;
-      margin: 20px 0;
-    }
+/* PICHA ZA UMMA */
+.photo-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:14px 0 20px}
+.photo-card-image{display:block;width:100%;height:210px;object-fit:cover;border-radius:13px;cursor:zoom-in;background:#e8eef5}
+.engagement{margin-top:13px;border-top:1px solid #e5edf6;padding-top:12px}
+.engagement-actions{display:flex;gap:10px;flex-wrap:wrap}
+.like-btn,.comments-toggle{border:0;border-radius:10px;padding:9px 13px;font-weight:800;cursor:pointer}
+.like-btn{background:#e8f2ff;color:#0757a6}
+.like-btn.liked{background:#0757a6;color:#fff}
+.comments-toggle{background:#fff4d8;color:#8a5a00}
+.comment-area{margin-top:12px}
+.comment-list{display:grid;gap:8px;margin:10px 0}
+.comment-item{background:#f5f8fc;border-radius:10px;padding:9px 11px;font-size:13px}
+.comment-item strong{display:block;color:#0757a6;margin-bottom:3px}
+.comment-form{display:flex;gap:7px;margin-top:9px}
+.comment-form input{min-width:0;flex:1;border:1px solid #d3deeb;border-radius:9px;padding:11px}
+.comment-form button{border:0;border-radius:9px;background:#d9a323;color:#fff;font-weight:900;padding:0 14px;cursor:pointer}
+.comment-hint{font-size:12px;color:#64748b}
 
-    .ad-price {
-      background: white;
-      border: 1px solid #dce8f5;
-      border-radius: 14px;
-      padding: 16px;
-    }
+/* PICHA KUFUNGUKA KWA UKUBWA */
+.photo-dialog{width:100vw;height:100dvh;max-width:none;max-height:none;margin:0;padding:0;border:0;background:#06172c;color:#fff;overflow:hidden}
+.photo-dialog::backdrop{background:#06172c}
+.photo-viewer{height:100%;display:flex;flex-direction:column;background:radial-gradient(circle at center,#12365c,#041326 75%)}
+.viewer-top{display:flex;justify-content:space-between;align-items:center;padding:15px 18px}
+.viewer-counter{font-weight:800;color:#d7e8ff}
+.viewer-close{width:42px;height:42px;border:1px solid #ffffff55;border-radius:50%;background:#ffffff16;color:#fff;font-size:28px}
+.viewer-stage{position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:8px 54px}
+.viewer-image{max-width:100%;max-height:100%;object-fit:contain;user-select:none}
+.viewer-arrow{position:absolute;top:50%;transform:translateY(-50%);width:42px;height:52px;border:1px solid #ffffff55;border-radius:12px;background:#ffffff18;color:#fff;font-size:30px}
+.viewer-prev{left:9px}
+.viewer-next{right:9px}
+.viewer-caption{padding:12px 18px 22px;text-align:center;max-height:23vh;overflow:auto}
+.viewer-caption h3{margin:0 0 5px}
+.viewer-caption p{margin:0;color:#d3e2f3;font-size:14px}
 
-    .ad-price strong {
-      display: block;
-      color: #0757a6;
-      font-size: 22px;
-      margin-top: 8px;
-    }
-
-    .ad-action {
-      background: #0757a6;
-      color: white;
-      border: 0;
-      border-radius: 10px;
-      padding: 13px 20px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .ad-dialog {
-      width: min(95%,520px);
-      max-height: 90vh;
-      overflow-y: auto;
-      border: 0;
-      border-radius: 18px;
-      padding: 25px;
-    }
-
-    .ad-dialog::backdrop {
-      background: rgba(0,0,0,.65);
-    }
-
-    .ad-dialog label {
-      display: block;
-      font-weight: 600;
-      margin: 12px 0;
-    }
-
-    .ad-dialog input,
-    .ad-dialog select,
-    .ad-dialog textarea {
-      display: block;
-      width: 100%;
-      padding: 12px;
-      margin-top: 6px;
-      border: 1px solid #ccd8e5;
-      border-radius: 9px;
-      box-sizing: border-box;
-    }
-
-    /* SEHEMU KUU YA MALIPO */
-    .ad-payment {
-      background: linear-gradient(145deg,#eaf3ff,#ffffff);
-      border: 1px solid #c8dcf5;
-      border-radius: 20px;
-      padding: 18px;
-      margin: 20px 0;
-      box-shadow: 0 8px 25px rgba(7,87,166,.10);
-    }
-
-    .ad-payment h3 {
-      color: #0757a6;
-      font-size: 21px;
-      text-align: center;
-      margin: 0 0 8px;
-      font-weight: 900;
-    }
-
-    .ad-payment .payment-intro {
-      font-size: 14px;
-      color: #53677f;
-      line-height: 1.6;
-      text-align: center;
-      margin: 0 0 18px;
-    }
-
-    /* KADI ZA MITANDAO: UREFU MFUPI, UPANA ULEULE */
-    .payment-network {
-      width: 100%;
-      box-sizing: border-box;
-      border-radius: 16px;
-      padding: 10px 17px;
-      margin: 0 0 13px;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 5px 14px rgba(0,0,0,.13);
-    }
-
-    .payment-network strong {
-      display: block;
-      font-size: 14px;
-      font-weight: 900;
-      letter-spacing: .5px;
-      margin: 4px 0 5px;
-    }
-
-    .payment-brand {
-      display: block;
-      font-size: 22px;
-      line-height: 1.05;
-      font-weight: 1000;
-      margin: 0 0 3px;
-      letter-spacing: -.5px;
-    }
-
-    .payment-brand small {
-      display: block;
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 1px;
-      margin-top: 2px;
-    }
-
-    .payment-number-box {
-      background: #fff;
-      border-radius: 11px;
-      padding: 6px 12px;
-      margin-top: 7px;
-    }
-
-    .payment-number {
-      display: block;
-      font-size: clamp(22px,5.5vw,26px);
-      font-weight: 1000;
-      letter-spacing: 1px;
-      overflow-wrap: anywhere;
-      text-align: center;
-    }
-
-    .payment-label {
-      display: inline-block;
-      text-align: center;
-      font-size: 11px;
-      font-weight: 900;
-      letter-spacing: 1.5px;
-      margin-top: 6px;
-      padding: 7px 15px;
-      border-radius: 30px;
-    }
-
-    /* MIXX BY YAS */
-    .payment-mixx {
-      background: linear-gradient(135deg,#ffdf00,#ffc400);
-      color: #092c57;
-      border: 2px solid #f0b900;
-    }
-
-    .payment-mixx .payment-number {
-      color: #082d59;
-    }
-
-    .payment-mixx .payment-label {
-      background: #092d59;
-      color: #ffe000;
-    }
-
-    /* AIRTEL MONEY */
-    .payment-airtel {
-      background: linear-gradient(135deg,#ed1b2f,#b90020);
-      color: #fff;
-      border: 2px solid #c90020;
-    }
-
-    .payment-airtel .payment-number {
-      color: #d00022;
-    }
-
-    .payment-airtel .payment-label {
-      background: #ffdf00;
-      color: #a60019;
-    }
-
-    /* VODACOM M-PESA */
-    .payment-vodacom {
-      background: linear-gradient(135deg,#e60019,#a90016);
-      color: #fff;
-      border: 2px solid #bd0018;
-    }
-
-    .payment-vodacom .payment-number {
-      color: #c9001d;
-    }
-
-    .payment-vodacom .payment-label {
-      background: #fff;
-      color: #bd0018;
-    }
-
-    /* JINA LA MPOKEAJI */
-    .payment-recipient {
-      background: linear-gradient(120deg,#052b59,#0757a6);
-      border: 2px solid #1686ff;
-      border-radius: 15px;
-      padding: 18px;
-      color: white;
-      margin-top: 17px;
-      text-align: center;
-      box-shadow: 0 5px 18px rgba(7,87,166,.25);
-    }
-
-    .payment-recipient small {
-      display: block;
-      color: #ffdf00;
-      font-size: 12px;
-      font-weight: 900;
-      letter-spacing: 1.5px;
-    }
-
-    .payment-recipient strong {
-      display: block;
-      color: #fff !important;
-      font-size: clamp(23px,6vw,29px);
-      font-weight: 1000;
-      margin-top: 7px;
-      letter-spacing: 1px;
-    }
-
-    .payment-instructions {
-      background: #fff;
-      border-left: 4px solid #0757a6;
-      border-radius: 10px;
-      padding: 13px;
-      font-size: 14px;
-      line-height: 1.7;
-      color: #334155;
-      margin: 16px 0 0;
-    }
-
-    .ad-note {
-      font-size: 13px;
-      color: #5d6b7b;
-      line-height: 1.6;
-    }
-
-    .ad-close {
-      float: right;
-      border: 0;
-      background: transparent;
-      font-size: 26px;
-      cursor: pointer;
-    }
-
-    .ad-featured {
-      color: #b77900;
-      font-weight: 700;
-    }
-  </style>
+@media(max-width:600px){
+.photo-card-image{height:185px}
+.viewer-stage{padding:8px 43px}
+.viewer-arrow{width:35px;height:46px}
+.comment-form button{padding:0 11px}
+}
+</style>
 </head>
 
 <body>
-  <header class="topbar">
-    <a class="brand" href="#" aria-label="EBY HUDUMA CONNECT mwanzo">
-      <span class="brand-mark">EBY</span>
-      <span><strong>HUDUMA CONNECT</strong><small>BY EBY MEDIA TZ</small></span>
-    </a>
-
-    <button id="menuBtn" class="menu-btn" aria-label="Fungua menyu">☰</button>
-
-    <nav id="nav">
-      <a href="#huduma">Huduma</a>
-      <a href="#biashara">Biashara</a>
-      <a href="#matangazo">Matangazo</a>
-      <a href="#fursa">Fursa</a>
-      <button id="authOpen" class="nav-cta">Ingia / Jisajili</button>
-    </nav>
-  </header>
-
-  <main>
-    <section class="hero">
-      <div class="hero-copy">
-        <span class="eyebrow">JUKWAA LA HUDUMA NA FURSA TANZANIA</span>
-        <h1>Unatafuta huduma?<br><em>Anza hapa.</em></h1>
-        <p>
-          Tafuta biashara, wataalamu, bidhaa, mafunzo na fursa.
-          EBY HUDUMA CONNECT inakuunganisha na watoa huduma
-          sehemu mbalimbali za Tanzania.
-        </p>
-        <div class="hero-actions">
-          <a class="btn primary" href="#biashara">Tafuta huduma</a>
-          <button class="btn ghost" id="providerOpen">Sajili biashara yako</button>
-        </div>
-      </div>
-
-      <div class="hero-card">
-        <div class="spark">✦</div>
-        <span class="eyebrow">EBY MEDIA TZ</span>
-        <h2>Huduma zote.<br>Sehemu moja.</h2>
-        <p>Rahisisha kutafuta na kutoa huduma kwa njia ya kidijitali.</p>
-        <div class="hero-tags">
-          <span>Biashara</span>
-          <span>Elimu</span>
-          <span>Ajira</span>
-          <span>Wataalamu</span>
-        </div>
-      </div>
-    </section>
-
-    <section class="search-panel" id="huduma">
-      <div>
-        <span class="eyebrow">TAFUTA KWA URAHISI</span>
-        <h2>Unahitaji nini leo?</h2>
-      </div>
-
-      <form id="searchForm" class="search-form">
-        <input id="searchInput" type="search"
-          placeholder="Mfano: fundi umeme, poster, website..."
-          aria-label="Tafuta huduma">
-
-        <select id="categoryFilter" aria-label="Chagua kundi">
-          <option value="">Makundi yote</option>
-          <option>Biashara</option>
-          <option>Matangazo</option>
-          <option>Ufundi</option>
-          <option>Elimu</option>
-          <option>Teknolojia</option>
-          <option>Nyaraka</option>
-          <option>Afya</option>
-          <option>Usafiri</option>
-          <option>Nyingine</option>
-        </select>
-
-        <button class="btn primary" type="submit">Tafuta</button>
-      </form>
-    </section>
-
-    <section class="section" id="biashara">
-      <div class="section-heading">
-        <div>
-          <span class="eyebrow">SOKO LA HUDUMA</span>
-          <h2>Biashara na watoa huduma</h2>
-        </div>
-        <span id="businessCount" class="muted">Inapakia...</span>
-      </div>
-
-      <div id="businessList" class="card-grid">
-        <div class="empty">
-          Taarifa za biashara zitaonekana hapa baada ya kuunganisha database.
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="matangazo">
-      <div class="section-heading">
-        <div>
-          <span class="eyebrow">TANGAZO LAKO LIONEKANE</span>
-          <h2>Matangazo ya biashara</h2>
-        </div>
-      </div>
-
-      <div class="ad-intro">
-        <h2>Tangaza biashara yako Tanzania nzima</h2>
-        <p>
-          Wafikie wateja wapya kupitia EBY HUDUMA CONNECT.
-          Chagua muda wa tangazo, pakia picha na tuma maombi yako.
-        </p>
-
-        <div class="ad-prices">
-          <div class="ad-price"><span>Siku 7</span><strong>TSh 5,000</strong></div>
-          <div class="ad-price"><span>Siku 14</span><strong>TSh 8,000</strong></div>
-          <div class="ad-price"><span>Siku 30</span><strong>TSh 15,000</strong></div>
-          <div class="ad-price"><span class="ad-featured">Featured siku 30</span><strong>TSh 25,000</strong></div>
-        </div>
-
-        <button class="ad-action" id="advertisementOpen" type="button">
-          + Weka tangazo lako
-        </button>
-      </div>
-
-      <div class="section-heading">
-        <div>
-          <span class="eyebrow">MATANGAZO YALIYOIDHINISHWA</span>
-          <h2>Matangazo mapya</h2>
-        </div>
-        <span id="advertisementCount" class="muted">Inasubiri kuunganishwa</span>
-      </div>
-
-      <div id="advertisementList" class="card-grid">
-        <div class="empty">
-          Matangazo yaliyoidhinishwa yataonekana hapa.
-        </div>
-      </div>
-    </section>
-
-    <section class="section split-section" id="fursa">
-      <div>
-        <span class="eyebrow">FURSA</span>
-        <h2>Fursa na matangazo</h2>
-        <p>
-          Sehemu ya ajira, vikundi na matangazo yaliyoidhinishwa
-          itaongezwa hatua kwa hatua.
-        </p>
-      </div>
-
-      <div class="feature-list">
-        <div>
-          <span class="feature-icon">⌕</span>
-          <span>
-            <strong>Tafuta kwa eneo</strong>
-            <small>Chagua mkoa na wilaya ili kupata huduma karibu nawe.</small>
-          </span>
-        </div>
-        <div>
-          <span class="feature-icon">✓</span>
-          <span>
-            <strong>Watoa huduma waliokaguliwa</strong>
-            <small>Biashara zitapitia ukaguzi kabla ya kuonyeshwa kama zimethibitishwa.</small>
-          </span>
-        </div>
-        <div>
-          <span class="feature-icon">✦</span>
-          <span>
-            <strong>EBY AI</strong>
-            <small>Msaidizi wa kidijitali utaongezwa baada ya hatua ya kwanza.</small>
-          </span>
-        </div>
-      </div>
-    </section>
-
-    <section class="cta-band">
-      <div>
-        <span class="eyebrow">WEWE NI MTOA HUDUMA?</span>
-        <h2>Wafikie wateja wapya.</h2>
-        <p>Sajili biashara au huduma yako kwenye EBY HUDUMA CONNECT.</p>
-      </div>
-      <button id="providerOpen2" class="btn light">Sajili biashara</button>
-    </section>
-  </main>
-
-  <footer>
-    <div class="brand footer-brand">
-      <span class="brand-mark">EBY</span>
-      <span>
-        <strong>HUDUMA CONNECT</strong>
-        <small>BY EBY MEDIA TZ</small>
-      </span>
-    </div>
-
-    <p>© <span id="year"></span> EBY MEDIA TZ. Haki zote zimehifadhiwa.</p>
-    <small>Jukwaa la kuwaunganisha wateja na watoa huduma Tanzania.</small>
-  </footer>
-
-  <!-- INGIA / JISAJILI -->
-  <dialog id="authDialog">
-    <button class="dialog-close" data-close="authDialog" aria-label="Funga">×</button>
-
-    <span class="eyebrow">KARIBU EBY HUDUMA CONNECT</span>
-    <h2 id="authTitle">Ingia kwenye akaunti</h2>
-
-    <div class="tabs">
-      <button id="loginTab" class="active">Ingia</button>
-      <button id="signupTab">Jisajili</button>
-    </div>
-
-    <form id="authForm" class="stack">
-      <label id="nameWrap" class="hidden">
-        Jina kamili
-        <input id="fullName" autocomplete="name" placeholder="Jina lako">
-      </label>
-
-      <label>
-        Njia ya kutumia akaunti
-        <select id="authMethod">
-          <option value="email">Barua pepe</option>
-          <option value="phone">Namba ya simu</option>
-        </select>
-      </label>
-
-      <label id="identifierLabel">
-        Barua pepe
-        <input id="identifier" type="email" autocomplete="email"
-          required placeholder="barua@mfano.com">
-      </label>
-
-      <small id="identifierHint" class="muted">
-        Tumia barua pepe unayoweza kuifikia.
-      </small>
-
-      <label>
-        Nenosiri
-        <input id="password" type="password" autocomplete="current-password"
-          minlength="8" required placeholder="Angalau herufi 8">
-      </label>
-
-      <button class="btn primary full" type="submit" id="authSubmit">Ingia</button>
-    </form>
-
-    <p id="authMessage" class="form-message" aria-live="polite"></p>
-  </dialog>
-
-  <!-- USAJILI WA BIASHARA -->
-  <dialog id="providerDialog">
-    <button class="dialog-close" data-close="providerDialog" aria-label="Funga">×</button>
-
-    <span class="eyebrow">JIUNGE NA MTANDAO WETU</span>
-    <h2>Sajili biashara au huduma</h2>
-
-    <p class="muted">
-      Ingia kwanza. Usajili utatumwa kwa ukaguzi wa msimamizi
-      kabla ya kuonekana hadharani.
-    </p>
-
-    <form id="businessForm" class="stack">
-      <label>
-        Jina la biashara / mtoa huduma
-        <input id="businessName" required maxlength="120">
-      </label>
-
-      <label>
-        Kundi la huduma
-        <select id="businessCategory" required>
-          <option value="">Chagua kundi</option>
-          <option>Biashara</option>
-          <option>Matangazo</option>
-          <option>Ufundi</option>
-          <option>Elimu</option>
-          <option>Teknolojia</option>
-          <option>Nyaraka</option>
-          <option>Afya</option>
-          <option>Usafiri</option>
-          <option>Nyingine</option>
-        </select>
-      </label>
-
-      <label>
-        Namba ya simu
-        <input id="businessPhone" type="tel" placeholder="Mfano: 07XXXXXXXX">
-      </label>
-
-      <label>
-        Mkoa
-        <input id="businessRegion" required placeholder="Mfano: Pwani">
-      </label>
-
-      <label>
-        Wilaya
-        <input id="businessDistrict" placeholder="Mfano: Bagamoyo">
-      </label>
-
-      <label>
-        Maelezo
-        <textarea id="businessDescription" rows="3" maxlength="1000"
-          placeholder="Eleza huduma unazotoa"></textarea>
-      </label>
-
-      <button class="btn primary full" type="submit">Tuma kwa ukaguzi</button>
-    </form>
-
-    <p id="businessMessage" class="form-message" aria-live="polite"></p>
-  </dialog>
-
-  <!-- WEKA TANGAZO -->
-  <dialog id="advertisementDialog" class="ad-dialog">
-    <button class="ad-close" type="button" data-close="advertisementDialog" aria-label="Funga">×</button>
-
-    <span class="eyebrow">EBY MEDIA TZ</span>
-    <h2>Weka tangazo lako</h2>
-
-    <p class="ad-note">
-      Ingia kwenye akaunti kabla ya kutuma tangazo.
-      Tangazo litahitaji kuthibitishwa na msimamizi.
-    </p>
-
-    <form id="advertisementForm" class="stack">
-      <label>
-        Kichwa cha tangazo
-        <input id="advertisementTitle" type="text" maxlength="120"
-          required placeholder="Mfano: Tunauza vifaa vya ujenzi">
-      </label>
-
-      <label>
-        Maelezo ya tangazo
-        <textarea id="advertisementDescription" rows="4" maxlength="1500"
-          required placeholder="Eleza bidhaa au huduma unayotangaza"></textarea>
-      </label>
-
-      <label>
-        Picha ya tangazo
-        <input id="advertisementImage" type="file"
-          accept="image/jpeg,image/png,image/webp" required>
-      </label>
-
-      <small class="ad-note">Ruhusiwa: JPG, PNG au WEBP. Ukubwa wa juu ni MB 5.</small>
-
-      <label>
-        Aina ya tangazo
-        <select id="advertisementPlan" required>
-          <option value="">Chagua muda wa tangazo</option>
-          <option value="7">Siku 7 - TSh 5,000</option>
-          <option value="14">Siku 14 - TSh 8,000</option>
-          <option value="30">Siku 30 - TSh 15,000</option>
-          <option value="featured">Featured siku 30 - TSh 25,000</option>
-        </select>
-      </label>
-
-      <label>
-        Mtandao wa malipo
-        <select id="advertisementPaymentMethod" required>
-          <option value="">Chagua mtandao</option>
-          <option value="tigo">Tigo Pesa / Mixx by Yas</option>
-          <option value="airtel">Airtel Money</option>
-          <option value="vodacom">Vodacom M-Pesa</option>
-        </select>
-      </label>
-
-      <!-- MALIPO KWA LIPA NAMBA -->
-      <div class="ad-payment">
-        <h3>💳 MALIPO KWA LIPA NAMBA</h3>
-
-        <p class="payment-intro">
-          Chagua mtandao wako na tumia Lipa Namba husika kulipia tangazo.
-        </p>
-
-        <div class="payment-network payment-mixx">
-          <span class="payment-brand">Mixx <small>by Yas</small></span>
-          <strong>MIXX BY YAS</strong>
-          <div class="payment-number-box">
-            <span class="payment-number">22 121 530</span>
-          </div>
-          <span class="payment-label">LIPA NAMBA</span>
-        </div>
-
-        <div class="payment-network payment-airtel">
-          <span class="payment-brand">airtel <small>money</small></span>
-          <strong>AIRTEL MONEY</strong>
-          <div class="payment-number-box">
-            <span class="payment-number">130317855</span>
-          </div>
-          <span class="payment-label">LIPA NAMBA</span>
-        </div>
-
-        <div class="payment-network payment-vodacom">
-          <span class="payment-brand">vodacom <small>m-pesa</small></span>
-          <strong>VODACOM M-PESA</strong>
-          <div class="payment-number-box">
-            <span class="payment-number">68278229</span>
-          </div>
-          <span class="payment-label">LIPA NAMBA</span>
-        </div>
-
-        <div class="payment-recipient">
-          <small>JINA LA MPOKEAJI</small>
-          <strong>EBSON SANYA</strong>
-        </div>
-
-        <p class="payment-instructions">
-          <strong>Maelekezo ya malipo:</strong><br>
-          Fungua huduma ya Lipa kwa Simu kwenye mtandao wako,
-          chagua Lipa Namba na ingiza namba husika.
-          Hakikisha jina la mpokeaji ni <strong>EBSON SANYA</strong>
-          kabla ya kuthibitisha malipo.
-        </p>
-      </div>
-
-      <label>
-        Jina la aliyelipa
-        <input id="advertisementPayerName" type="text" maxlength="120"
-          required placeholder="Jina lililotumika kulipia">
-      </label>
-
-      <label>
-        Namba ya simu iliyotumika kulipia
-        <input id="advertisementPayerPhone" type="tel"
-          required placeholder="Mfano: 07XXXXXXXX">
-      </label>
-
-      <label>
-        Namba ya muamala / Transaction ID
-        <input id="advertisementTransaction" type="text" maxlength="100"
-          required placeholder="Weka namba ya muamala">
-      </label>
-
-      <p class="ad-note">
-        Malipo yatakaguliwa na msimamizi. Kutuma taarifa za malipo
-        hakumaanishi kuwa malipo tayari yamethibitishwa.
-      </p>
-
-      <button class="btn primary full" type="submit">
-        Tuma tangazo kwa ukaguzi
-      </button>
-    </form>
-
-    <p id="advertisementMessage" class="form-message" aria-live="polite"></p>
-  </dialog>
-
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+<header class="topbar">
+<a class="brand" href="#">
+<span class="brand-mark">EBY</span>
+<span><strong>HUDUMA CONNECT</strong><small>BY EBY MEDIA TZ</small></span>
+</a>
+<button id="menuBtn" class="menu-btn" aria-label="Fungua menyu">☰</button>
+<nav id="nav">
+<a href="#huduma">Huduma</a>
+<a href="#biashara">Biashara</a>
+<a href="#picha">Picha</a>
+<a href="#matangazo">Matangazo</a>
+<a href="#fursa">Fursa</a>
+<button id="authOpen" class="nav-cta">Ingia / Jisajili</button>
+</nav>
+</header>
+
+<main>
+<section class="hero">
+<div class="hero-copy">
+<span class="eyebrow">JUKWAA LA HUDUMA NA FURSA TANZANIA</span>
+<h1>Unatafuta huduma?<br><em>Anza hapa.</em></h1>
+<p>Tafuta biashara, wataalamu, bidhaa, mafunzo na fursa. EBY HUDUMA CONNECT inakuunganisha na watoa huduma sehemu mbalimbali za Tanzania.</p>
+<div class="hero-actions">
+<a class="btn primary" href="#biashara">Tafuta huduma</a>
+<button class="btn ghost" id="providerOpen">Sajili biashara yako</button>
+</div>
+</div>
+<div class="hero-card">
+<div class="spark">✦</div>
+<span class="eyebrow">EBY MEDIA TZ</span>
+<h2>Huduma zote.<br>Sehemu moja.</h2>
+<p>Rahisisha kutafuta na kutoa huduma kwa njia ya kidijitali.</p>
+<div class="hero-tags"><span>Biashara</span><span>Elimu</span><span>Ajira</span><span>Wataalamu</span></div>
+</div>
+</section>
+
+<section class="search-panel" id="huduma">
+<div><span class="eyebrow">TAFUTA KWA URAHISI</span><h2>Unahitaji nini leo?</h2></div>
+<form id="searchForm" class="search-form">
+<input id="searchInput" type="search" placeholder="Mfano: fundi umeme, poster, website..." aria-label="Tafuta huduma">
+<select id="categoryFilter" aria-label="Chagua kundi">
+<option value="">Makundi yote</option>
+<option>Biashara</option><option>Matangazo</option><option>Ufundi</option><option>Elimu</option><option>Teknolojia</option><option>Nyaraka</option><option>Afya</option><option>Usafiri</option><option>Nyingine</option>
+</select>
+<button class="btn primary" type="submit">Tafuta</button>
+</form>
+</section>
+
+<section class="section" id="biashara">
+<div class="section-heading">
+<div><span class="eyebrow">SOKO LA HUDUMA</span><h2>Biashara na watoa huduma</h2></div>
+<span id="businessCount" class="muted">Inapakia...</span>
+</div>
+<div id="businessList" class="card-grid"><div class="empty">Biashara zilizoidhinishwa zitaonekana hapa.</div></div>
+</section>
+
+<!-- PICHA ZA UMMA -->
+<section class="section" id="picha">
+<div class="section-heading">
+<div><span class="eyebrow">JUMUIYA YA EBY</span><h2>Picha za umma</h2></div>
+<span id="photoCount" class="muted">Inapakia...</span>
+</div>
+<div class="photo-toolbar">
+<p class="muted">Tazama picha, weka Like na shiriki maoni yako.</p>
+<button id="publicPhotoOpen" class="photo-upload-btn" type="button">＋ Pakia picha</button>
+</div>
+<div id="publicPhotoList" class="card-grid"><div class="empty">Picha zilizoidhinishwa zitaonekana hapa.</div></div>
+</section>
+
+<section class="section" id="matangazo">
+<div class="section-heading"><div><span class="eyebrow">TANGAZO LAKO LIONEKANE</span><h2>Matangazo ya biashara</h2></div></div>
+<div class="ad-intro">
+<h2>Tangaza biashara yako Tanzania nzima</h2>
+<p>Wafikie wateja wapya kupitia EBY HUDUMA CONNECT. Chagua muda wa tangazo, pakia picha na tuma maombi yako.</p>
+<div class="ad-prices">
+<div class="ad-price"><span>Siku 7</span><strong>TSh 5,000</strong></div>
+<div class="ad-price"><span>Siku 14</span><strong>TSh 8,000</strong></div>
+<div class="ad-price"><span>Siku 30</span><strong>TSh 15,000</strong></div>
+<div class="ad-price"><span class="ad-featured">Featured siku 30</span><strong>TSh 25,000</strong></div>
+</div>
+<button class="ad-action" id="advertisementOpen" type="button">+ Weka tangazo lako</button>
+</div>
+<div class="section-heading">
+<div><span class="eyebrow">MATANGAZO YALIYOIDHINISHWA</span><h2>Matangazo mapya</h2></div>
+<span id="advertisementCount" class="muted">Inasubiri kuunganishwa</span>
+</div>
+<div id="advertisementList" class="card-grid"><div class="empty">Matangazo yaliyoidhinishwa yataonekana hapa.</div></div>
+</section>
+
+<section class="section split-section" id="fursa">
+<div><span class="eyebrow">FURSA</span><h2>Fursa na matangazo</h2><p>Sehemu ya ajira, vikundi na matangazo yaliyoidhinishwa itaongezwa hatua kwa hatua.</p></div>
+<div class="feature-list">
+<div><span class="feature-icon">⌕</span><span><strong>Tafuta kwa eneo</strong><small>Chagua mkoa na wilaya ili kupata huduma karibu nawe.</small></span></div>
+<div><span class="feature-icon">✓</span><span><strong>Watoa huduma waliokaguliwa</strong><small>Biashara zitapitia ukaguzi kabla ya kuonyeshwa kama zimethibitishwa.</small></span></div>
+<div><span class="feature-icon">✦</span><span><strong>EBY AI</strong><small>Msaidizi wa kidijitali utaongezwa baada ya hatua ya kwanza.</small></span></div>
+</div>
+</section>
+
+<section class="cta-band">
+<div><span class="eyebrow">WEWE NI MTOA HUDUMA?</span><h2>Wafikie wateja wapya.</h2><p>Sajili biashara au huduma yako kwenye EBY HUDUMA CONNECT.</p></div>
+<button id="providerOpen2" class="btn light">Sajili biashara</button>
+</section>
+</main>
+
+<footer>
+<div class="brand footer-brand"><span class="brand-mark">EBY</span><span><strong>HUDUMA CONNECT</strong><small>BY EBY MEDIA TZ</small></span></div>
+<p>© <span id="year"></span> EBY MEDIA TZ. Haki zote zimehifadhiwa.</p>
+<small>Jukwaa la kuwaunganisha wateja na watoa huduma Tanzania.</small>
+</footer>
+
+<!-- INGIA / JISAJILI -->
+<dialog id="authDialog">
+<button class="dialog-close" data-close="authDialog" aria-label="Funga">×</button>
+<span class="eyebrow">KARIBU EBY HUDUMA CONNECT</span>
+<h2 id="authTitle">Ingia kwenye akaunti</h2>
+<div class="tabs"><button id="loginTab" class="active">Ingia</button><button id="signupTab">Jisajili</button></div>
+<form id="authForm" class="stack">
+<label id="nameWrap" class="hidden">Jina kamili<input id="fullName" autocomplete="name" placeholder="Jina lako"></label>
+<label>Njia ya kutumia akaunti<select id="authMethod"><option value="email">Barua pepe</option><option value="phone">Namba ya simu</option></select></label>
+<label id="identifierLabel">Barua pepe<input id="identifier" type="email" autocomplete="email" required placeholder="barua@mfano.com"></label>
+<small id="identifierHint" class="muted">Tumia barua pepe unayoweza kuifikia.</small>
+<label>Nenosiri<input id="password" type="password" autocomplete="current-password" minlength="8" required placeholder="Angalau herufi 8"></label>
+<button class="btn primary full" type="submit" id="authSubmit">Ingia</button>
+</form>
+<p id="authMessage" class="form-message" aria-live="polite"></p>
+</dialog>
+
+<!-- USAJILI WA BIASHARA -->
+<dialog id="providerDialog">
+<button class="dialog-close" data-close="providerDialog" aria-label="Funga">×</button>
+<span class="eyebrow">JIUNGE NA MTANDAO WETU</span>
+<h2>Sajili biashara au huduma</h2>
+<p class="muted">Ingia kwanza. Usajili utatumwa kwa ukaguzi wa msimamizi kabla ya kuonekana hadharani.</p>
+<form id="businessForm" class="stack">
+<label>Jina la biashara / mtoa huduma<input id="businessName" required maxlength="120"></label>
+<label>Kundi la huduma<select id="businessCategory" required><option value="">Chagua kundi</option><option>Biashara</option><option>Matangazo</option><option>Ufundi</option><option>Elimu</option><option>Teknolojia</option><option>Nyaraka</option><option>Afya</option><option>Usafiri</option><option>Nyingine</option></select></label>
+<label>Namba ya simu<input id="businessPhone" type="tel" placeholder="Mfano: 07XXXXXXXX"></label>
+<label>Mkoa<input id="businessRegion" required placeholder="Mfano: Pwani"></label>
+<label>Wilaya<input id="businessDistrict" placeholder="Mfano: Bagamoyo"></label>
+<label>Maelezo<textarea id="businessDescription" rows="3" maxlength="1000" placeholder="Eleza huduma unazotoa"></textarea></label>
+<button class="btn primary full" type="submit">Tuma kwa ukaguzi</button>
+</form>
+<p id="businessMessage" class="form-message" aria-live="polite"></p>
+</dialog>
+
+<!-- PAKIA PICHA ZA UMMA -->
+<dialog id="photoUploadDialog" class="photo-upload-dialog">
+<button class="dialog-close" data-close="photoUploadDialog" aria-label="Funga">×</button>
+<span class="eyebrow">JUMUIYA YA EBY</span>
+<h2>Pakia picha ya umma</h2>
+<p class="muted">Picha itapitiwa na msimamizi kabla haijaonekana kwa watu wote.</p>
+<form id="publicPhotoForm" class="stack">
+<label>Kichwa cha picha<input id="publicPhotoTitle" maxlength="120" required></label>
+<label>Maelezo<textarea id="publicPhotoDescription" rows="3" maxlength="1000"></textarea></label>
+<label>Chagua picha<input id="publicPhotoFile" type="file" accept="image/jpeg,image/png,image/webp" required></label>
+<small class="ad-note">JPG, PNG au WEBP. Ukubwa wa juu MB 5.</small>
+<button class="btn primary full" type="submit">Tuma picha kwa ukaguzi</button>
+</form>
+<p id="publicPhotoMessage" class="form-message" aria-live="polite"></p>
+</dialog>
+
+<!-- WEKA TANGAZO -->
+<dialog id="advertisementDialog" class="ad-dialog">
+<button class="ad-close" type="button" data-close="advertisementDialog" aria-label="Funga">×</button>
+<span class="eyebrow">EBY MEDIA TZ</span>
+<h2>Weka tangazo lako</h2>
+<p class="ad-note">Ingia kwenye akaunti kabla ya kutuma tangazo. Tangazo litahitaji kuthibitishwa na msimamizi.</p>
+<form id="advertisementForm" class="stack">
+<label>Kichwa cha tangazo<input id="advertisementTitle" maxlength="120" required></label>
+<label>Maelezo ya tangazo<textarea id="advertisementDescription" rows="4" maxlength="1500" required></textarea></label>
+<label>Picha ya tangazo<input id="advertisementImage" type="file" accept="image/jpeg,image/png,image/webp" required></label>
+<small class="ad-note">JPG, PNG au WEBP. Ukubwa wa juu MB 5.</small>
+<label>Aina ya tangazo<select id="advertisementPlan" required><option value="">Chagua muda wa tangazo</option><option value="7">Siku 7 - TSh 5,000</option><option value="14">Siku 14 - TSh 8,000</option><option value="30">Siku 30 - TSh 15,000</option><option value="featured">Featured siku 30 - TSh 25,000</option></select></label>
+<label>Mtandao wa malipo<select id="advertisementPaymentMethod" required><option value="">Chagua mtandao</option><option value="tigo">Tigo Pesa / Mixx by Yas</option><option value="airtel">Airtel Money</option><option value="vodacom">Vodacom M-Pesa</option></select></label>
+
+<div class="ad-payment">
+<h3>💳 MALIPO KWA LIPA NAMBA</h3>
+<p class="payment-intro">Chagua mtandao wako na tumia Lipa Namba husika kulipia tangazo.</p>
+<div class="payment-network payment-mixx"><span class="payment-brand">Mixx <small>by Yas</small></span><strong>MIXX BY YAS</strong><div class="payment-number-box"><span class="payment-number">22 121 530</span></div><span class="payment-label">LIPA NAMBA</span></div>
+<div class="payment-network payment-airtel"><span class="payment-brand">airtel <small>money</small></span><strong>AIRTEL MONEY</strong><div class="payment-number-box"><span class="payment-number">130317855</span></div><span class="payment-label">LIPA NAMBA</span></div>
+<div class="payment-network payment-vodacom"><span class="payment-brand">vodacom <small>m-pesa</small></span><strong>VODACOM M-PESA</strong><div class="payment-number-box"><span class="payment-number">68278229</span></div><span class="payment-label">LIPA NAMBA</span></div>
+<div class="payment-recipient"><small>JINA LA MPOKEAJI</small><strong>EBSON SANYA</strong></div>
+<p class="payment-instructions"><strong>Maelekezo ya malipo:</strong><br>Fungua huduma ya Lipa kwa Simu kwenye mtandao wako, chagua Lipa Namba na ingiza namba husika. Hakikisha jina la mpokeaji ni <strong>EBSON SANYA</strong> kabla ya kuthibitisha malipo.</p>
+</div>
+
+<label>Jina la aliyelipa<input id="advertisementPayerName" maxlength="120" required></label>
+<label>Namba ya simu iliyotumika kulipia<input id="advertisementPayerPhone" type="tel" required></label>
+<label>Namba ya muamala / Transaction ID<input id="advertisementTransaction" maxlength="100" required></label>
+<p class="ad-note">Malipo yatakaguliwa na msimamizi. Kutuma taarifa za malipo hakumaanishi kuwa malipo tayari yamethibitishwa.</p>
+<button class="btn primary full" type="submit">Tuma tangazo kwa ukaguzi</button>
+</form>
+<p id="advertisementMessage" class="form-message" aria-live="polite"></p>
+</dialog>
+
+<!-- FULL SCREEN PHOTO VIEWER -->
+<dialog id="photoViewerDialog" class="photo-dialog" aria-label="Mwonekano mkubwa wa picha">
+<div class="photo-viewer">
+<div class="viewer-top">
+<span id="viewerCounter" class="viewer-counter">1 / 1</span>
+<button id="viewerClose" class="viewer-close" type="button" aria-label="Funga picha">×</button>
+</div>
+<div class="viewer-stage">
+<button id="viewerPrev" class="viewer-arrow viewer-prev" type="button" aria-label="Picha iliyopita">‹</button>
+<img id="viewerImage" class="viewer-image" alt="">
+<button id="viewerNext" class="viewer-arrow viewer-next" type="button" aria-label="Picha inayofuata">›</button>
+</div>
+<div class="viewer-caption"><h3 id="viewerTitle"></h3><p id="viewerDescription"></p></div>
+</div>
+</dialog>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
 </body>
-</html>
+  </html>
