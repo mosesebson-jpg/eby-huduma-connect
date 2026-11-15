@@ -299,7 +299,27 @@
 <div class="viewer-caption"><h3 id="viewerTitle"></h3><p id="viewerDescription"></p></div>
 </div>
 </dialog>
+<!-- DIRISHA LA MAONI -->
+<dialog id="commentsDialog" class="ad-dialog">
+  <button type="button" data-close="commentsDialog">Funga ×</button>
+  <h2>Maoni</h2>
 
+  <div id="commentsArea">
+    <div id="commentsList"></div>
+
+    <form id="commentForm">
+      <input
+        id="commentInput"
+        type="text"
+        placeholder="Andika maoni yako..."
+        required
+      >
+      <button type="submit">Tuma</button>
+    </form>
+
+    <p id="commentMessage"></p>
+  </div>
+</dialog>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 </body>
   </html>
