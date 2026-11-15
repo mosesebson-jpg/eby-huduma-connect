@@ -942,75 +942,33 @@ dialog h2 {
   color: #64748b;
 }
 
-/* =====================================
-   FULL SCREEN PHOTO VIEWER
-   Muonekano kama picha ya mfano
-   ===================================== */
+
+/* PHOTO VIEWER - EBY MEDIA STYLE */
 
 .photo-dialog {
   position: fixed;
   inset: 0;
-  width: 100vw !important;
-  height: 100dvh !important;
-  max-width: none !important;
-  max-height: none !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  background: #0757a6 !important;
-  color: #fff;
+  width: 100vw;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: #0757a6;
+  color: white;
   overflow: hidden;
-}
-
-.photo-dialog::backdrop {
-  background: #06172c;
 }
 
 .photo-viewer {
   position: relative;
-  height: 100%;
   width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(145deg,#0757a6,#06366f);
+  background: #0757a6;
 }
-
-/* Juu: namba ya picha na kitufe cha kufunga */
-
-.viewer-top {
-  position: relative;
-  z-index: 5;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 18px;
-  min-height: 75px;
-}
-
-.viewer-counter {
-  background: #062d59;
-  color: #fff;
-  padding: 12px 22px;
-  border-radius: 35px;
-  font-weight: 900;
-  font-size: 16px;
-}
-
-.viewer-close {
-  width: 55px;
-  height: 55px;
-  border: 0;
-  border-radius: 50%;
-  background: #06366f;
-  color: #fff;
-  font-size: 32px;
-  font-weight: bold;
-  display: grid;
-  place-items: center;
-}
-
-/* Sehemu ya picha na mistari ya bluu pembeni */
 
 .viewer-stage {
   position: relative;
@@ -1019,8 +977,7 @@ dialog h2 {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 10px 14px 80px !important;
-  background: #0757a6;
+  padding: 8px 14px 80px;
   overflow: hidden;
 }
 
@@ -1030,48 +987,10 @@ dialog h2 {
   max-height: 100%;
   width: auto;
   height: auto;
-  object-fit: contain !important;
-  object-position: center;
-  border-left: 3px solid #1686ff;
-  border-right: 3px solid #1686ff;
-  user-select: none;
-  -webkit-user-drag: none;
+  object-fit: contain;
+  border-left: 4px solid #1686ff;
+  border-right: 4px solid #1686ff;
 }
-
-/* Mishale ya kuchagua picha */
-
-.viewer-arrow {
-  position: absolute;
-  z-index: 6;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 58px;
-  height: 58px;
-  border: 2px solid #ffffff55;
-  border-radius: 50%;
-  background: #062d59dd;
-  color: #fff;
-  font-size: 34px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 5px 18px #00152d55;
-}
-
-.viewer-arrow:active {
-  transform: translateY(-50%) scale(.94);
-  background: #0b73cf;
-}
-
-.viewer-prev {
-  left: 14px;
-}
-
-.viewer-next {
-  right: 14px;
-}
-
-/* Maandishi chini ya picha */
 
 .viewer-caption {
   position: absolute;
@@ -1084,61 +1003,55 @@ dialog h2 {
   padding: 14px 18px;
   border-radius: 17px;
   background: rgba(3,30,62,.84);
-  color: #fff;
+  color: white;
   text-align: center;
   backdrop-filter: blur(7px);
-  -webkit-backdrop-filter: blur(7px);
-  box-shadow: 0 8px 25px #00152d55;
 }
 
-.viewer-caption h3 {
-  margin: 0 0 7px;
-  color: #fff;
-  font-size: 19px;
-  font-weight: 800;
-}
-
-.viewer-caption p {
-  margin: 0;
-  color: #e5f0ff;
-  font-size: 15px;
-  line-height: 1.7;
-  overflow-wrap: anywhere;
-}
-
-/* =====================================
-   PHOTO UPLOAD DIALOG
-   ===================================== */
-
-.photo-upload-dialog {
-  width: min(95%,520px);
-  max-height: 90vh;
-  overflow-y: auto;
+.viewer-arrow {
+  position: absolute;
+  z-index: 6;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 58px;
+  height: 58px;
   border: 0;
-  border-radius: 18px;
-  padding: 24px;
+  border-radius: 50%;
+  background: #062d59;
+  color: white;
+  font-size: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.photo-upload-dialog::backdrop {
-  background: #000a;
+.viewer-prev {
+  left: 14px;
 }
 
-.photo-upload-dialog label {
-  display: block;
-  font-weight: 600;
-  margin: 12px 0;
+.viewer-next {
+  right: 14px;
 }
 
-.photo-upload-dialog input,
-.photo-upload-dialog textarea {
-  display: block;
-  width: 100%;
-  padding: 12px;
-  margin-top: 6px;
-  border: 1px solid #ccd8e5;
-  border-radius: 9px;
-  box-sizing: border-box;
+@media(max-width:600px) {
+  .viewer-stage {
+    padding: 8px 14px 80px;
+  }
+
+  .viewer-arrow {
+    width: 48px;
+    height: 48px;
+  }
+
+  .viewer-prev {
+    left: 10px;
+  }
+
+  .viewer-next {
+    right: 10px;
+  }
 }
+
 
 /* =====================================
    RESPONSIVE DESIGN
