@@ -8,6 +8,7 @@
   let supabaseClient = null;
   let authMode = "login";
   let currentUser = null;
+  let currentIsAdmin = false;
 
   const AD_BUCKET = "advertisement-images";
 
@@ -65,7 +66,35 @@
     $("nav")?.classList.toggle("open");
   });
 
-  $("year").textContent = new Date().getFullYear();
+  if ($("year")) {
+    $("year").textContent = new Date().getFullYear();
+  }
+
+  // =====================================
+  // ADMIN CHECK
+  // =====================================
+
+  async function checkAdmin(user) {
+    if (!supabaseClient || !user?.id) return false;
+
+    try {
+      const { data, error } = await supabaseClient
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (error) {
+        console.error("Admin check error:", error);
+        return false;
+      }
+
+      return data?.role === "admin";
+    } catch (error) {
+      console.error("Admin check error:", error);
+      return false;
+    }
+  }
 
   // =====================================
   // AUTHENTICATION
@@ -146,6 +175,8 @@
   function setAccountButton(user) {
     currentUser = user || null;
 
+    if (!user) currentIsAdmin = false;
+
     const button = $("authOpen");
     if (!button) return;
 
@@ -181,7 +212,9 @@
     }
 
     accountMenu.hidden = true;
+    currentIsAdmin = false;
     setAccountButton(null);
+    updateAdminTestVisibility();
 
     toast("Umetoka kwenye akaunti.");
   });
@@ -199,17 +232,30 @@
   async function refreshSession() {
     if (!supabaseClient) {
       setAccountButton(null);
+      currentIsAdmin = false;
+      updateAdminTestVisibility();
       return;
     }
 
     const { data, error } = await supabaseClient.auth.getSession();
+    const user = error ? null : data.session?.user || null;
 
-    setAccountButton(error ? null : data.session?.user || null);
+    setAccountButton(user);
+    currentIsAdmin = user ? await checkAdmin(user) : false;
+    updateAdminTestVisibility();
   }
 
   if (supabaseClient) {
     supabaseClient.auth.onAuthStateChange((_event, session) => {
-      setAccountButton(session?.user || null);
+      const user = session?.user || null;
+
+      setAccountButton(user);
+
+      // Ukaguzi wa admin unafanywa baada ya mabadiliko ya session.
+      Promise.resolve().then(async () => {
+        currentIsAdmin = user ? await checkAdmin(user) : false;
+        updateAdminTestVisibility();
+      });
     });
   }
 
@@ -460,34 +506,27 @@
     return AD_PRICES[plan] || 0;
   }
 
+  // Muhimu: Hii haifuti tena kadi za malipo.
   function updatePaymentInstructions() {
-    const method = $("advertisementPaymentMethod").value;
-    const number = PAYMENT_NUMBERS[method];
-
     const box = document.querySelector(".ad-payment");
     if (!box) return;
 
-    if (!method || !number) return;
+    let priceLine = $("adSelectedPrice");
+
+    if (!priceLine) {
+      priceLine = document.createElement("p");
+      priceLine.id = "adSelectedPrice";
+      priceLine.style.cssText =
+        "font-weight:700;color:#07518b;margin:10px 0";
+
+      box.appendChild(priceLine);
+    }
 
     const amount = selectedAdPrice();
 
-    const labels = {
-      tigo: "Tigo Pesa / Mixx by Yas",
-      airtel: "Airtel Money",
-      vodacom: "Vodacom M-Pesa"
-    };
-
-    box.innerHTML = `
-      <strong>MAELEZO YA MALIPO</strong>
-      <p>Mtandao: <strong>${labels[method]}</strong></p>
-      <p>Lipa Namba: <strong>${number}</strong></p>
-      <p>Jina la mpokeaji: <strong>Ebson Sanya</strong></p>
-      <p>Kiasi cha kulipa: <strong>TSh ${amount.toLocaleString("en-US")}</strong></p>
-      <small>
-        Lipa kwenye namba hii kisha jaza taarifa za muamala.
-        Hakikisha jina la mpokeaji ni Ebson Sanya.
-      </small>
-    `;
+    priceLine.textContent = amount
+      ? `Bei ya kifurushi ulichochagua: TSh ${amount.toLocaleString("en-US")}`
+      : "Chagua kifurushi cha tangazo kuona bei.";
   }
 
   $("advertisementPlan").addEventListener(
@@ -501,6 +540,109 @@
   );
 
   // =====================================
+  // ADMIN TEST MODE
+  // =====================================
+
+  function createAdminTestControl() {
+    const form = $("advertisementForm");
+    if (!form || $("advertisementAdminTest")) return;
+
+    const wrapper = document.createElement("div");
+    wrapper.id = "ebyAdminTestWrap";
+    wrapper.hidden = true;
+    wrapper.style.cssText =
+      "margin:16px 0;padding:14px;border:2px dashed #d69b16;border-radius:12px;background:#fff9e8;color:#503b0a";
+
+    wrapper.innerHTML = `
+      <label style="display:flex;align-items:center;gap:10px;font-weight:800;cursor:pointer">
+        <input type="checkbox" id="advertisementAdminTest" style="width:20px;height:20px">
+        JARIBIO LA ADMIN (BILA MALIPO)
+      </label>
+      <p id="ebyAdminTestNote" style="margin:8px 0 0;font-size:13px">
+        Hali hii ni kwa majaribio ya msimamizi pekee. Tangazo halitaonekana kwa umma.
+      </p>
+    `;
+
+    const paymentBox = form.querySelector(".ad-payment");
+    const submitButton = form.querySelector('button[type="submit"]');
+
+    if (paymentBox) {
+      paymentBox.parentNode.insertBefore(wrapper, paymentBox);
+    } else if (submitButton) {
+      form.insertBefore(wrapper, submitButton);
+    } else {
+      form.appendChild(wrapper);
+    }
+
+    $("advertisementAdminTest").addEventListener("change", () => {
+      updateAdminTestFields();
+    });
+  }
+
+  function updateAdminTestVisibility() {
+    createAdminTestControl();
+
+    const wrapper = $("ebyAdminTestWrap");
+    const checkbox = $("advertisementAdminTest");
+
+    if (!wrapper || !checkbox) return;
+
+    wrapper.hidden = !currentIsAdmin;
+
+    if (!currentIsAdmin) {
+      checkbox.checked = false;
+    }
+
+    updateAdminTestFields();
+  }
+
+  function updateAdminTestFields() {
+    const checkbox = $("advertisementAdminTest");
+    const testMode = Boolean(
+      currentIsAdmin && checkbox?.checked
+    );
+
+    const paymentFields = [
+      $("advertisementPaymentMethod"),
+      $("advertisementPayerName"),
+      $("advertisementPayerPhone"),
+      $("advertisementTransaction")
+    ];
+
+    paymentFields.forEach((field) => {
+      if (!field) return;
+
+      if (!field.dataset.originalRequired) {
+        field.dataset.originalRequired = field.required ? "true" : "false";
+      }
+
+      field.required = testMode
+        ? false
+        : field.dataset.originalRequired === "true";
+    });
+
+    const note = $("ebyAdminTestNote");
+
+    if (note) {
+      note.textContent = testMode
+        ? "UMEWASHA JARIBIO: Hakuna malipo yanayohitajika. Tangazo litahifadhiwa kama jaribio na halitaonekana kwa umma."
+        : "Hali hii ni kwa majaribio ya msimamizi pekee. Tangazo halitaonekana kwa umma.";
+    }
+
+    const button = $("advertisementForm")?.querySelector(
+      'button[type="submit"]'
+    );
+
+    if (button && !button.disabled) {
+      button.textContent = testMode
+        ? "Tuma tangazo la majaribio"
+        : "Tuma tangazo kwa ukaguzi";
+    }
+  }
+
+  createAdminTestControl();
+
+  // =====================================
   // OPEN ADVERTISEMENT FORM
   // =====================================
 
@@ -510,17 +652,22 @@
       return;
     }
 
-    const { data } = await supabaseClient.auth.getSession();
+    const { data, error } = await supabaseClient.auth.getSession();
 
-    if (!data.session?.user) {
+    if (error || !data.session?.user) {
       toast("Ingia kwenye akaunti kwanza.");
       setAuthMode("login");
       showDialog("authDialog");
       return;
     }
 
+    currentUser = data.session.user;
+    currentIsAdmin = await checkAdmin(currentUser);
+
     $("advertisementForm").reset();
     $("advertisementMessage").textContent = "";
+
+    updateAdminTestVisibility();
     updatePaymentInstructions();
 
     showDialog("advertisementDialog");
@@ -563,19 +710,47 @@
     const description = $("advertisementDescription").value.trim();
     const file = $("advertisementImage").files[0];
     const plan = $("advertisementPlan").value;
+
     const paymentMethod = $("advertisementPaymentMethod").value;
     const payerName = $("advertisementPayerName").value.trim();
     const payerPhone = $("advertisementPayerPhone").value.trim();
     const transactionId = $("advertisementTransaction").value.trim();
 
-    if (!title || !description || !file || !plan ||
-        !paymentMethod || !payerName || !payerPhone || !transactionId) {
-      message.textContent = "Jaza sehemu zote zinazohitajika.";
+    const testRequested = Boolean(
+      $("advertisementAdminTest")?.checked
+    );
+
+    // Admin anakaguliwa tena wakati wa kutuma.
+    const isAdmin = await checkAdmin(user);
+
+    currentIsAdmin = isAdmin;
+    updateAdminTestVisibility();
+
+    const testMode = testRequested && isAdmin;
+
+    if (testRequested && !isAdmin) {
+      message.textContent =
+        "Huna ruhusa ya kutumia jaribio la admin.";
+      return;
+    }
+
+    if (!title || !description || !file || !plan) {
+      message.textContent =
+        "Jaza jina la tangazo, maelezo, picha na kifurushi.";
       return;
     }
 
     if (!AD_PRICES[plan]) {
       message.textContent = "Chagua muda sahihi wa tangazo.";
+      return;
+    }
+
+    if (
+      !testMode &&
+      (!paymentMethod || !payerName || !payerPhone || !transactionId)
+    ) {
+      message.textContent =
+        "Jaza taarifa zote za malipo na muamala.";
       return;
     }
 
@@ -597,24 +772,24 @@
       return;
     }
 
-    if (!/^[A-Za-z0-9+\-\s]{7,25}$/.test(payerPhone)) {
+    if (!testMode && !/^[A-Za-z0-9+\-\s]{7,25}$/.test(payerPhone)) {
       message.textContent =
         "Weka namba sahihi ya simu iliyotumika kulipia.";
       return;
     }
 
-    if (transactionId.length < 4) {
+    if (!testMode && transactionId.length < 4) {
       message.textContent =
         "Weka namba sahihi ya muamala.";
       return;
     }
 
-    const amount = AD_PRICES[plan];
-
     button.disabled = true;
     button.textContent = "Inatuma tangazo...";
 
-    message.textContent = "Tafadhali subiri, picha inapakiwa.";
+    message.textContent = testMode
+      ? "Jaribio linaendelea. Picha inapakiwa..."
+      : "Tafadhali subiri, picha inapakiwa.";
 
     const extension = file.type === "image/jpeg"
       ? "jpg"
@@ -626,7 +801,6 @@
       `${user.id}/${crypto.randomUUID()}.${extension}`;
 
     try {
-      // Picha inapakiwa kwenye folda ya mtumiaji mwenyewe.
       const { error: uploadError } = await supabaseClient
         .storage
         .from(AD_BUCKET)
@@ -648,7 +822,6 @@
       message.textContent =
         "Picha imepakiwa. Tunahifadhi ombi lako...";
 
-      // Ombi linaingia pending. Halichapishwi moja kwa moja.
       const payload = {
         owner_id: user.id,
         title,
@@ -656,11 +829,12 @@
         image_url: imageUrl,
         target_url: null,
         status: "pending",
-        payment_method: paymentMethod,
-        payer_name: payerName,
-        payer_phone: payerPhone,
-        transaction_id: transactionId,
-        payment_status: "pending"
+        payment_method: testMode ? null : paymentMethod,
+        payer_name: testMode ? null : payerName,
+        payer_phone: testMode ? null : payerPhone,
+        transaction_id: testMode ? null : transactionId,
+        payment_status: "pending",
+        is_test: testMode
       };
 
       const { error: insertError } = await supabaseClient
@@ -670,10 +844,18 @@
       if (insertError) throw insertError;
 
       $("advertisementForm").reset();
-      message.textContent =
-        "Ombi lako limepokelewa. Malipo yanasubiri kuthibitishwa na msimamizi.";
+      updateAdminTestFields();
+      updatePaymentInstructions();
 
-      toast("Tangazo limetumwa kwa ukaguzi.");
+      message.textContent = testMode
+        ? "Jaribio limehifadhiwa. Tangazo halitaonekana kwa umma."
+        : "Ombi lako limepokelewa. Malipo yanasubiri kuthibitishwa na msimamizi.";
+
+      toast(
+        testMode
+          ? "Jaribio la admin limetumwa."
+          : "Tangazo limetumwa kwa ukaguzi."
+      );
 
       window.setTimeout(() => {
         if ($("advertisementDialog").open) {
@@ -690,7 +872,7 @@
 
     } finally {
       button.disabled = false;
-      button.textContent = "Tuma tangazo kwa ukaguzi";
+      updateAdminTestFields();
     }
   });
 
@@ -712,6 +894,7 @@
       .select("id,title,description,image_url,target_url")
       .eq("status", "active")
       .eq("payment_status", "approved")
+      .eq("is_test", false)
       .order("created_at", { ascending: false })
       .limit(20);
 
