@@ -299,11 +299,53 @@ if(error){
 $("message").textContent="Imeshindikana kuingia: "+error.message;
 return;
 }
-await checkAdmin(data.session);
-}finally{
-$("loginButton").disabled=false;
+async function checkAdmin(session){
+  if(!session){
+    showLogin();
+    return;
+  }
+
+  $("message").textContent="Inakagua ruhusa za Admin...";
+
+  try{
+    const {data,error}=await db
+      .from("profiles")
+      .select("id,full_name,role")
+      .eq("id",session.user.id)
+      .maybeSingle();
+
+    if(error){
+      showLogin();
+      $("message").textContent="Hitilafu ya kusoma profiles: "+error.message;
+      return;
+    }
+
+    if(!data){
+      showLogin();
+      $("message").textContent="Akaunti haijapatikana kwenye profiles.";
+      return;
+    }
+
+    if(String(data.role||"").toLowerCase().trim()!=="admin"){
+      showLogin();
+      $("message").textContent="Akaunti hii haina ruhusa za Admin.";
+      return;
+    }
+
+    currentUser=session.user;
+    $("message").textContent="";
+    $("loginBox").style.display="none";
+    $("dashboard").style.display="block";
+    $("logout").hidden=false;
+    $("welcome").textContent="Karibu "+(data.full_name||session.user.email);
+
+    await loadStats();
+
+  }catch(error){
+    showLogin();
+    $("message").textContent="Hitilafu: "+error.message;
+  }
 }
-});
 
 $("logout").addEventListener("click",async()=>{
 await db.auth.signOut();
