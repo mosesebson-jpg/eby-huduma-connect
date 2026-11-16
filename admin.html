@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>EBY MEDIA TZ | Admin Dashboard</title>
+<title>EBY HUDUMA CONNECT | Admin Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
@@ -26,7 +26,7 @@ nav button{background:white;color:#07518d;border:1px solid #ddd}
 nav button.active{background:#07518d;color:white}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:14px}
 .stat,.panel{background:white;padding:20px;border-radius:13px;box-shadow:0 3px 12px #0001}
-.stat strong{display:block;font-size:28px;color:#07518d;margin-top:12px}
+.stat strong{display:block;font-size:26px;color:#07518d;margin-top:12px;overflow-wrap:anywhere}
 .stat small{color:#64748b}
 .panel{margin-top:18px;overflow-x:auto}
 table{border-collapse:collapse;width:100%;min-width:650px}
@@ -42,7 +42,7 @@ th{background:#edf4fb}
 .approve{background:#dcfce7;color:#166534}
 .cancel{background:#64748b;color:white}
 .preview{width:85px;height:70px;object-fit:cover;border-radius:7px}
-.notice{padding:12px;background:#edf4fb;border-radius:8px;margin:10px 0;color:#07518d}
+.notice{padding:12px;background:#edf4fb;border-radius:8px;margin:10px 0;color:#07518d;line-height:1.6}
 .form-buttons{display:flex;gap:10px}
 .form-buttons button{flex:1}
 .badge{display:inline-block;padding:5px 8px;border-radius:7px;background:#e5efff;color:#07518d;font-weight:bold}
@@ -58,11 +58,14 @@ th{background:#edf4fb}
 .photo-actions{display:flex;gap:7px;flex-wrap:wrap;min-width:150px}
 .photo-card{background:#fff;border:1px solid #e5eaf0;border-radius:12px;padding:12px;margin:10px 0}
 .photo-card img{max-width:100%;max-height:300px;object-fit:contain;border-radius:10px}
-.photo-card h3{margin:8px 0}
+.money{font-size:24px;font-weight:bold;color:#07518d;margin-top:10px}
+.revenue-filter{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.revenue-filter select{max-width:220px}
 @media(max-width:600px){
 .layout{padding:12px}
 .login{margin:25px 12px}
 .panel{padding:14px}
+.stat{padding:14px}
 }
 </style>
 </head>
@@ -71,8 +74,8 @@ th{background:#edf4fb}
 
 <header>
 <div>
-<h2>EBY MEDIA TZ</h2>
-<small>Kisima cha Burudani | Admin Center</small>
+<h2>EBY HUDUMA CONNECT</h2>
+<small>Admin Center | Usimamizi wa Mfumo</small>
 </div>
 <button class="logout" id="logout" hidden>Toka</button>
 </header>
@@ -91,11 +94,12 @@ th{background:#edf4fb}
 </section>
 
 <main class="layout" id="dashboard">
-<h2>Karibu EBY MEDIA TZ 👋</h2>
+<h2>Karibu EBY HUDUMA CONNECT 👋</h2>
 <p id="welcome">Admin Dashboard</p>
 
 <nav id="navigation">
 <button class="active" data-table="overview">Dashboard</button>
+<button data-table="revenue">💰 Mapato</button>
 <button data-table="profiles">Wanachama</button>
 <button data-table="advertisements">Matangazo</button>
 <button data-table="ad_tests">Matangazo ya Majaribio</button>
@@ -111,8 +115,35 @@ th{background:#edf4fb}
 <section id="overview">
 <div class="grid" id="stats"></div>
 <div class="panel">
-<h3>EBY MEDIA TZ Control Center</h3>
-<p>Simamia wanachama, biashara, matangazo, picha na huduma zako hapa.</p>
+<h3>EBY HUDUMA CONNECT Control Center</h3>
+<p>Simamia wanachama, mapato, biashara, matangazo, picha na huduma zako hapa.</p>
+</div>
+</section>
+
+<!-- REVENUE DASHBOARD -->
+<section id="revenueSection" style="display:none">
+<div class="panel">
+<h2>💰 REVENUE DASHBOARD</h2>
+<p class="notice">
+Hapa utaona miamala yote iliyoingia kwenye mfumo wa EBY HUDUMA CONNECT.
+Jumla ya mapato huhesabiwa kwa miamala yenye hali ya malipo iliyoidhinishwa.
+</p>
+
+<div class="grid" id="revenueStats"></div>
+
+<div class="revenue-filter">
+<label for="revenueFilter">Chuja miamala:</label>
+<select id="revenueFilter">
+<option value="all">Miamala yote</option>
+<option value="approved">Yaliyothibitishwa</option>
+<option value="pending">Yanayosubiri</option>
+<option value="rejected">Yaliyokataliwa</option>
+</select>
+<button class="edit" id="refreshRevenue">↻ Refresh mapato</button>
+</div>
+
+<p id="revenueLoading"></p>
+<div id="revenueList"></div>
 </div>
 </section>
 
@@ -211,7 +242,7 @@ Picha itaonekana kwa umma baada ya kuidhinishwa.
 "use strict";
 
 const SUPABASE_URL="https://noruvqqesdzlwfijxerq.supabase.co";
-const SUPABASE_ANON_KEY="sb_publishable__3ThPNKCLJghRDsCCL_4ig_9ZfFUKHD";
+const SUPABASE_ANON_KEY="sb_publishable__3ThPNKCLJghRDsCC_4ig_9ZfFUKHD";
 
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 const $=id=>document.getElementById(id);
@@ -231,6 +262,7 @@ service_inquiries:"Maombi ya huduma"
 let currentUser=null;
 let editingAd=null;
 let checking=false;
+let revenueCache=[];
 
 function showLogin(){
 $("loginBox").style.display="block";
@@ -262,7 +294,6 @@ currentUser=session.user;
 $("loginBox").style.display="none";
 $("dashboard").style.display="block";
 $("logout").hidden=false;
-$("welcome").textContent="Karibu "+(data.full_name||session.user.email);
 await loadStats();
 
 }catch(error){
@@ -307,6 +338,7 @@ $("stats").appendChild(card);
 function hideAllSections(){
 $("overview").style.display="none";
 $("records").style.display="none";
+$("revenueSection").style.display="none";
 $("adsSection").style.display="none";
 $("testAdsSection").style.display="none";
 $("photosSection").style.display="none";
@@ -372,10 +404,161 @@ return span;
 }
 
 // ------------------------------------
+// REVENUE DASHBOARD
+// ------------------------------------
+function money(value,currency){
+const number=Number(value||0).toLocaleString("en-US",{maximumFractionDigits:2});
+return (currency||"TZS")+" "+number;
+}
+
+function revenueCard(title,value,description){
+const card=document.createElement("div");
+card.className="stat";
+
+const label=document.createElement("small");
+label.textContent=title;
+
+const amount=document.createElement("strong");
+amount.textContent=value;
+
+const note=document.createElement("small");
+note.textContent=description||"";
+
+card.append(label,amount,note);
+return card;
+}
+
+function renderRevenueStats(rows){
+const box=$("revenueStats");
+box.innerHTML="";
+
+const approved=rows.filter(x=>x.payment_status==="approved");
+const pending=rows.filter(x=>x.payment_status==="pending");
+const rejected=rows.filter(x=>x.payment_status==="rejected");
+
+const currencies=[...new Set(rows.map(x=>x.currency||"TZS"))];
+
+if(!rows.length){
+box.appendChild(revenueCard("Jumla ya miamala","0","Hakuna miamala iliyopatikana"));
+return;
+}
+
+box.appendChild(revenueCard("Jumla ya miamala",String(rows.length),"Miamala yote iliyosajiliwa"));
+box.appendChild(revenueCard("Yaliyothibitishwa",String(approved.length),"Idadi ya malipo yaliyoidhinishwa"));
+box.appendChild(revenueCard("Yanayosubiri",String(pending.length),"Idadi ya malipo yanayosubiri"));
+box.appendChild(revenueCard("Yaliyokataliwa",String(rejected.length),"Idadi ya malipo yaliyokataliwa"));
+
+currencies.forEach(currency=>{
+const total=approved
+.filter(x=>(x.currency||"TZS")===currency)
+.reduce((sum,x)=>sum+Number(x.amount||0),0);
+
+box.appendChild(
+revenueCard("Mapato yaliyothibitishwa ("+currency+")",money(total,currency),"Jumla ya malipo yaliyoidhinishwa pekee")
+);
+});
+}
+
+async function loadRevenue(){
+$("revenueLoading").textContent="Inapakia taarifa za mapato...";
+$("revenueList").innerHTML="";
+$("revenueStats").innerHTML="";
+
+const {data,error}=await db
+.from("revenue_transactions")
+.select("id,source_type,source_id,description,payer_name,payer_phone,transaction_reference,amount,currency,payment_method,payment_status,confirmed_by,confirmed_at,created_at")
+.order("created_at",{ascending:false})
+.limit(500);
+
+$("revenueLoading").textContent="";
+
+if(error){
+$("revenueList").textContent="Imeshindikana kupakia mapato: "+error.message;
+return;
+}
+
+revenueCache=data||[];
+renderRevenueStats(revenueCache);
+renderRevenueTable();
+}
+
+function renderRevenueTable(){
+const filter=$("revenueFilter").value;
+const rows=filter==="all"
+?revenueCache
+:revenueCache.filter(x=>x.payment_status===filter);
+
+$("revenueList").innerHTML="";
+
+if(!rows.length){
+$("revenueList").innerHTML='<div class="empty">Hakuna miamala katika kundi hili.</div>';
+return;
+}
+
+const table=document.createElement("table");
+const thead=document.createElement("thead");
+const head=document.createElement("tr");
+
+[
+"Tarehe",
+"Mlipaji",
+"Simu",
+"Maelezo",
+"Aina ya malipo",
+"Namba ya muamala",
+"Kiasi",
+"Hali ya malipo",
+"Tarehe ya uthibitisho"
+].forEach(label=>{
+const th=document.createElement("th");
+th.textContent=label;
+head.appendChild(th);
+});
+
+thead.appendChild(head);
+table.appendChild(thead);
+
+const tbody=document.createElement("tbody");
+
+rows.forEach(item=>{
+const tr=document.createElement("tr");
+
+const values=[
+item.created_at?new Date(item.created_at).toLocaleString("sw-TZ"):"-",
+item.payer_name||"-",
+item.payer_phone||"-",
+item.description||item.source_type||"-",
+item.payment_method||"-",
+item.transaction_reference||"-",
+money(item.amount,item.currency),
+item.payment_status||"pending",
+item.confirmed_at?new Date(item.confirmed_at).toLocaleString("sw-TZ"):"-"
+];
+
+values.forEach((value,index)=>{
+const td=document.createElement("td");
+if(index===7){
+td.appendChild(badge(value));
+}else{
+td.textContent=String(value);
+}
+tr.appendChild(td);
+});
+
+tbody.appendChild(tr);
+});
+
+table.appendChild(tbody);
+$("revenueList").appendChild(table);
+}
+
+$("refreshRevenue").addEventListener("click",loadRevenue);
+$("revenueFilter").addEventListener("change",renderRevenueTable);
+
+// ------------------------------------
 // PUBLIC PHOTO MANAGEMENT
 // ------------------------------------
 async function loadPublicPhotosAdmin(){
-
 $("photosLoading").textContent="Inapakia picha...";
 $("photosList").innerHTML="";
 $("photoStats").innerHTML="";
@@ -525,7 +708,7 @@ box.innerHTML="";
 const {data,error}=await db.from("advertisements").select("payment_status,is_test");
 if(error){box.textContent="Imeshindikana kupakia muhtasari wa malipo.";return;}
 
-const normalAds=data.filter(x=>x.is_test!==true);
+const normalAds=(data||[]).filter(x=>x.is_test!==true);
 const items=[
 ["Jumla ya maombi",normalAds.length],
 ["Yanasubiri malipo",normalAds.filter(x=>!x.payment_status||x.payment_status==="pending").length],
@@ -885,20 +1068,6 @@ $("saveAd").textContent="HIFADHI TANGAZO";
 }
 });
 
-function adMsg(text,color="#07518d"){
-$("adMessage").textContent=text;
-$("adMessage").style.color=color;
-}
-
-function resetAdForm(){
-editingAd=null;
-$("adForm").reset();
-$("adFormTitle").textContent="➕ Ongeza Tangazo la Admin";
-$("saveAd").textContent="HIFADHI TANGAZO";
-$("cancelEdit").hidden=true;
-adMsg("");
-}
-
 function editAd(ad){
 editingAd=ad.id;
 $("adTitle").value=ad.title||"";
@@ -945,6 +1114,11 @@ hideAllSections();
 $("overview").style.display="block";
 await loadStats();
 
+}else if(table==="revenue"){
+hideAllSections();
+$("revenueSection").style.display="block";
+await loadRevenue();
+
 }else if(table==="advertisements"){
 hideAllSections();
 $("adsSection").style.display="block";
@@ -982,7 +1156,6 @@ return;
 }
 await checkAdmin(data.session);
 })();
-
 </script>
 </body>
 </html>
