@@ -14,11 +14,12 @@ header h2{margin:0;font-size:20px}
 header small{color:#b9dafa}
 button{cursor:pointer;border:0;border-radius:9px;padding:11px;font-weight:bold}
 button:disabled{opacity:.5;cursor:not-allowed}
-.logout{background:white;color:#07518d}
-.login{max-width:420px;margin:50px auto;background:white;padding:25px;border-radius:16px;box-shadow:0 5px 25px #0001}
-input,textarea,select{width:100%;padding:13px;margin:8px 0 15px;border:1px solid #ddd;border-radius:9px;font-size:15px;font-family:inherit}
+input,textarea,select{width:100%;padding:13px;margin:8px 0 15px;border:1px solid #ddd;border-radius:9px;font-size:16px;font-family:inherit;background:white;color:#17243b;pointer-events:auto}
+input:focus,textarea:focus,select:focus{outline:2px solid #07518d;border-color:#07518d}
 textarea{min-height:90px;resize:vertical}
+.login{max-width:420px;margin:50px auto;background:white;padding:25px;border-radius:16px;box-shadow:0 5px 25px #0001;position:relative;z-index:2}
 .primary{background:#07518d;color:white;width:100%;padding:15px}
+.logout{background:white;color:#07518d}
 .layout{display:none;max-width:1300px;margin:auto;padding:18px}
 nav{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0}
 nav button{background:white;color:#07518d;border:1px solid #ddd}
@@ -33,7 +34,7 @@ td,th{padding:12px;border-bottom:1px solid #eee;text-align:left;font-size:13px;v
 th{background:#edf4fb}
 #message{color:#c0392b;font-size:14px;line-height:1.5}
 .ad-form{max-width:700px;margin-bottom:25px}
-.ad-actions{display:flex;gap:7px;flex-wrap:wrap;min-width:190px}
+.ad-actions,.photo-actions{display:flex;gap:7px;flex-wrap:wrap;min-width:150px}
 .edit{background:#e5efff;color:#07518d}
 .delete,.reject{background:#fee2e2;color:#b91c1c}
 .approve{background:#dcfce7;color:#166534}
@@ -50,17 +51,11 @@ th{background:#edf4fb}
 .test-card{background:#fffbeb;border-left:5px solid #d69e16}
 .test-label{display:inline-block;background:#fef3c7;color:#92400e;padding:6px 10px;border-radius:7px;font-weight:bold;margin-bottom:8px}
 .empty{padding:18px;background:#f8fafc;border-radius:9px;color:#64748b}
-.photo-actions{display:flex;gap:7px;flex-wrap:wrap;min-width:150px}
 .photo-card{background:#fff;border:1px solid #e5eaf0;border-radius:12px;padding:12px;margin:10px 0}
 .photo-card img{max-width:100%;max-height:300px;object-fit:contain;border-radius:10px}
 .revenue-filter{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .revenue-filter select{max-width:220px}
-@media(max-width:600px){
-.layout{padding:12px}
-.login{margin:25px 12px}
-.panel{padding:14px}
-.stat{padding:14px}
-}
+@media(max-width:600px){.layout{padding:12px}.login{margin:25px 12px}.panel{padding:14px}.stat{padding:14px}}
 </style>
 </head>
 <body>
@@ -77,13 +72,13 @@ th{background:#edf4fb}
 <h2>Admin Login</h2>
 <p>Ingia kwenye mfumo wa usimamizi.</p>
 <form id="loginForm">
-<label>Barua pepe</label>
-<input id="email" type="email" required placeholder="Admin email">
-<label>Nenosiri</label>
-<input id="password" type="password" required placeholder="Nenosiri">
+<label for="email">Barua pepe</label>
+<input id="email" type="email" autocomplete="username" required placeholder="Admin email">
+<label for="password">Nenosiri</label>
+<input id="password" type="password" autocomplete="current-password" required placeholder="Nenosiri">
 <button class="primary" type="submit" id="loginButton">INGIA ADMIN</button>
 </form>
-<p id="message"></p>
+<p id="message" aria-live="polite"></p>
 </section>
 
 <main class="layout" id="dashboard">
@@ -232,6 +227,8 @@ let currentUser=null;
 let editingAd=null;
 let revenueCache=[];
 
+/* LOGIN NA UTHIBITISHAJI WA ADMIN */
+
 function showLogin(){
 $("loginBox").style.display="block";
 $("dashboard").style.display="none";
@@ -250,8 +247,8 @@ $("message").textContent="Inakagua ruhusa za Admin...";
 try{
 const {data,error}=await db
 .from("profiles")
-.select("uuid,full_name,role")
-.eq("uuid",session.user.id)
+.select("id,full_name,role")
+.eq("id",session.user.id)
 .maybeSingle();
 
 if(error){
@@ -262,13 +259,13 @@ return;
 
 if(!data){
 showLogin();
-$("message").textContent="Akaunti imeingia lakini haijapatikana kwenye profiles. Hakiki uuid ya akaunti.";
+$("message").textContent="Akaunti haijapatikana kwenye profiles. Hakiki taarifa za akaunti.";
 return;
 }
 
 if(String(data.role||"").toLowerCase().trim()!=="admin"){
 showLogin();
-$("message").textContent="Akaunti hii ina role ya "+(data.role||"isiyojulikana")+", si admin.";
+$("message").textContent="Akaunti hii haina ruhusa za Admin.";
 return;
 }
 
@@ -288,69 +285,64 @@ $("message").textContent="Hitilafu: "+error.message;
 
 $("loginForm").addEventListener("submit",async e=>{
 e.preventDefault();
+
+const email=$("email").value.trim();
+const password=$("password").value;
+
+if(!email||!password){
+$("message").textContent="Tafadhali jaza email na nenosiri.";
+return;
+}
+
 $("loginButton").disabled=true;
 $("message").textContent="Inakagua akaunti...";
+
 try{
 const {data,error}=await db.auth.signInWithPassword({
-email:$("email").value.trim(),
-password:$("password").value
+email:email,
+password:password
 });
+
 if(error){
 $("message").textContent="Imeshindikana kuingia: "+error.message;
 return;
 }
-async function checkAdmin(session){
-  if(!session){
-    showLogin();
-    return;
-  }
 
-  $("message").textContent="Inakagua ruhusa za Admin...";
+await checkAdmin(data.session);
 
-  try{
-    const {data,error}=await db
-      .from("profiles")
-      .select("id,full_name,role")
-      .eq("id",session.user.id)
-      .maybeSingle();
-
-    if(error){
-      showLogin();
-      $("message").textContent="Hitilafu ya kusoma profiles: "+error.message;
-      return;
-    }
-
-    if(!data){
-      showLogin();
-      $("message").textContent="Akaunti haijapatikana kwenye profiles.";
-      return;
-    }
-
-    if(String(data.role||"").toLowerCase().trim()!=="admin"){
-      showLogin();
-      $("message").textContent="Akaunti hii haina ruhusa za Admin.";
-      return;
-    }
-
-    currentUser=session.user;
-    $("message").textContent="";
-    $("loginBox").style.display="none";
-    $("dashboard").style.display="block";
-    $("logout").hidden=false;
-    $("welcome").textContent="Karibu "+(data.full_name||session.user.email);
-
-    await loadStats();
-
-  }catch(error){
-    showLogin();
-    $("message").textContent="Hitilafu: "+error.message;
-  }
+}catch(error){
+$("message").textContent="Hitilafu: "+error.message;
+}finally{
+$("loginButton").disabled=false;
 }
+});
 
 $("logout").addEventListener("click",async()=>{
-await db.auth.signOut();
+const {error}=await db.auth.signOut();
+if(error){
+alert("Imeshindikana kutoka: "+error.message);
+return;
+}
 showLogin();
+$("email").value="";
+$("password").value="";
 });
+
+db.auth.onAuthStateChange((event,session)=>{
+if(event==="SIGNED_OUT")showLogin();
+});
+
+(async()=>{
+const {data,error}=await db.auth.getSession();
+if(error){
+showLogin();
+$("message").textContent="Hitilafu ya session: "+error.message;
+return;
+}
+await checkAdmin(data.session);
+})();
+
+/* DASHBOARD STATS */
 
 async function loadStats(){
 $("stats").innerHTML="";
@@ -382,10 +374,12 @@ $("tableContent").innerHTML="";
 
 const {data,error}=await db.from(table).select("*").limit(50);
 $("loading").textContent="";
+
 if(error){
 $("tableContent").textContent="Hitilafu: "+error.message;
 return;
 }
+
 if(!data?.length){
 $("tableContent").textContent="Hakuna taarifa zilizopatikana.";
 return;
@@ -394,11 +388,13 @@ return;
 const t=document.createElement("table");
 const thead=document.createElement("thead");
 const head=document.createElement("tr");
+
 Object.keys(data[0]).forEach(key=>{
 const th=document.createElement("th");
 th.textContent=key;
 head.appendChild(th);
 });
+
 thead.appendChild(head);
 t.appendChild(thead);
 
@@ -413,9 +409,12 @@ tr.appendChild(td);
 });
 tbody.appendChild(tr);
 });
+
 t.appendChild(tbody);
 $("tableContent").appendChild(t);
 }
+
+/* VIBANDIKO NA FEDHA */
 
 function badge(value){
 const span=document.createElement("span");
@@ -444,9 +443,12 @@ card.append(label,amount,note);
 return card;
 }
 
+/* MAPATO */
+
 function renderRevenueStats(rows){
 const box=$("revenueStats");
 box.innerHTML="";
+
 const approved=rows.filter(x=>x.payment_status==="approved");
 const pending=rows.filter(x=>x.payment_status==="pending");
 const rejected=rows.filter(x=>x.payment_status==="rejected");
@@ -479,10 +481,12 @@ const {data,error}=await db.from("revenue_transactions")
 .order("created_at",{ascending:false}).limit(500);
 
 $("revenueLoading").textContent="";
+
 if(error){
 $("revenueList").textContent="Imeshindikana kupakia mapato: "+error.message;
 return;
 }
+
 revenueCache=data||[];
 renderRevenueStats(revenueCache);
 renderRevenueTable();
@@ -492,6 +496,7 @@ function renderRevenueTable(){
 const filter=$("revenueFilter").value;
 const rows=filter==="all"?revenueCache:revenueCache.filter(x=>x.payment_status===filter);
 $("revenueList").innerHTML="";
+
 if(!rows.length){
 $("revenueList").innerHTML='<div class="empty">Hakuna miamala katika kundi hili.</div>';
 return;
@@ -500,33 +505,42 @@ return;
 const table=document.createElement("table");
 const thead=document.createElement("thead");
 const head=document.createElement("tr");
+
 ["Tarehe","Mlipaji","Simu","Maelezo","Aina ya malipo","Namba ya muamala","Kiasi","Hali ya malipo","Tarehe ya uthibitisho"].forEach(label=>{
 const th=document.createElement("th");
 th.textContent=label;
 head.appendChild(th);
 });
+
 thead.appendChild(head);
 table.appendChild(thead);
 
 const tbody=document.createElement("tbody");
+
 rows.forEach(item=>{
 const tr=document.createElement("tr");
 const values=[
 item.created_at?new Date(item.created_at).toLocaleString("sw-TZ"):"-",
-item.payer_name||"-",item.payer_phone||"-",
+item.payer_name||"-",
+item.payer_phone||"-",
 item.description||item.source_type||"-",
-item.payment_method||"-",item.transaction_reference||"-",
-money(item.amount,item.currency),item.payment_status||"pending",
+item.payment_method||"-",
+item.transaction_reference||"-",
+money(item.amount,item.currency),
+item.payment_status||"pending",
 item.confirmed_at?new Date(item.confirmed_at).toLocaleString("sw-TZ"):"-"
 ];
+
 values.forEach((value,index)=>{
 const td=document.createElement("td");
 if(index===7)td.appendChild(badge(value));
 else td.textContent=String(value);
 tr.appendChild(td);
 });
+
 tbody.appendChild(tr);
 });
+
 table.appendChild(tbody);
 $("revenueList").appendChild(table);
 }
@@ -534,12 +548,18 @@ $("revenueList").appendChild(table);
 $("refreshRevenue").addEventListener("click",loadRevenue);
 $("revenueFilter").addEventListener("change",renderRevenueTable);
 
+/* PICHA ZA UMMA */
+
 async function loadPublicPhotosAdmin(){
 $("photosLoading").textContent="Inapakia picha...";
 $("photosList").innerHTML="";
 $("photoStats").innerHTML="";
-const {data,error}=await db.from("public_photos").select("*").order("created_at",{ascending:false}).limit(100);
+
+const {data,error}=await db.from("public_photos").select("*")
+.order("created_at",{ascending:false}).limit(100);
+
 $("photosLoading").textContent="";
+
 if(error){
 $("photosList").textContent="Hitilafu: "+error.message;
 return;
@@ -552,6 +572,7 @@ const stats=[
 ["Zilizoidhinishwa",photos.filter(p=>p.status==="approved").length],
 ["Zilizokataliwa",photos.filter(p=>p.status==="rejected").length]
 ];
+
 stats.forEach(([name,count])=>{
 const card=document.createElement("div");
 card.className="stat";
@@ -571,8 +592,9 @@ return;
 photos.forEach(photo=>{
 const card=document.createElement("article");
 card.className="photo-card";
+
 const img=document.createElement("img");
-img.src=photo.image_url;
+img.src=photo.image_url||"";
 img.alt=photo.title||"Picha ya mwanachama";
 img.loading="lazy";
 img.addEventListener("click",()=>window.open(photo.image_url,"_blank"));
@@ -581,21 +603,26 @@ card.appendChild(img);
 const title=document.createElement("h3");
 title.textContent=photo.title||"Bila kichwa";
 card.appendChild(title);
+
 const description=document.createElement("p");
 description.textContent=photo.description||"Hakuna maelezo.";
 card.appendChild(description);
+
 const owner=document.createElement("small");
 owner.textContent="Mmiliki: "+(photo.user_id||"-");
 card.appendChild(owner);
+
 const date=document.createElement("p");
 date.textContent=photo.created_at?new Date(photo.created_at).toLocaleString("sw-TZ"):"";
 card.appendChild(date);
+
 const status=document.createElement("p");
 status.appendChild(badge(photo.status));
 card.appendChild(status);
 
 const actions=document.createElement("div");
 actions.className="photo-actions";
+
 if(photo.status!=="approved"){
 const approve=document.createElement("button");
 approve.className="approve";
@@ -603,6 +630,7 @@ approve.textContent="IDHINISHA";
 approve.addEventListener("click",()=>updatePublicPhoto(photo.id,"approved"));
 actions.appendChild(approve);
 }
+
 if(photo.status!=="rejected"){
 const reject=document.createElement("button");
 reject.className="reject";
@@ -610,6 +638,7 @@ reject.textContent="KATAA";
 reject.addEventListener("click",()=>updatePublicPhoto(photo.id,"rejected"));
 actions.appendChild(reject);
 }
+
 card.appendChild(actions);
 $("photosList").appendChild(card);
 });
@@ -618,19 +647,26 @@ $("photosList").appendChild(card);
 async function updatePublicPhoto(id,newStatus){
 const action=newStatus==="approved"?"kuidhinisha picha hii":"kukataa picha hii";
 if(!confirm("Una uhakika unataka "+action+"?"))return;
+
 $("photosLoading").textContent="Inahifadhi mabadiliko...";
-const {error}=await db.from("public_photos").update({status:newStatus}).eq("id",id);
+
+const {error}=await db.from("public_photos")
+.update({status:newStatus}).eq("id",id);
+
 if(error){
 $("photosLoading").textContent="Imeshindikana: "+error.message;
 alert("Hitilafu: "+error.message);
 return;
 }
+
 alert(newStatus==="approved"?"Picha imeidhinishwa.":"Picha imekataliwa.");
 await loadPublicPhotosAdmin();
 await loadStats();
 }
 
 $("refreshPhotos").addEventListener("click",loadPublicPhotosAdmin);
+
+/* MATANGAZO */
 
 function adMsg(text,color="#07518d"){
 $("adMessage").textContent=text;
@@ -649,8 +685,14 @@ adMsg("");
 async function loadPaymentStats(){
 const box=$("paymentStats");
 box.innerHTML="";
+
 const {data,error}=await db.from("advertisements").select("payment_status,is_test");
-if(error){box.textContent="Imeshindikana kupakia muhtasari wa malipo.";return;}
+
+if(error){
+box.textContent="Imeshindikana kupakia muhtasari wa malipo.";
+return;
+}
+
 const normalAds=(data||[]).filter(x=>x.is_test!==true);
 const items=[
 ["Jumla ya maombi",normalAds.length],
@@ -658,6 +700,7 @@ const items=[
 ["Yaliyothibitishwa",normalAds.filter(x=>x.payment_status==="approved").length],
 ["Yaliyokataliwa",normalAds.filter(x=>x.payment_status==="rejected").length]
 ];
+
 items.forEach(([name,count])=>{
 const card=document.createElement("div");
 card.className="stat";
@@ -673,11 +716,18 @@ box.appendChild(card);
 async function loadAds(){
 $("adsLoading").textContent="Inapakia matangazo...";
 $("adsList").innerHTML="";
+
 const {data,error}=await db.from("advertisements")
 .select("id,owner_id,title,description,image_url,target_url,status,start_date,end_date,created_at,payment_method,payer_name,payer_phone,transaction_id,payment_status,is_test")
 .eq("is_test",false).order("created_at",{ascending:false}).limit(100);
+
 $("adsLoading").textContent="";
-if(error){$("adsList").textContent="Hitilafu: "+error.message;return;}
+
+if(error){
+$("adsList").textContent="Hitilafu: "+error.message;
+return;
+}
+
 if(!data?.length){
 $("adsList").innerHTML='<div class="empty">Hakuna matangazo ya kawaida yaliyowasilishwa.</div>';
 await loadPaymentStats();
@@ -687,174 +737,370 @@ return;
 const table=document.createElement("table");
 const thead=document.createElement("thead");
 const head=document.createElement("tr");
+
 ["Picha","Tangazo","Taarifa za malipo","Hali ya malipo","Hali ya tangazo","Vitendo"].forEach(label=>{
 const th=document.createElement("th");
 th.textContent=label;
 head.appendChild(th);
 });
+
 thead.appendChild(head);
 table.appendChild(thead);
 const tbody=document.createElement("tbody");
 
 data.forEach(ad=>{
 const tr=document.createElement("tr");
+
 const imageCell=document.createElement("td");
 if(ad.image_url){
 const img=document.createElement("img");
-img.src=ad.image_url;img.alt=ad.title||"Tangazo";img.className="preview";img.loading="lazy";
+img.src=ad.image_url;
+img.alt=ad.title||"Tangazo";
+img.className="preview";
+img.loading="lazy";
 imageCell.appendChild(img);
 }else imageCell.textContent="-";
 tr.appendChild(imageCell);
 
 const titleCell=document.createElement("td");
-const title=document.createElement("strong");title.textContent=ad.title||"-";
-const description=document.createElement("p");description.textContent=ad.description||"";
-const date=document.createElement("small");date.textContent="Tarehe: "+(ad.created_at?new Date(ad.created_at).toLocaleDateString("sw-TZ"):"-");
-titleCell.append(title,description,date);tr.appendChild(titleCell);
+const title=document.createElement("strong");
+title.textContent=ad.title||"-";
+const description=document.createElement("p");
+description.textContent=ad.description||"";
+const date=document.createElement("small");
+date.textContent="Tarehe: "+(ad.created_at?new Date(ad.created_at).toLocaleDateString("sw-TZ"):"-");
+titleCell.append(title,description,date);
+tr.appendChild(titleCell);
 
 const paymentCell=document.createElement("td");
 paymentCell.className="payment-info";
 [["Mtandao",ad.payment_method],["Mlipaji",ad.payer_name],["Simu",ad.payer_phone],["Muamala",ad.transaction_id]].forEach(([label,value])=>{
-const line=document.createElement("div");line.textContent=label+": "+(value||"-");paymentCell.appendChild(line);
+const line=document.createElement("div");
+line.textContent=label+": "+(value||"-");
+paymentCell.appendChild(line);
 });
 tr.appendChild(paymentCell);
 
-const paymentStatusCell=document.createElement("td");paymentStatusCell.appendChild(badge(ad.payment_status||"pending"));tr.appendChild(paymentStatusCell);
-const statusCell=document.createElement("td");statusCell.appendChild(badge(ad.status||"pending"));tr.appendChild(statusCell);
-const actions=document.createElement("td");actions.className="ad-actions";
+const paymentStatusCell=document.createElement("td");
+paymentStatusCell.appendChild(badge(ad.payment_status||"pending"));
+tr.appendChild(paymentStatusCell);
+
+const statusCell=document.createElement("td");
+statusCell.appendChild(badge(ad.status||"pending"));
+tr.appendChild(statusCell);
+
+const actions=document.createElement("td");
+actions.className="ad-actions";
 
 if(ad.payment_status!=="approved"){
-const b=document.createElement("button");b.className="approve";b.textContent="Thibitisha malipo";b.addEventListener("click",()=>verifyPayment(ad));actions.appendChild(b);
+const b=document.createElement("button");
+b.className="approve";
+b.textContent="Thibitisha malipo";
+b.addEventListener("click",()=>verifyPayment(ad));
+actions.appendChild(b);
 }
+
 if(ad.payment_status!=="rejected"){
-const b=document.createElement("button");b.className="reject";b.textContent="Kataa malipo";b.addEventListener("click",()=>rejectPaymentAction(ad));actions.appendChild(b);
+const b=document.createElement("button");
+b.className="reject";
+b.textContent="Kataa malipo";
+b.addEventListener("click",()=>rejectPaymentAction(ad));
+actions.appendChild(b);
 }
+
 if(ad.payment_status==="approved"&&ad.status!=="active"){
-const b=document.createElement("button");b.className="approve";b.textContent="Idhinisha tangazo";b.addEventListener("click",()=>approveAdvertisement(ad));actions.appendChild(b);
+const b=document.createElement("button");
+b.className="approve";
+b.textContent="Idhinisha tangazo";
+b.addEventListener("click",()=>approveAdvertisement(ad));
+actions.appendChild(b);
 }
-const editBtn=document.createElement("button");editBtn.className="edit";editBtn.textContent="Hariri";editBtn.addEventListener("click",()=>editAd(ad));
-const deleteBtn=document.createElement("button");deleteBtn.className="delete";deleteBtn.textContent="Futa";deleteBtn.addEventListener("click",()=>deleteAd(ad.id));
-actions.append(editBtn,deleteBtn);tr.appendChild(actions);tbody.appendChild(tr);
+
+const editBtn=document.createElement("button");
+editBtn.className="edit";
+editBtn.textContent="Hariri";
+editBtn.addEventListener("click",()=>editAd(ad));
+
+const deleteBtn=document.createElement("button");
+deleteBtn.className="delete";
+deleteBtn.textContent="Futa";
+deleteBtn.addEventListener("click",()=>deleteAd(ad.id));
+
+actions.append(editBtn,deleteBtn);
+tr.appendChild(actions);
+tbody.appendChild(tr);
 });
+
 table.appendChild(tbody);
 $("adsList").appendChild(table);
 await loadPaymentStats();
 }
 
+/* MATANGAZO YA MAJARIBIO */
+
 async function loadTestAds(){
 $("testAdsLoading").textContent="Inapakia matangazo ya majaribio...";
 $("testAdsList").innerHTML="";
 $("testStats").innerHTML="";
+
 const {data,error}=await db.from("advertisements")
 .select("id,owner_id,title,description,image_url,target_url,status,created_at,payment_status,is_test")
 .eq("is_test",true).order("created_at",{ascending:false}).limit(100);
+
 $("testAdsLoading").textContent="";
-if(error){$("testAdsList").textContent="Hitilafu: "+error.message;return;}
+
+if(error){
+$("testAdsList").textContent="Hitilafu: "+error.message;
+return;
+}
+
 const tests=data||[];
 const items=[
 ["Jumla ya majaribio",tests.length],
 ["Yanasubiri",tests.filter(x=>x.status==="pending").length],
 ["Yaliyowekwa active",tests.filter(x=>x.status==="active").length]
 ];
+
 items.forEach(([name,count])=>{
-const card=document.createElement("div");card.className="stat";
-const label=document.createElement("small");label.textContent=name;
-const number=document.createElement("strong");number.textContent=count;
-card.append(label,number);$("testStats").appendChild(card);
+const card=document.createElement("div");
+card.className="stat";
+const label=document.createElement("small");
+label.textContent=name;
+const number=document.createElement("strong");
+number.textContent=count;
+card.append(label,number);
+$("testStats").appendChild(card);
 });
-if(!tests.length){$("testAdsList").innerHTML='<div class="empty">Bado hakuna matangazo ya majaribio.</div>';return;}
+
+if(!tests.length){
+$("testAdsList").innerHTML='<div class="empty">Bado hakuna matangazo ya majaribio.</div>';
+return;
+}
 
 const table=document.createElement("table");
 const thead=document.createElement("thead");
 const head=document.createElement("tr");
+
 ["Picha","Tangazo la majaribio","Tarehe","Hali ya tangazo","Hali ya malipo","Vitendo"].forEach(label=>{
-const th=document.createElement("th");th.textContent=label;head.appendChild(th);
+const th=document.createElement("th");
+th.textContent=label;
+head.appendChild(th);
 });
-thead.appendChild(head);table.appendChild(thead);
+
+thead.appendChild(head);
+table.appendChild(thead);
 const tbody=document.createElement("tbody");
 
 tests.forEach(ad=>{
-const tr=document.createElement("tr");tr.className="test-card";
+const tr=document.createElement("tr");
+tr.className="test-card";
+
 const imageCell=document.createElement("td");
 if(ad.image_url){
-const img=document.createElement("img");img.src=ad.image_url;img.alt=ad.title||"Tangazo la majaribio";img.className="preview";img.loading="lazy";imageCell.appendChild(img);
+const img=document.createElement("img");
+img.src=ad.image_url;
+img.alt=ad.title||"Tangazo la majaribio";
+img.className="preview";
+img.loading="lazy";
+imageCell.appendChild(img);
 }else imageCell.textContent="-";
 tr.appendChild(imageCell);
 
 const details=document.createElement("td");
-const testLabel=document.createElement("span");testLabel.className="test-label";testLabel.textContent="🧪 JARIBIO LA ADMIN";
-const title=document.createElement("strong");title.textContent=ad.title||"Bila kichwa";
-const description=document.createElement("p");description.textContent=ad.description||"Hakuna maelezo.";
-details.append(testLabel,title,description);tr.appendChild(details);
+const testLabel=document.createElement("span");
+testLabel.className="test-label";
+testLabel.textContent="🧪 JARIBIO LA ADMIN";
+const title=document.createElement("strong");
+title.textContent=ad.title||"Bila kichwa";
+const description=document.createElement("p");
+description.textContent=ad.description||"Hakuna maelezo.";
+details.append(testLabel,title,description);
+tr.appendChild(details);
 
-const dateCell=document.createElement("td");dateCell.textContent=ad.created_at?new Date(ad.created_at).toLocaleString("sw-TZ"):"-";tr.appendChild(dateCell);
-const statusCell=document.createElement("td");statusCell.appendChild(badge(ad.status||"pending"));tr.appendChild(statusCell);
-const paymentCell=document.createElement("td");paymentCell.appendChild(badge(ad.payment_status||"pending"));tr.appendChild(paymentCell);
-const actions=document.createElement("td");actions.className="ad-actions";
-const deleteButton=document.createElement("button");deleteButton.className="delete";deleteButton.textContent="Futa jaribio";deleteButton.addEventListener("click",()=>deleteTestAd(ad));
-actions.appendChild(deleteButton);tr.appendChild(actions);tbody.appendChild(tr);
+const dateCell=document.createElement("td");
+dateCell.textContent=ad.created_at?new Date(ad.created_at).toLocaleString("sw-TZ"):"-";
+tr.appendChild(dateCell);
+
+const statusCell=document.createElement("td");
+statusCell.appendChild(badge(ad.status||"pending"));
+tr.appendChild(statusCell);
+
+const paymentCell=document.createElement("td");
+paymentCell.appendChild(badge(ad.payment_status||"pending"));
+tr.appendChild(paymentCell);
+
+const actions=document.createElement("td");
+actions.className="ad-actions";
+const deleteButton=document.createElement("button");
+deleteButton.className="delete";
+deleteButton.textContent="Futa jaribio";
+deleteButton.addEventListener("click",()=>deleteTestAd(ad));
+actions.appendChild(deleteButton);
+tr.appendChild(actions);
+tbody.appendChild(tr);
 });
-table.appendChild(tbody);$("testAdsList").appendChild(table);
+
+table.appendChild(tbody);
+$("testAdsList").appendChild(table);
 }
 
 async function deleteTestAd(ad){
-if(ad.is_test!==true){alert("Hili si tangazo la majaribio.");return;}
-if(!confirm("Una uhakika unataka kufuta jaribio hili?\n\n"+(ad.title||"Tangazo la majaribio")))return;
-const {error}=await db.from("advertisements").delete().eq("id",ad.id).eq("is_test",true);
-if(error){alert("Imeshindikana kufuta jaribio: "+error.message);return;}
-alert("Tangazo la majaribio limefutwa.");
-await loadTestAds();await loadStats();
+if(ad.is_test!==true){
+alert("Hili si tangazo la majaribio.");
+return;
 }
 
+if(!confirm("Una uhakika unataka kufuta jaribio hili?\n\n"+(ad.title||"Tangazo la majaribio")))return;
+
+const {error}=await db.from("advertisements").delete()
+.eq("id",ad.id).eq("is_test",true);
+
+if(error){
+alert("Imeshindikana kufuta jaribio: "+error.message);
+return;
+}
+
+alert("Tangazo la majaribio limefutwa.");
+await loadTestAds();
+await loadStats();
+}
+
+/* UTHIBITISHAJI WA MALIPO */
+
 async function verifyPayment(ad){
-if(!ad.transaction_id){alert("Tangazo hili halina namba ya muamala.");return;}
-const confirmed=confirm("Hakiki kwanza muamala kwenye akaunti yako ya simu.\n\nJina: "+(ad.payer_name||"-")+"\nNamba: "+(ad.payer_phone||"-")+"\nMuamala: "+ad.transaction_id+"\n\nJe, umethibitisha kuwa fedha zimeingia?");
+if(!ad.transaction_id){
+alert("Tangazo hili halina namba ya muamala.");
+return;
+}
+
+const confirmed=confirm(
+"Hakiki kwanza muamala kwenye akaunti yako ya simu.\n\n"+
+"Jina: "+(ad.payer_name||"-")+"\n"+
+"Namba: "+(ad.payer_phone||"-")+"\n"+
+"Muamala: "+ad.transaction_id+"\n\n"+
+"Je, umethibitisha kuwa fedha zimeingia?"
+);
+
 if(!confirmed)return;
-const {error}=await db.from("advertisements").update({payment_status:"approved"}).eq("id",ad.id).eq("is_test",false);
-if(error){alert("Imeshindikana: "+error.message);return;}
+
+const {error}=await db.from("advertisements")
+.update({payment_status:"approved"})
+.eq("id",ad.id).eq("is_test",false);
+
+if(error){
+alert("Imeshindikana: "+error.message);
+return;
+}
+
 alert("Malipo yamethibitishwa. Sasa unaweza kuidhinisha tangazo.");
-await loadAds();await loadStats();
+await loadAds();
+await loadStats();
 }
 
 async function rejectPaymentAction(ad){
 if(!confirm("Una uhakika unataka kukataa malipo haya?"))return;
-const {error}=await db.from("advertisements").update({payment_status:"rejected",status:"paused"}).eq("id",ad.id).eq("is_test",false);
-if(error){alert("Imeshindikana: "+error.message);return;}
-alert("Malipo yamekataliwa.");await loadAds();await loadStats();
+
+const {error}=await db.from("advertisements")
+.update({payment_status:"rejected",status:"paused"})
+.eq("id",ad.id).eq("is_test",false);
+
+if(error){
+alert("Imeshindikana: "+error.message);
+return;
+}
+
+alert("Malipo yamekataliwa.");
+await loadAds();
+await loadStats();
 }
 
 async function approveAdvertisement(ad){
-if(ad.payment_status!=="approved"||ad.is_test===true){alert("Tangazo hili haliwezi kuidhinishwa kupitia mfumo wa malipo ya kawaida.");return;}
-if(!confirm("Idhinisha tangazo hili lionekane kwenye tovuti?"))return;
-const {error}=await db.from("advertisements").update({status:"active"}).eq("id",ad.id).eq("is_test",false);
-if(error){alert("Imeshindikana: "+error.message);return;}
-alert("Tangazo limeidhinishwa.");await loadAds();await loadStats();
+if(ad.payment_status!=="approved"||ad.is_test===true){
+alert("Tangazo hili haliwezi kuidhinishwa kupitia mfumo wa malipo ya kawaida.");
+return;
 }
+
+if(!confirm("Idhinisha tangazo hili lionekane kwenye tovuti?"))return;
+
+const {error}=await db.from("advertisements")
+.update({status:"active"})
+.eq("id",ad.id).eq("is_test",false);
+
+if(error){
+alert("Imeshindikana: "+error.message);
+return;
+}
+
+alert("Tangazo limeidhinishwa.");
+await loadAds();
+await loadStats();
+}
+
+/* KUONGEZA NA KUHARIRI TANGAZO */
 
 $("adForm").addEventListener("submit",async e=>{
 e.preventDefault();
-if(!currentUser){adMsg("Ingia tena kwenye akaunti ya Admin.","#c0392b");return;}
+
+if(!currentUser){
+adMsg("Ingia tena kwenye akaunti ya Admin.","#c0392b");
+return;
+}
+
 const start_date=$("adStart").value||null;
 const end_date=$("adEnd").value||null;
-if(start_date&&end_date&&end_date<start_date){adMsg("Tarehe ya mwisho haiwezi kuwa kabla ya tarehe ya kuanza.","#c0392b");return;}
+
+if(start_date&&end_date&&end_date<start_date){
+adMsg("Tarehe ya mwisho haiwezi kuwa kabla ya tarehe ya kuanza.","#c0392b");
+return;
+}
+
 const payload={
 title:$("adTitle").value.trim(),
 description:$("adDescription").value.trim()||null,
 image_url:$("adImage").value.trim()||null,
 target_url:$("adTarget").value.trim()||null,
-start_date,end_date,status:$("adStatus").value
+start_date,
+end_date,
+status:$("adStatus").value
 };
-if(!payload.title){adMsg("Weka kichwa cha tangazo.","#c0392b");return;}
-$("saveAd").disabled=true;$("saveAd").textContent="Inahifadhi...";
+
+if(!payload.title){
+adMsg("Weka kichwa cha tangazo.","#c0392b");
+return;
+}
+
+$("saveAd").disabled=true;
+$("saveAd").textContent="Inahifadhi...";
+
 try{
 let result;
-if(editingAd){result=await db.from("advertisements").update(payload).eq("id",editingAd);}
-else{result=await db.from("advertisements").insert({...payload,owner_id:currentUser.id,payment_status:"approved",is_test:false});}
+
+if(editingAd){
+result=await db.from("advertisements")
+.update(payload).eq("id",editingAd);
+}else{
+result=await db.from("advertisements")
+.insert({
+...payload,
+owner_id:currentUser.id,
+payment_status:"approved",
+is_test:false
+});
+}
+
 if(result.error)throw result.error;
+
 alert(editingAd?"Tangazo limehaririwa.":"Tangazo limehifadhiwa.");
-resetAdForm();await loadAds();await loadStats();
-}catch(error){adMsg("Imeshindikana: "+error.message,"#c0392b");}
-finally{$("saveAd").disabled=false;$("saveAd").textContent="HIFADHI TANGAZO";}
+resetAdForm();
+await loadAds();
+await loadStats();
+
+}catch(error){
+adMsg("Imeshindikana: "+error.message,"#c0392b");
+}finally{
+$("saveAd").disabled=false;
+$("saveAd").textContent="HIFADHI TANGAZO";
+}
 });
 
 function editAd(ad){
@@ -875,50 +1121,66 @@ $("adFormTitle").scrollIntoView({behavior:"smooth"});
 
 async function deleteAd(id){
 if(!confirm("Una uhakika unataka kufuta tangazo hili?"))return;
-const {error}=await db.from("advertisements").delete().eq("id",id).eq("is_test",false);
-if(error){alert("Imeshindikana kufuta: "+error.message);return;}
-alert("Tangazo limefutwa.");await loadAds();await loadStats();
+
+const {error}=await db.from("advertisements")
+.delete().eq("id",id).eq("is_test",false);
+
+if(error){
+alert("Imeshindikana kufuta: "+error.message);
+return;
+}
+
+alert("Tangazo limefutwa.");
+await loadAds();
+await loadStats();
 }
 
 $("cancelEdit").addEventListener("click",resetAdForm);
 $("refreshAds").addEventListener("click",loadAds);
 $("refreshTestAds").addEventListener("click",loadTestAds);
 
+/* MENU YA DASHBOARD */
+
 $("navigation").addEventListener("click",async e=>{
 const btn=e.target.closest("button");
 if(!btn)return;
+
 document.querySelectorAll("#navigation button").forEach(b=>b.classList.remove("active"));
 btn.classList.add("active");
+
 const table=btn.dataset.table;
 
 if(table==="overview"){
-hideAllSections();$("overview").style.display="block";await loadStats();
+hideAllSections();
+$("overview").style.display="block";
+await loadStats();
+
 }else if(table==="revenue"){
-hideAllSections();$("revenueSection").style.display="block";await loadRevenue();
+hideAllSections();
+$("revenueSection").style.display="block";
+await loadRevenue();
+
 }else if(table==="advertisements"){
-hideAllSections();$("adsSection").style.display="block";resetAdForm();await loadAds();
+hideAllSections();
+$("adsSection").style.display="block";
+resetAdForm();
+await loadAds();
+
 }else if(table==="ad_tests"){
-hideAllSections();$("testAdsSection").style.display="block";await loadTestAds();
+hideAllSections();
+$("testAdsSection").style.display="block";
+await loadTestAds();
+
 }else if(table==="public_photos"){
-hideAllSections();$("photosSection").style.display="block";await loadPublicPhotosAdmin();
+hideAllSections();
+$("photosSection").style.display="block";
+await loadPublicPhotosAdmin();
+
 }else{
 await loadTable(table);
 }
 });
 
-db.auth.onAuthStateChange((event,session)=>{
-if(event==="SIGNED_OUT")showLogin();
-});
-
-(async()=>{
-const {data,error}=await db.auth.getSession();
-if(error){
-showLogin();
-$("message").textContent="Hitilafu ya session: "+error.message;
-return;
-}
-await checkAdmin(data.session);
-})();
 </script>
 </body>
 </html>
