@@ -324,7 +324,17 @@
 <p class="ad-note">Ingia kwenye akaunti kabla ya kutuma tangazo. Tangazo litahitaji kuthibitishwa na msimamizi.</p>
 <form id="advertisementForm" class="stack">
 <label>Kichwa cha tangazo<input id="advertisementTitle" maxlength="120" required></label>
-<label>Maelezo ya tangazo<textarea id="advertisementDescription" rows="4" maxlength="1500" required></textarea></label>
+
+<label>Namba ya WhatsApp / Simu ya mtangazaji
+<input
+id="advertisementWhatsapp"
+type="tel"
+inputmode="tel"
+placeholder="Mfano: 0788309986"
+>
+<small class="ad-note">Hii ndiyo namba ambayo wateja watatumia kuwasiliana nawe. Si namba ya malipo.</small>
+</label>
+
 <label>Picha ya tangazo<input id="advertisementImage" type="file" accept="image/jpeg,image/png,image/webp" required></label>
 <small class="ad-note">JPG, PNG au WEBP. Ukubwa wa juu MB 5.</small>
 <label>Aina ya tangazo<select id="advertisementPlan" required><option value="">Chagua muda wa tangazo</option><option value="7">Siku 7 - TSh 5,000</option><option value="14">Siku 14 - TSh 8,000</option><option value="30">Siku 30 - TSh 15,000</option><option value="featured">Featured siku 30 - TSh 25,000</option></select></label>
