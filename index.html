@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="sw">
 <head>
@@ -86,71 +87,87 @@
 .viewer-arrow{width:35px;height:46px}
 .comment-form button{padding:0 11px}
 }
-  
+
 /* EBY CONNECT - FINAL PHOTO CARD FIX */
-
-/* Picha ijaze upana wa kadi */
-.photo-card-image {
-  display: block !important;
-  width: 100% !important;
-  height: auto !important;
-  max-height: none !important;
-  object-fit: contain !important;
-  object-position: center !important;
-  background: #fff !important;
-  border: 0 !important;
-  border-radius: 0 !important;
+.photo-card-image{
+  display:block!important;
+  width:100%!important;
+  height:auto!important;
+  max-height:none!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  background:#fff!important;
+  border:0!important;
+  border-radius:0!important;
+}
+.engagement-bar{
+  display:flex!important;
+  align-items:center!important;
+  flex-wrap:wrap!important;
+  gap:18px!important;
+  padding:16px!important;
+  border-top:1px solid #e5edf6!important;
+  background:#fff!important;
+}
+.like-button,.comment-button{
+  border:0!important;
+  background:transparent!important;
+  font-size:17px!important;
+  font-weight:800!important;
+  padding:6px 0!important;
+}
+.like-button{color:#2878c9!important}
+.like-button.liked{color:#0757a6!important}
+.comment-button{color:#c09216!important}
+.engagement-count{color:#536579!important;font-size:14px!important;font-weight:700!important}
+.viewer-stage{background:#0757a6!important}
+.viewer-image{
+  border-left:4px solid #1686ff!important;
+  border-right:4px solid #1686ff!important;
+  object-fit:contain!important;
 }
 
-/* Muundo wa Like na Maoni */
-.engagement-bar {
-  display: flex !important;
-  align-items: center !important;
-  flex-wrap: wrap !important;
-  gap: 18px !important;
-  padding: 16px !important;
-  border-top: 1px solid #e5edf6 !important;
-  background: #fff !important;
+/* ADMIN DASHBOARD NDANI YA UKURASA MKUU */
+.admin-dashboard-section{
+  width:100%;
+  padding:18px;
+  max-width:1500px;
+  margin:0 auto;
 }
-
-.like-button,
-.comment-button {
-  border: 0 !important;
-  background: transparent !important;
-  font-size: 17px !important;
-  font-weight: 800 !important;
-  padding: 6px 0 !important;
+.admin-dashboard-heading{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:12px;
+  margin-bottom:15px;
 }
-
-.like-button {
-  color: #2878c9 !important;
+.admin-dashboard-heading h2{
+  margin:0;
+  color:#0757a6;
 }
-
-.like-button.liked {
-  color: #0757a6 !important;
+.admin-dashboard-back{
+  border:0;
+  border-radius:10px;
+  padding:12px 18px;
+  background:#0757a6;
+  color:#fff;
+  font-weight:800;
+  cursor:pointer;
 }
-
-.comment-button {
-  color: #c09216 !important;
+.admin-dashboard-frame{
+  display:block;
+  width:100%;
+  height:85vh;
+  min-height:750px;
+  border:1px solid #dce5ef;
+  border-radius:16px;
+  background:#fff;
 }
-
-.engagement-count {
-  color: #536579 !important;
-  font-size: 14px !important;
-  font-weight: 700 !important;
+@media(max-width:600px){
+  .admin-dashboard-section{padding:10px}
+  .admin-dashboard-frame{height:80vh;min-height:700px}
 }
-
-/* Picha kubwa */
-.viewer-stage {
-  background: #0757a6 !important;
-}
-
-.viewer-image {
-  border-left: 4px solid #1686ff !important;
-  border-right: 4px solid #1686ff !important;
-  object-fit: contain !important;
-}
-
 </style>
 </head>
 
@@ -167,11 +184,12 @@
 <a href="#picha">Picha</a>
 <a href="#matangazo">Matangazo</a>
 <a href="#fursa">Fursa</a>
+<button id="adminDashboardOpen" class="nav-cta" type="button" hidden>ADMIN DASHBOARD</button>
 <button id="authOpen" class="nav-cta">Ingia / Jisajili</button>
 </nav>
 </header>
 
-<main>
+<main id="mainContent">
 <section class="hero">
 <div class="hero-copy">
 <span class="eyebrow">JUKWAA LA HUDUMA NA FURSA TANZANIA</span>
@@ -259,7 +277,24 @@
 </section>
 </main>
 
-<footer>
+<!-- ADMIN DASHBOARD INAFUNGUKA NDANI YA UKURASA HUU -->
+<section id="embeddedAdminSection" class="admin-dashboard-section" hidden>
+  <div class="admin-dashboard-heading">
+    <h2>EBY HUDUMA CONNECT | ADMIN DASHBOARD</h2>
+    <button id="adminDashboardBack" class="admin-dashboard-back" type="button">
+      ← Rudi ukurasa mkuu
+    </button>
+  </div>
+  <iframe
+    id="adminDashboardFrame"
+    class="admin-dashboard-frame"
+    src="admin.html"
+    title="EBY HUDUMA CONNECT Admin Dashboard"
+    loading="lazy">
+  </iframe>
+</section>
+
+<footer id="mainFooter">
 <div class="brand footer-brand"><span class="brand-mark">EBY</span><span><strong>HUDUMA CONNECT</strong><small>BY EBY MEDIA TZ</small></span></div>
 <p>© <span id="year"></span> EBY MEDIA TZ. Haki zote zimehifadhiwa.</p>
 <small>Jukwaa la kuwaunganisha wateja na watoa huduma Tanzania.</small>
@@ -374,27 +409,21 @@ placeholder="Mfano: 0788309986"
 <div class="viewer-caption"><h3 id="viewerTitle"></h3><p id="viewerDescription"></p></div>
 </div>
 </dialog>
+
 <!-- DIRISHA LA MAONI -->
 <dialog id="commentsDialog" class="ad-dialog">
-  <button type="button" data-close="commentsDialog">Funga ×</button>
-  <h2>Maoni</h2>
-
-  <div id="commentsArea">
-    <div id="commentsList"></div>
-
-    <form id="commentForm">
-      <input
-        id="commentInput"
-        type="text"
-        placeholder="Andika maoni yako..."
-        required
-      >
-      <button type="submit">Tuma</button>
-    </form>
-
-    <p id="commentMessage"></p>
-  </div>
+<button type="button" data-close="commentsDialog">Funga ×</button>
+<h2>Maoni</h2>
+<div id="commentsArea">
+<div id="commentsList"></div>
+<form id="commentForm">
+<input id="commentInput" type="text" placeholder="Andika maoni yako..." required>
+<button type="submit">Tuma</button>
+</form>
+<p id="commentMessage"></p>
+</div>
 </dialog>
+
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 </body>
-  </html>
+</html>
