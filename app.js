@@ -1,4 +1,3 @@
-
 (() => {
 "use strict";
 
@@ -15,7 +14,6 @@ let touchStartX = 0;
 
 const AD_BUCKET = "advertisement-images";
 const PHOTO_BUCKET = "public-photos";
-
 const AD_PRICES = {
   "7": 5000,
   "14": 8000,
@@ -59,68 +57,13 @@ $("menuBtn")?.addEventListener("click", () => {
   $("nav")?.classList.toggle("open");
 });
 
-$("year").textContent = new Date().getFullYear();
-
-/* =====================================================
-   ADMIN DASHBOARD NDANI YA UKURASA MKUU
-===================================================== */
-
-function openAdminDashboard() {
-  if (!currentIsAdmin) {
-    toast("Huna ruhusa ya kufungua Admin Dashboard.");
-    return;
-  }
-
-  const main = $("mainContent");
-  const dashboard = $("embeddedAdminSection");
-  const footer = $("mainFooter");
-
-  if (!dashboard) {
-    toast("Sehemu ya Admin Dashboard haijapatikana.");
-    return;
-  }
-
-  if (main) main.hidden = true;
-  if (footer) footer.hidden = true;
-
-  dashboard.hidden = false;
-
-  $("nav")?.classList.remove("open");
-
-  dashboard.scrollIntoView({
-    behavior: "smooth",
-    block: "start"
-  });
+if ($("year")) {
+  $("year").textContent = new Date().getFullYear();
 }
 
-function closeAdminDashboard() {
-  const main = $("mainContent");
-  const dashboard = $("embeddedAdminSection");
-  const footer = $("mainFooter");
-
-  if (dashboard) dashboard.hidden = true;
-  if (main) main.hidden = false;
-  if (footer) footer.hidden = false;
-
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
-}
-
-$("adminDashboardOpen")?.addEventListener(
-  "click",
-  openAdminDashboard
-);
-
-$("adminDashboardBack")?.addEventListener(
-  "click",
-  closeAdminDashboard
-);
-
-/* =====================================================
-   UKAGUZI WA ADMIN
-===================================================== */
+/* =========================
+   ADMIN NA AKAUNTI
+========================= */
 
 async function checkAdmin(user) {
   if (!sb || !user?.id) return false;
@@ -133,22 +76,15 @@ async function checkAdmin(user) {
       .maybeSingle();
 
     if (error) throw error;
-
     return data?.role === "admin";
-
   } catch (error) {
-    console.error("Admin check", error);
+    console.error("Admin check:", error);
     return false;
   }
 }
 
-/* =====================================================
-   LOGIN NA USAJILI
-===================================================== */
-
 function setAuthMode(mode) {
   authMode = mode;
-
   const signup = mode === "signup";
 
   $("authTitle").textContent = signup
@@ -156,14 +92,9 @@ function setAuthMode(mode) {
     : "Ingia kwenye akaunti";
 
   $("nameWrap").classList.toggle("hidden", !signup);
-
-  $("authSubmit").textContent = signup
-    ? "Jisajili"
-    : "Ingia";
-
+  $("authSubmit").textContent = signup ? "Jisajili" : "Ingia";
   $("loginTab").classList.toggle("active", !signup);
   $("signupTab").classList.toggle("active", signup);
-
   $("authMessage").textContent = "";
 }
 
@@ -174,11 +105,7 @@ function updateAuthIdentifier() {
     phone ? "Namba ya simu" : "Barua pepe";
 
   $("identifier").type = phone ? "tel" : "email";
-
-  $("identifier").autocomplete = phone
-    ? "tel"
-    : "email";
-
+  $("identifier").autocomplete = phone ? "tel" : "email";
   $("identifier").placeholder = phone
     ? "+2557XXXXXXXX"
     : "barua@mfano.com";
@@ -188,51 +115,30 @@ function updateAuthIdentifier() {
     : "Tumia barua pepe unayoweza kuifikia.";
 }
 
-$("authMethod").addEventListener(
-  "change",
-  updateAuthIdentifier
-);
-
+$("authMethod").addEventListener("change", updateAuthIdentifier);
 updateAuthIdentifier();
 
-$("providerOpen").addEventListener("click", () => {
-  showDialog("providerDialog");
-});
+$("providerOpen").addEventListener("click", () =>
+  showDialog("providerDialog")
+);
 
-$("providerOpen2").addEventListener("click", () => {
-  showDialog("providerDialog");
-});
+$("providerOpen2").addEventListener("click", () =>
+  showDialog("providerDialog")
+);
 
-$("loginTab").addEventListener("click", () => {
-  setAuthMode("login");
-});
-
-$("signupTab").addEventListener("click", () => {
-  setAuthMode("signup");
-});
-
-/* =====================================================
-   MENYU YA AKAUNTI
-===================================================== */
+$("loginTab").addEventListener("click", () => setAuthMode("login"));
+$("signupTab").addEventListener("click", () => setAuthMode("signup"));
 
 const accountMenu = document.createElement("div");
-
 accountMenu.id = "ebyAccountMenu";
 accountMenu.hidden = true;
-
 accountMenu.style.cssText =
   "position:absolute;z-index:9999;right:16px;top:72px;min-width:240px;max-width:calc(100vw - 32px);padding:16px;background:#fff;color:#172b45;border:1px solid #dce5ef;border-radius:16px;box-shadow:0 12px 35px #0002";
 
 accountMenu.innerHTML = `
 <p id="ebyAccountStatus" style="margin:0 0 12px;font-weight:700;overflow-wrap:anywhere"></p>
-
-<button type="button" id="ebyStaySignedIn" style="width:100%;padding:12px;border:0;border-radius:10px;background:#eaf3ff;color:#07518b;font-weight:700;margin-bottom:8px">
-Endelea kubaki umeingia
-</button>
-
-<button type="button" id="ebySignOut" style="width:100%;padding:12px;border:0;border-radius:10px;background:#07518b;color:#fff;font-weight:700">
-Toka kwenye akaunti
-</button>
+<button type="button" id="ebyStaySignedIn" style="width:100%;padding:12px;border:0;border-radius:10px;background:#eaf3ff;color:#07518b;font-weight:700;margin-bottom:8px">Endelea kubaki umeingia</button>
+<button type="button" id="ebySignOut" style="width:100%;padding:12px;border:0;border-radius:10px;background:#07518b;color:#fff;font-weight:700">Toka kwenye akaunti</button>
 `;
 
 document.body.append(accountMenu);
@@ -276,13 +182,9 @@ $("ebySignOut").onclick = async () => {
   }
 
   accountMenu.hidden = true;
-
   setAccountButton(null);
-
   currentIsAdmin = false;
-
   updateAdminTestVisibility();
-
   toast("Umetoka kwenye akaunti.");
 };
 
@@ -296,10 +198,6 @@ document.addEventListener("click", event => {
   }
 });
 
-/* =====================================================
-   KUREJESHA SESSION
-===================================================== */
-
 async function refreshSession() {
   if (!sb) {
     setAccountButton(null);
@@ -308,44 +206,24 @@ async function refreshSession() {
   }
 
   const { data, error } = await sb.auth.getSession();
-
-  const user = error
-    ? null
-    : data.session?.user || null;
+  const user = error ? null : data.session?.user || null;
 
   setAccountButton(user);
-
-  currentIsAdmin = user
-    ? await checkAdmin(user)
-    : false;
-
+  currentIsAdmin = user ? await checkAdmin(user) : false;
   updateAdminTestVisibility();
 }
 
 if (sb) {
   sb.auth.onAuthStateChange((_event, session) => {
     const user = session?.user || null;
-
     setAccountButton(user);
 
     Promise.resolve().then(async () => {
-      currentIsAdmin = user
-        ? await checkAdmin(user)
-        : false;
-
+      currentIsAdmin = user ? await checkAdmin(user) : false;
       updateAdminTestVisibility();
-
-      await Promise.all([
-        loadAdvertisements(),
-        loadPublicPhotos()
-      ]);
     });
   });
 }
-
-/* =====================================================
-   KUTUMA LOGIN / USAJILI
-===================================================== */
 
 $("authForm").addEventListener("submit", async event => {
   event.preventDefault();
@@ -390,39 +268,30 @@ $("authForm").addEventListener("submit", async event => {
 
     if (result.error) throw result.error;
 
-    $("authMessage").textContent =
-      authMode === "signup"
-        ? "Ombi la usajili limetumwa. Angalia uthibitishaji."
-        : "Umeingia kikamilifu.";
+    $("authMessage").textContent = authMode === "signup"
+      ? "Ombi la usajili limetumwa. Angalia uthibitishaji."
+      : "Umeingia kikamilifu.";
 
     await refreshSession();
 
     if (authMode === "login" || result.data.session) {
       $("authDialog").close();
-
       toast(
         authMode === "login"
           ? "Karibu tena EBY HUDUMA CONNECT."
           : "Akaunti imetengenezwa."
       );
     }
-
   } catch (error) {
     $("authMessage").textContent =
       error.message || "Imeshindikana. Jaribu tena.";
-
   } finally {
     button.disabled = false;
   }
 });
 
-/* =====================================================
-   KUTHIBITISHA MTUMIAJI
-===================================================== */
-
 async function requireLogin(messageEl) {
   const { data, error } = await sb.auth.getSession();
-
   if (error) throw error;
 
   const user = data.session?.user;
@@ -435,18 +304,16 @@ async function requireLogin(messageEl) {
 
     setAuthMode("login");
     showDialog("authDialog");
-
     return null;
   }
 
   currentUser = user;
-
   return user;
 }
 
-/* =====================================================
+/* =========================
    USAJILI WA BIASHARA
-===================================================== */
+========================= */
 
 $("businessForm").addEventListener("submit", async event => {
   event.preventDefault();
@@ -463,14 +330,11 @@ $("businessForm").addEventListener("submit", async event => {
   if (!user) {
     $("businessMessage").textContent =
       "Tafadhali ingia au jisajili kwanza.";
-
     showDialog("authDialog");
     return;
   }
 
-  const button = $("businessForm")
-    .querySelector('[type="submit"]');
-
+  const button = $("businessForm").querySelector('[type="submit"]');
   button.disabled = true;
 
   try {
@@ -486,174 +350,117 @@ $("businessForm").addEventListener("submit", async event => {
       is_verified: false
     };
 
-    const { error } = await sb
-      .from("businesses")
-      .insert(payload);
-
+    const { error } = await sb.from("businesses").insert(payload);
     if (error) throw error;
 
     $("businessForm").reset();
-
     $("businessMessage").textContent =
       "Ombi lako limepokelewa na litasubiri ukaguzi.";
 
     toast("Usajili wa biashara umetumwa.");
-
+    loadBusinessLocations();
   } catch (error) {
     $("businessMessage").textContent =
       error.message || "Imeshindikana kutuma ombi.";
-
   } finally {
     button.disabled = false;
   }
 });
 
-/* =====================================================
-   KUONYESHA BIASHARA
-===================================================== */
+/* =========================
+   UTAFUTAJI WA BIASHARA
+   MKOA NA WILAYA
+========================= */
 
-async function loadBusinesses(search = "", category = "") {
-  const list = $("businessList");
+let regionFilter = null;
+let districtFilter = null;
+let businessLocations = [];
 
-  if (!sb) {
-    $("businessCount").textContent =
-      "Database haijaunganishwa";
-    return;
+function createLocationFilters() {
+  const form = $("searchForm");
+  if (!form) return;
+
+  regionFilter = $("regionFilter");
+  districtFilter = $("districtFilter");
+
+  if (!regionFilter) {
+    regionFilter = document.createElement("select");
+    regionFilter.id = "regionFilter";
+    regionFilter.className = $("categoryFilter")?.className || "";
+    regionFilter.innerHTML =
+      '<option value="">Mikoa yote</option>';
+
+    const category = $("categoryFilter");
+    if (category) category.insertAdjacentElement("afterend", regionFilter);
+    else form.append(regionFilter);
   }
 
-  let query = sb
-    .from("businesses")
-    .select("id,name,description,category,phone,whatsapp,region,district,is_verified")
-    .eq("status", "approved")
-    .order("created_at", { ascending: false })
-    .limit(30);
+  if (!districtFilter) {
+    districtFilter = document.createElement("select");
+    districtFilter.id = "districtFilter";
+    districtFilter.className = regionFilter.className;
+    districtFilter.innerHTML =
+      '<option value="">Wilaya zote</option>';
 
-  if (category) {
-    query = query.ilike("category", category);
+    regionFilter.insertAdjacentElement("afterend", districtFilter);
   }
 
-  if (search) {
-    query = query.or(
-      `name.ilike.%${search}%,description.ilike.%${search}%,region.ilike.%${search}%,district.ilike.%${search}%`
+  regionFilter.addEventListener("change", () => {
+    updateDistrictOptions();
+    loadBusinesses(
+      $("searchInput").value.trim(),
+      $("categoryFilter").value,
+      regionFilter.value,
+      districtFilter.value
     );
-  }
+  });
 
-  const { data, error } = await query;
-
-  if (error) {
-    $("businessCount").textContent = "Hitilafu ya kupakia";
-    list.innerHTML =
-      '<div class="empty">Imeshindikana kupakia biashara.</div>';
-    return;
-  }
-
-  $("businessCount").textContent =
-    `${data.length} biashara`;
-
-  list.innerHTML = "";
-
-  if (!data.length) {
-    list.innerHTML =
-      '<div class="empty">Bado hakuna biashara zilizoidhinishwa kwenye kundi hili.</div>';
-    return;
-  }
-
-  data.forEach(item => {
-    const card = document.createElement("article");
-    card.className = "business-card";
-
-    const categoryLabel = document.createElement("span");
-    categoryLabel.className = "pill";
-    categoryLabel.textContent = item.category || "Huduma";
-
-    const heading = document.createElement("h3");
-    heading.textContent = item.name;
-
-    const description = document.createElement("p");
-    description.textContent =
-      item.description ||
-      "Wasiliana na mtoa huduma kupata maelezo zaidi.";
-
-    const location = document.createElement("small");
-    location.textContent =
-      [item.district, item.region]
-        .filter(Boolean)
-        .join(", ");
-
-    card.append(
-      categoryLabel,
-      heading,
-      description,
-      location
+  districtFilter.addEventListener("change", () => {
+    loadBusinesses(
+      $("searchInput").value.trim(),
+      $("categoryFilter").value,
+      regionFilter.value,
+      districtFilter.value
     );
-
-    const contact = item.whatsapp || item.phone;
-
-    if (contact) {
-      const link = document.createElement("a");
-
-      link.className = "contact-link";
-      link.textContent = "Wasiliana";
-
-      link.href = item.whatsapp
-        ? `https://wa.me/${contact.replace(/\D/g, "")}`
-        : `tel:${contact}`;
-
-      link.target = item.whatsapp ? "_blank" : "_self";
-      link.rel = "noopener";
-
-      card.append(link);
-    }
-
-    if (item.is_verified) {
-      const verified = document.createElement("small");
-      verified.className = "verified";
-      verified.textContent = "✓ Imethibitishwa";
-      card.append(verified);
-    }
-
-    list.append(card);
   });
 }
 
-$("searchForm").addEventListener("submit", event => {
-  event.preventDefault();
+function updateDistrictOptions() {
+  if (!districtFilter) return;
 
-  loadBusinesses(
-    $("searchInput").value.trim(),
-    $("categoryFilter").value
-  );
-  /* =====================================================
-   MFUMO MPYA WA UTAFUTAJI: MKOA NA WILAYA
-===================================================== */
+  const selectedRegion = regionFilter.value;
+  const previousDistrict = districtFilter.value;
 
-const regionFilter = document.createElement("select");
-regionFilter.id = "regionFilter";
-regionFilter.innerHTML = '<option value="">Mikoa yote</option>';
+  const districts = [
+    ...new Set(
+      businessLocations
+        .filter(item =>
+          !selectedRegion || item.region === selectedRegion
+        )
+        .map(item => item.district)
+        .filter(Boolean)
+    )
+  ].sort();
 
-const districtFilter = document.createElement("select");
-districtFilter.id = "districtFilter";
-districtFilter.innerHTML = '<option value="">Wilaya zote</option>';
+  districtFilter.innerHTML =
+    '<option value="">Wilaya zote</option>';
 
-regionFilter.style.cssText =
-  "width:100%;padding:12px;border:1px solid #ccd6e2;border-radius:9px;font:inherit";
+  districts.forEach(district => {
+    const option = document.createElement("option");
+    option.value = district;
+    option.textContent = district;
+    districtFilter.append(option);
+  });
 
-districtFilter.style.cssText =
-  regionFilter.style.cssText;
-
-const searchForm = $("searchForm");
-
-if (searchForm) {
-  const searchButton = searchForm.querySelector('[type="submit"]');
-
-  searchForm.insertBefore(regionFilter, searchButton);
-  searchForm.insertBefore(districtFilter, searchButton);
+  if (districts.includes(previousDistrict)) {
+    districtFilter.value = previousDistrict;
+  }
 }
-
-let approvedBusinessLocations = [];
 
 async function loadBusinessLocations() {
   if (!sb) return;
+
+  createLocationFilters();
 
   const { data, error } = await sb
     .from("businesses")
@@ -662,128 +469,90 @@ async function loadBusinessLocations() {
     .limit(1000);
 
   if (error) {
-    console.error("Locations:", error);
+    console.error("Business locations:", error);
     return;
   }
 
-  approvedBusinessLocations = data || [];
+  businessLocations = data || [];
 
   const regions = [
     ...new Set(
-      approvedBusinessLocations
-        .map(item => item.region?.trim())
+      businessLocations
+        .map(item => item.region)
         .filter(Boolean)
     )
-  ].sort((a, b) => a.localeCompare(b));
+  ].sort();
 
-  regionFilter.replaceChildren(
-    new Option("Mikoa yote", "")
-  );
+  const previousRegion = regionFilter?.value || "";
 
-  regions.forEach(region => {
-    regionFilter.add(new Option(region, region));
-  });
+  if (regionFilter) {
+    regionFilter.innerHTML =
+      '<option value="">Mikoa yote</option>';
+
+    regions.forEach(region => {
+      const option = document.createElement("option");
+      option.value = region;
+      option.textContent = region;
+      regionFilter.append(option);
+    });
+
+    if (regions.includes(previousRegion)) {
+      regionFilter.value = previousRegion;
+    }
+  }
 
   updateDistrictOptions();
 }
 
-function updateDistrictOptions() {
-  const selectedRegion = regionFilter.value;
-
-  const districts = [
-    ...new Set(
-      approvedBusinessLocations
-        .filter(item =>
-          !selectedRegion ||
-          item.region?.trim() === selectedRegion
-        )
-        .map(item => item.district?.trim())
-        .filter(Boolean)
-    )
-  ].sort((a, b) => a.localeCompare(b));
-
-  districtFilter.replaceChildren(
-    new Option("Wilaya zote", "")
-  );
-
-  districts.forEach(district => {
-    districtFilter.add(new Option(district, district));
-  });
-}
-
-regionFilter.addEventListener("change", () => {
-  updateDistrictOptions();
-
-  loadBusinesses(
-    $("searchInput").value.trim(),
-    $("categoryFilter").value
-  );
-});
-
-districtFilter.addEventListener("change", () => {
-  loadBusinesses(
-    $("searchInput").value.trim(),
-    $("categoryFilter").value
-  );
-});
-
-const originalLoadBusinesses = loadBusinesses;
-
-loadBusinesses = async function(search = "", category = "") {
+async function loadBusinesses(
+  search = "",
+  category = "",
+  region = "",
+  district = ""
+) {
   const list = $("businessList");
 
-  if (!sb) return originalLoadBusinesses(search, category);
+  if (!sb) {
+    $("businessCount").textContent = "Database haijaunganishwa";
+    return;
+  }
 
   let query = sb
     .from("businesses")
-    .select("id,name,description,category,phone,whatsapp,region,district,is_verified")
+    .select(
+      "id,name,description,category,phone,whatsapp,region,district,is_verified"
+    )
     .eq("status", "approved")
     .order("created_at", { ascending: false })
-    .limit(1000);
+    .limit(30);
 
-  if (category) {
-    query = query.ilike("category", category);
-  }
-
-  if (regionFilter.value) {
-    query = query.eq("region", regionFilter.value);
-  }
-
-  if (districtFilter.value) {
-    query = query.eq("district", districtFilter.value);
-  }
+  if (category) query = query.ilike("category", category);
+  if (region) query = query.eq("region", region);
+  if (district) query = query.eq("district", district);
 
   if (search) {
-    const safeSearch = search.replace(/[%_,()]/g, " ").trim();
-
-    if (safeSearch) {
-      query = query.or(
-        `name.ilike.%${safeSearch}%,description.ilike.%${safeSearch}%,region.ilike.%${safeSearch}%,district.ilike.%${safeSearch}%`
-      );
-    }
+    const safeSearch = search.replace(/[,%()]/g, " ");
+    query = query.or(
+      `name.ilike.%${safeSearch}%,description.ilike.%${safeSearch}%,region.ilike.%${safeSearch}%,district.ilike.%${safeSearch}%`
+    );
   }
 
   const { data, error } = await query;
 
   if (error) {
-    console.error(error);
-
     $("businessCount").textContent = "Hitilafu ya kupakia";
-
     list.innerHTML =
       '<div class="empty">Imeshindikana kupakia biashara.</div>';
-
+    console.error(error);
     return;
   }
 
-  $("businessCount").textContent =
-    `${data.length} biashara`;
-
-  list.replaceChildren();
+  $("businessCount").textContent = `${data.length} biashara`;
+  list.innerHTML = "";
 
   if (!data.length) {
     list.innerHTML =
-      '<div class="empty">Hakuna biashara zilizopatikana katika eneo ulilochagua.</div>';
+      '<div class="empty">Hakuna biashara zilizopatikana kwa utafutaji huu.</div>';
     return;
   }
 
@@ -791,29 +560,27 @@ loadBusinesses = async function(search = "", category = "") {
     const card = document.createElement("article");
     card.className = "business-card";
 
-    const categoryLabel = document.createElement("span");
-    categoryLabel.className = "pill";
-    categoryLabel.textContent = item.category || "Huduma";
+    const cat = document.createElement("span");
+    cat.className = "pill";
+    cat.textContent = item.category || "Huduma";
 
     const heading = document.createElement("h3");
     heading.textContent = item.name;
 
     const description = document.createElement("p");
     description.textContent =
-      item.description ||
-      "Wasiliana na mtoa huduma kupata maelezo zaidi.";
+      item.description || "Wasiliana na mtoa huduma kupata maelezo zaidi.";
 
-    const location = document.createElement("small");
-    location.textContent =
+    const place = document.createElement("small");
+    place.textContent =
       [item.district, item.region].filter(Boolean).join(", ");
 
-    card.append(categoryLabel, heading, description, location);
+    card.append(cat, heading, description, place);
 
     const contact = item.whatsapp || item.phone;
 
     if (contact) {
       const link = document.createElement("a");
-
       link.className = "contact-link";
       link.textContent = "Wasiliana";
 
@@ -823,7 +590,6 @@ loadBusinesses = async function(search = "", category = "") {
 
       link.target = item.whatsapp ? "_blank" : "_self";
       link.rel = "noopener";
-
       card.append(link);
     }
 
@@ -836,21 +602,29 @@ loadBusinesses = async function(search = "", category = "") {
 
     list.append(card);
   });
-};
+}
 
-loadBusinessLocations();
+createLocationFilters();
+
+$("searchForm").addEventListener("submit", event => {
+  event.preventDefault();
+
+  loadBusinesses(
+    $("searchInput").value.trim(),
+    $("categoryFilter").value,
+    regionFilter?.value || "",
+    districtFilter?.value || ""
+  );
 });
 
-/* =====================================================
-   PHOTO VIEWER
-===================================================== */
+/* =========================
+   PICHA VIEWER
+========================= */
 
 function openViewer(items, index) {
   viewerItems = items;
   viewerIndex = index;
-
   renderViewer();
-
   showDialog("photoViewerDialog");
 }
 
@@ -862,9 +636,7 @@ function renderViewer() {
   $("viewerImage").src = item.image_url;
   $("viewerImage").alt = item.title || "Picha";
   $("viewerTitle").textContent = item.title || "";
-  $("viewerDescription").textContent =
-    item.description || "";
-
+  $("viewerDescription").textContent = item.description || "";
   $("viewerCounter").textContent =
     `${viewerIndex + 1} / ${viewerItems.length}`;
 }
@@ -873,15 +645,13 @@ function moveViewer(step) {
   if (!viewerItems.length) return;
 
   viewerIndex =
-    (viewerIndex + step + viewerItems.length) %
-    viewerItems.length;
+    (viewerIndex + step + viewerItems.length) % viewerItems.length;
 
   renderViewer();
 }
 
-$("viewerClose").onclick = () => {
+$("viewerClose").onclick = () =>
   $("photoViewerDialog").close();
-};
 
 $("viewerPrev").onclick = () => moveViewer(-1);
 $("viewerNext").onclick = () => moveViewer(1);
@@ -891,8 +661,7 @@ $("viewerImage").addEventListener("touchstart", event => {
 }, { passive: true });
 
 $("viewerImage").addEventListener("touchend", event => {
-  const dx =
-    event.changedTouches[0].screenX - touchStartX;
+  const dx = event.changedTouches[0].screenX - touchStartX;
 
   if (Math.abs(dx) > 45) {
     moveViewer(dx < 0 ? 1 : -1);
@@ -906,42 +675,38 @@ document.addEventListener("keydown", event => {
   if (event.key === "ArrowLeft") moveViewer(-1);
 });
 
-/* =====================================================
+/* =========================
    LIKES NA MAONI
-===================================================== */
+========================= */
 
 async function engagementData(type, id) {
-  const [likes, commentCount, comments, mine] =
-    await Promise.all([
-      sb.from("content_likes")
-        .select("id", { count: "exact", head: true })
-        .eq("content_type", type)
-        .eq("content_id", id),
+  const [likes, commentCount, comments, mine] = await Promise.all([
+    sb.from("content_likes")
+      .select("id", { count: "exact", head: true })
+      .eq("content_type", type)
+      .eq("content_id", id),
 
-      sb.from("content_comments")
-        .select("id", { count: "exact", head: true })
-        .eq("content_type", type)
-        .eq("content_id", id),
+    sb.from("content_comments")
+      .select("id", { count: "exact", head: true })
+      .eq("content_type", type)
+      .eq("content_id", id),
 
-      sb.from("content_comments")
-        .select("id,user_id,author_name,body,created_at")
-        .eq("content_type", type)
-        .eq("content_id", id)
-        .order("created_at", { ascending: false })
-        .limit(30),
+    sb.from("content_comments")
+      .select("id,user_id,author_name,body,created_at")
+      .eq("content_type", type)
+      .eq("content_id", id)
+      .order("created_at", { ascending: false })
+      .limit(30),
 
-      currentUser
-        ? sb.from("content_likes")
-            .select("id")
-            .eq("content_type", type)
-            .eq("content_id", id)
-            .eq("user_id", currentUser.id)
-            .maybeSingle()
-        : Promise.resolve({
-            data: null,
-            error: null
-          })
-    ]);
+    currentUser
+      ? sb.from("content_likes")
+          .select("id")
+          .eq("content_type", type)
+          .eq("content_id", id)
+          .eq("user_id", currentUser.id)
+          .maybeSingle()
+      : Promise.resolve({ data: null, error: null })
+  ]);
 
   if (likes.error) throw likes.error;
   if (commentCount.error) throw commentCount.error;
@@ -996,7 +761,6 @@ function addEngagement(card, type, id) {
   send.textContent = "Tuma";
 
   form.append(input, send);
-
   area.append(comments, hint, form);
   box.append(actions, area);
   card.append(box);
@@ -1008,17 +772,13 @@ function addEngagement(card, type, id) {
       like.textContent = `👍 Like (${data.count})`;
       like.classList.toggle("liked", data.liked);
 
-      toggle.textContent =
-        `💬 Maoni (${data.commentCount})`;
-
+      toggle.textContent = `💬 Maoni (${data.commentCount})`;
       comments.replaceChildren();
 
       if (!data.comments.length) {
         const empty = document.createElement("small");
         empty.className = "comment-hint";
-        empty.textContent =
-          "Bado hakuna maoni. Kuwa wa kwanza.";
-
+        empty.textContent = "Bado hakuna maoni. Kuwa wa kwanza.";
         comments.append(empty);
       }
 
@@ -1027,143 +787,24 @@ function addEngagement(card, type, id) {
         row.className = "comment-item";
 
         const name = document.createElement("strong");
-        name.textContent =
-          comment.author_name || "Mwanachama";
+        name.textContent = comment.author_name || "Mwanachama";
 
         const body = document.createElement("span");
         body.textContent = comment.body;
 
         row.append(name, body);
-
-        if (
-          currentUser &&
-          comment.user_id === currentUser.id
-        ) {
-          const edit = document.createElement("button");
-
-          edit.type = "button";
-          edit.textContent = "✏️ Hariri";
-          edit.className = "comment-edit-btn";
-
-          edit.style.cssText =
-            "display:block;margin:7px 0 0;padding:6px 10px;border:1px solid #0757a6;border-radius:8px;background:#fff;color:#0757a6;font-weight:700;cursor:pointer";
-
-          edit.onclick = () => {
-            showCommentEditor(comment, row);
-          };
-
-          row.append(edit);
-        }
-
         comments.prepend(row);
       });
-
     } catch (error) {
-      console.error("Engagement load", error);
-
+      console.error("Engagement load:", error);
       hint.textContent =
         "Imeshindikana kupakia Likes/maoni. Angalia sera za Supabase.";
     }
   }
 
-  function showCommentEditor(comment, row) {
-    if (row.querySelector(".comment-edit-form")) return;
-
-    const editor = document.createElement("form");
-    editor.className = "comment-edit-form";
-
-    editor.style.cssText =
-      "display:grid;gap:8px;margin-top:10px";
-
-    const textarea = document.createElement("textarea");
-    textarea.value = comment.body;
-    textarea.maxLength = 1000;
-    textarea.required = true;
-    textarea.rows = 3;
-
-    textarea.style.cssText =
-      "width:100%;box-sizing:border-box;padding:10px;border:1px solid #b8c8da;border-radius:9px;font:inherit;resize:vertical";
-
-    const buttons = document.createElement("div");
-    buttons.style.cssText =
-      "display:flex;gap:8px;flex-wrap:wrap";
-
-    const save = document.createElement("button");
-    save.type = "submit";
-    save.textContent = "Hifadhi mabadiliko";
-
-    save.style.cssText =
-      "padding:8px 12px;border:0;border-radius:8px;background:#0757a6;color:white;font-weight:700";
-
-    const cancel = document.createElement("button");
-    cancel.type = "button";
-    cancel.textContent = "Ghairi";
-
-    cancel.style.cssText =
-      "padding:8px 12px;border:1px solid #c7d3df;border-radius:8px;background:#fff;color:#24364b";
-
-    cancel.onclick = () => editor.remove();
-
-    buttons.append(save, cancel);
-    editor.append(textarea, buttons);
-    row.append(editor);
-
-    textarea.focus();
-
-    editor.onsubmit = async event => {
-      event.preventDefault();
-
-      const updatedBody = textarea.value.trim();
-
-      if (!updatedBody) {
-        textarea.focus();
-        return;
-      }
-
-      try {
-        const user = await requireLogin(hint);
-
-        if (!user) return;
-
-        if (user.id !== comment.user_id) {
-          hint.textContent =
-            "Unaweza kuhariri maoni yako mwenyewe tu.";
-          return;
-        }
-
-        save.disabled = true;
-        save.textContent = "Inahifadhi...";
-
-        const { error } = await sb
-          .from("content_comments")
-          .update({ body: updatedBody })
-          .eq("id", comment.id)
-          .eq("user_id", user.id);
-
-        if (error) throw error;
-
-        await refresh();
-
-        toast("Maoni yamehaririwa kikamilifu.");
-
-      } catch (error) {
-        console.error("Comment update", error);
-
-        hint.textContent =
-          error.message ||
-          "Imeshindikana kuhariri maoni. Hakikisha ruhusa ya UPDATE imewekwa Supabase.";
-
-      } finally {
-        save.disabled = false;
-        save.textContent = "Hifadhi mabadiliko";
-      }
-    };
-  }
-
   like.onclick = async () => {
     try {
       const user = await requireLogin(hint);
-
       if (!user) return;
 
       const { data: old, error } = await sb
@@ -1177,15 +818,14 @@ function addEngagement(card, type, id) {
       if (error) throw error;
 
       if (old) {
-        const { error: deleteError } = await sb
+        const { error: del } = await sb
           .from("content_likes")
           .delete()
           .eq("id", old.id);
 
-        if (deleteError) throw deleteError;
-
+        if (del) throw del;
       } else {
-        const { error: insertError } = await sb
+        const { error: ins } = await sb
           .from("content_likes")
           .insert({
             user_id: user.id,
@@ -1193,11 +833,10 @@ function addEngagement(card, type, id) {
             content_id: id
           });
 
-        if (insertError) throw insertError;
+        if (ins) throw ins;
       }
 
       await refresh();
-
     } catch (error) {
       hint.textContent =
         error.message || "Imeshindikana kuhifadhi Like.";
@@ -1206,7 +845,6 @@ function addEngagement(card, type, id) {
 
   toggle.onclick = () => {
     area.hidden = !area.hidden;
-
     if (!area.hidden) input.focus();
   };
 
@@ -1214,12 +852,10 @@ function addEngagement(card, type, id) {
     event.preventDefault();
 
     const body = input.value.trim();
-
     if (!body) return;
 
     try {
       const user = await requireLogin(hint);
-
       if (!user) return;
 
       send.disabled = true;
@@ -1232,28 +868,22 @@ function addEngagement(card, type, id) {
         "Mwanachama"
       ).toString().slice(0, 100);
 
-      const { error } = await sb
-        .from("content_comments")
-        .insert({
-          user_id: user.id,
-          content_type: type,
-          content_id: id,
-          author_name: author,
-          body
-        });
+      const { error } = await sb.from("content_comments").insert({
+        user_id: user.id,
+        content_type: type,
+        content_id: id,
+        author_name: author,
+        body
+      });
 
       if (error) throw error;
 
       input.value = "";
-
       await refresh();
-
       toast("Maoni yako yametumwa.");
-
     } catch (error) {
       hint.textContent =
         error.message || "Imeshindikana kutuma maoni.";
-
     } finally {
       send.disabled = false;
     }
@@ -1262,310 +892,16 @@ function addEngagement(card, type, id) {
   refresh();
 }
 
-/* =====================================================
-   NAMBA ZA TANZANIA
-===================================================== */
-
-function normalizeTanzaniaPhone(value) {
-  let number = String(value || "").replace(/\D/g, "");
-
-  if (number.startsWith("0")) {
-    number = "255" + number.slice(1);
-  } else if (number.startsWith("+")) {
-    number = number.slice(1);
-  }
-
-  if (number.startsWith("255")) return number;
-
-  if (number.length >= 9 && number.length <= 12) {
-    return "255" + number;
-  }
-
-  return "";
-}
-
-/* =====================================================
-   MAWASILIANO YA PICHA
-===================================================== */
-
-function addPhotoContact(card, item) {
-  const number = normalizeTanzaniaPhone(
-    item.whatsapp_phone
-  );
-
-  if (!number) return;
-
-  const wrap = document.createElement("div");
-  wrap.className = "photo-contact-actions";
-
-  wrap.style.cssText =
-    "display:flex;gap:8px;flex-wrap:wrap;margin:10px 0";
-
-  const whatsapp = document.createElement("a");
-
-  whatsapp.href = `https://wa.me/${number}`;
-  whatsapp.target = "_blank";
-  whatsapp.rel = "noopener noreferrer";
-  whatsapp.className = "contact-link";
-  whatsapp.textContent = "WhatsApp";
-
-  whatsapp.style.cssText =
-    "background:#168b52;color:white";
-
-  const call = document.createElement("a");
-
-  call.href = `tel:+${number}`;
-  call.className = "contact-link";
-  call.textContent = "Piga simu";
-
-  wrap.append(whatsapp, call);
-  card.append(wrap);
-}
-
-/* =====================================================
-   KITufe CHA KUHARIRI CHAPISHO
-===================================================== */
-
-function addOwnerEditButton(card, item, type) {
-  const ownerField =
-    type === "photo" ? "user_id" : "owner_id";
-
-  if (!currentUser || item[ownerField] !== currentUser.id) {
-    return;
-  }
-
-  const button = document.createElement("button");
-
-  button.type = "button";
-  button.textContent = "✏️ Hariri chapisho lako";
-  button.className = "content-edit-button";
-
-  button.style.cssText =
-    "margin:10px 0;padding:9px 13px;border:1px solid #0757a6;border-radius:9px;background:#eef6ff;color:#0757a6;font-weight:800;cursor:pointer";
-
-  button.onclick = () => {
-    showContentEditor(card, item, type);
-  };
-
-  card.append(button);
-}
-
-/* =====================================================
-   KUHARIRI PICHA NA MATANGAZO
-===================================================== */
-
-function showContentEditor(card, item, type) {
-  if (card.querySelector(".content-edit-form")) return;
-
-  const photo = type === "photo";
-  const table = photo ? "public_photos" : "advertisements";
-  const ownerField = photo ? "user_id" : "owner_id";
-
-  const form = document.createElement("form");
-  form.className = "content-edit-form";
-
-  form.style.cssText =
-    "display:grid;gap:9px;margin:12px 0;padding:13px;background:#f3f7fc;border:1px solid #d5e2f0;border-radius:12px";
-
-  const title = document.createElement("input");
-
-  title.value = item.title || "";
-  title.maxLength = 120;
-  title.required = true;
-  title.placeholder = "Kichwa";
-
-  title.style.cssText =
-    "width:100%;box-sizing:border-box;padding:11px;border:1px solid #c7d3df;border-radius:8px;font:inherit";
-
-  const description = document.createElement("textarea");
-
-  description.value = item.description || "";
-  description.maxLength = photo ? 1000 : 1500;
-  description.rows = 3;
-  description.placeholder = "Maelezo";
-
-  description.style.cssText = title.style.cssText;
-
-  form.append(title, description);
-
-  let phone = null;
-
-  if (photo) {
-    phone = document.createElement("input");
-
-    phone.type = "tel";
-    phone.value = item.whatsapp_phone || "";
-    phone.placeholder = "Namba ya WhatsApp / simu";
-    phone.style.cssText = title.style.cssText;
-
-    form.append(phone);
-  }
-
-  let adWhatsapp = null;
-
-  if (!photo) {
-    adWhatsapp = document.createElement("input");
-
-    adWhatsapp.type = "tel";
-    adWhatsapp.value = item.whatsapp_phone || "";
-    adWhatsapp.placeholder = "Namba ya WhatsApp ya tangazo";
-    adWhatsapp.style.cssText = title.style.cssText;
-
-    form.append(adWhatsapp);
-  }
-
-  const message = document.createElement("small");
-  message.style.color = "#a33";
-
-  const actions = document.createElement("div");
-
-  actions.style.cssText =
-    "display:flex;gap:8px;flex-wrap:wrap";
-
-  const save = document.createElement("button");
-
-  save.type = "submit";
-  save.textContent = "Hifadhi mabadiliko";
-
-  save.style.cssText =
-    "padding:9px 13px;border:0;border-radius:8px;background:#0757a6;color:white;font-weight:800";
-
-  const cancel = document.createElement("button");
-
-  cancel.type = "button";
-  cancel.textContent = "Ghairi";
-
-  cancel.style.cssText =
-    "padding:9px 13px;border:1px solid #c7d3df;border-radius:8px;background:white";
-
-  cancel.onclick = () => form.remove();
-
-  actions.append(save, cancel);
-  form.append(message, actions);
-
-  card.append(form);
-  title.focus();
-
-  form.onsubmit = async event => {
-    event.preventDefault();
-
-    try {
-      const user = await requireLogin(message);
-
-      if (!user) return;
-
-      if (user.id !== item[ownerField]) {
-        message.textContent =
-          "Unaweza kuhariri chapisho lako mwenyewe tu.";
-        return;
-      }
-
-      const newTitle = title.value.trim();
-      const newDescription = description.value.trim();
-
-      if (!newTitle) {
-        message.textContent =
-          "Weka kichwa cha chapisho.";
-        return;
-      }
-
-      const updates = {
-        title: newTitle,
-        description: newDescription
-      };
-
-      if (photo) {
-        const raw = phone.value.trim();
-
-        const normalized = raw
-          ? normalizeTanzaniaPhone(raw)
-          : null;
-
-        if (raw && !normalized) {
-          message.textContent =
-            "Kagua namba. Mfano 0712345678 au +255712345678.";
-          return;
-        }
-
-        updates.whatsapp_phone = normalized;
-
-      } else {
-        const raw = adWhatsapp.value.trim();
-
-        const normalized = raw
-          ? normalizeTanzaniaPhone(raw)
-          : null;
-
-        if (raw && !normalized) {
-          message.textContent =
-            "Kagua namba ya WhatsApp ya tangazo.";
-          return;
-        }
-
-        updates.whatsapp_phone = normalized;
-      }
-
-      save.disabled = true;
-      save.textContent = "Inahifadhi...";
-
-      const { data, error } = await sb
-        .from(table)
-        .update(updates)
-        .eq("id", item.id)
-        .eq(ownerField, user.id)
-        .select("id")
-        .maybeSingle();
-
-      if (error) throw error;
-
-      if (!data) {
-        throw new Error(
-          "Hakuna rekodi iliyobadilishwa. Hakikisha sera ya UPDATE ya mmiliki imewekwa Supabase."
-        );
-      }
-
-      item.title = newTitle;
-      item.description = newDescription;
-      item.whatsapp_phone = updates.whatsapp_phone;
-
-      await (
-        photo
-          ? loadPublicPhotos()
-          : loadAdvertisements()
-      );
-
-      toast("Mabadiliko yamehifadhiwa.");
-
-    } catch (error) {
-      console.error("Content edit", error);
-
-      message.textContent =
-        error.message ||
-        "Imeshindikana kuhifadhi mabadiliko.";
-
-    } finally {
-      save.disabled = false;
-      save.textContent = "Hifadhi mabadiliko";
-    }
-  };
-}
-
-/* =====================================================
-   KADI ZA PICHA NA MATANGAZO
-===================================================== */
-
 function contentCard(item, type, index, all) {
   const card = document.createElement("article");
   card.className = "business-card";
 
-  const image = document.createElement("img");
-
-  image.className = "photo-card-image";
-  image.src = item.image_url;
-  image.alt = item.title || "Picha";
-  image.loading = "lazy";
-
-  image.onclick = () => openViewer(all, index);
+  const img = document.createElement("img");
+  img.className = "photo-card-image";
+  img.src = item.image_url;
+  img.alt = item.title || "Picha";
+  img.loading = "lazy";
+  img.onclick = () => openViewer(all, index);
 
   const heading = document.createElement("h3");
   heading.textContent = item.title || "";
@@ -1573,177 +909,62 @@ function contentCard(item, type, index, all) {
   const description = document.createElement("p");
   description.textContent = item.description || "";
 
-  card.append(image, heading, description);
+  card.append(img, heading, description);
 
-  if (type === "photo") {
-    addPhotoContact(card, item);
-  }
-
-  if (type === "advertisement") {
-    addAdvertisementContact(card, item);
-  }
-
-  addOwnerEditButton(card, item, type);
-
-  addEngagement(card, type, item.id);
-
-  return card;
-}
-
-/* =====================================================
-   MAWASILIANO YA MATANGAZO
-===================================================== */
-
-function addAdvertisementContact(card, item) {
-  if (item.target_url) {
+  if (type === "advertisement" && item.target_url) {
     const link = document.createElement("a");
-
     link.href = item.target_url;
     link.target = "_blank";
     link.rel = "noopener noreferrer";
     link.className = "contact-link";
     link.textContent = "Jifunze zaidi";
-
     card.append(link);
   }
 
-  const number = normalizeTanzaniaPhone(
-    item.whatsapp_phone
-  );
-
-  if (!number) return;
-
-  const wrap = document.createElement("div");
-
-  wrap.style.cssText =
-    "display:flex;gap:8px;flex-wrap:wrap;margin:10px 0";
-
-  const whatsapp = document.createElement("a");
-
-  const message =
-    `Habari, nimeiona biashara yako kupitia EBY HUDUMA CONNECT. Nimevutiwa na tangazo lako: ${item.title || "Tangazo"}. Naomba maelezo zaidi.`;
-
-  whatsapp.href =
-    `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
-
-  whatsapp.target = "_blank";
-  whatsapp.rel = "noopener noreferrer";
-  whatsapp.className = "contact-link";
-  whatsapp.textContent = "WhatsApp";
-
-  whatsapp.style.cssText =
-    "background:#168b52;color:white";
-
-  const call = document.createElement("a");
-
-  call.href = `tel:+${number}`;
-  call.className = "contact-link";
-  call.textContent = "Piga simu";
-
-  wrap.append(whatsapp, call);
-
-  card.append(wrap);
+  addEngagement(card, type, item.id);
+  return card;
 }
 
-/* =====================================================
-   FIELD YA WHATSAPP YA PICHA
-===================================================== */
-
-function ensurePhotoPhoneField() {
-  const form = $("publicPhotoForm");
-
-  if (!form || $("publicPhotoWhatsapp")) return;
-
-  const wrap = document.createElement("label");
-
-  wrap.id = "publicPhotoWhatsappWrap";
-
-  wrap.style.cssText =
-    "display:grid;gap:6px;margin:12px 0";
-
-  wrap.textContent =
-    "Namba ya simu / WhatsApp (si lazima)";
-
-  const input = document.createElement("input");
-
-  input.id = "publicPhotoWhatsapp";
-  input.type = "tel";
-  input.inputMode = "tel";
-  input.autocomplete = "tel";
-
-  input.placeholder =
-    "Mfano 0712345678 au +255712345678";
-
-  input.style.cssText =
-    "width:100%;box-sizing:border-box;padding:12px;border:1px solid #c7d3df;border-radius:10px;font:inherit";
-
-  const note = document.createElement("small");
-
-  note.textContent =
-    "Weka namba ambayo wateja wanaweza kutumia kukupata. Kwenye picha zitaonekana WhatsApp na Piga simu.";
-
-  wrap.append(input, note);
-
-  const submit = form.querySelector('[type="submit"]');
-
-  form.insertBefore(wrap, submit || null);
-}
-
-/* =====================================================
-   KUPAKIA PICHA ZA UMMA
-===================================================== */
+/* =========================
+   PICHA ZA UMMA
+========================= */
 
 async function loadPublicPhotos() {
-  ensurePhotoPhoneField();
-
   const list = $("publicPhotoList");
 
   if (!sb) {
-    $("photoCount").textContent =
-      "Database haijaunganishwa";
+    $("photoCount").textContent = "Database haijaunganishwa";
     return;
   }
 
   const { data, error } = await sb
     .from("public_photos")
-    .select("id,user_id,title,description,image_url,whatsapp_phone")
+    .select("id,title,description,image_url")
     .eq("status", "approved")
     .order("created_at", { ascending: false })
     .limit(40);
 
   if (error) {
     console.error(error);
-
     $("photoCount").textContent = "Hitilafu";
-
     list.innerHTML =
       '<div class="empty">Imeshindikana kupakia picha za umma.</div>';
-
     return;
   }
 
-  $("photoCount").textContent =
-    `${data.length} picha`;
-
+  $("photoCount").textContent = `${data.length} picha`;
   list.replaceChildren();
 
   if (!data.length) {
     list.innerHTML =
       '<div class="empty">Bado hakuna picha zilizoidhinishwa.</div>';
-
     return;
   }
 
   data.forEach((item, index) => {
-    list.append(
-      contentCard(item, "photo", index, data)
-    );
+    list.append(contentCard(item, "photo", index, data));
   });
 }
-
-/* =====================================================
-   KUFUNGUA DIRISHA LA PAKIA PICHA
-===================================================== */
 
 $("publicPhotoOpen").onclick = async () => {
   if (!sb) {
@@ -1751,152 +972,105 @@ $("publicPhotoOpen").onclick = async () => {
     return;
   }
 
-  const user = await requireLogin(
-    $("publicPhotoMessage")
-  );
-
+  const user = await requireLogin($("publicPhotoMessage"));
   if (!user) return;
 
   $("publicPhotoForm").reset();
   $("publicPhotoMessage").textContent = "";
-
   showDialog("photoUploadDialog");
 };
 
-/* =====================================================
-   KUTUMA PICHA ZA UMMA
-===================================================== */
+$("publicPhotoForm").addEventListener("submit", async event => {
+  event.preventDefault();
 
-$("publicPhotoForm").addEventListener(
-  "submit",
-  async event => {
-    event.preventDefault();
+  const msg = $("publicPhotoMessage");
+  const button = $("publicPhotoForm").querySelector('[type="submit"]');
 
-    const message = $("publicPhotoMessage");
+  try {
+    const user = await requireLogin(msg);
+    if (!user) return;
 
-    const button = $("publicPhotoForm")
-      .querySelector('[type="submit"]');
+    const title = $("publicPhotoTitle").value.trim();
+    const description = $("publicPhotoDescription").value.trim();
+    const file = $("publicPhotoFile").files[0];
 
-    try {
-      const user = await requireLogin(message);
-
-      if (!user) return;
-
-      const title =
-        $("publicPhotoTitle").value.trim();
-
-      const description =
-        $("publicPhotoDescription").value.trim();
-
-      const file =
-        $("publicPhotoFile").files[0];
-
-      const rawPhone =
-        $("publicPhotoWhatsapp")?.value.trim() || "";
-
-      const whatsappPhone = rawPhone
-        ? normalizeTanzaniaPhone(rawPhone)
-        : null;
-
-      if (rawPhone && !whatsappPhone) {
-        message.textContent =
-          "Kagua namba ya simu. Mfano 0712345678 au +255712345678.";
-        return;
-      }
-
-      if (!title || !file) {
-        message.textContent =
-          "Weka kichwa na uchague picha.";
-        return;
-      }
-
-      if (
-        !["image/jpeg", "image/png", "image/webp"]
-          .includes(file.type)
-      ) {
-        message.textContent =
-          "Chagua JPG, PNG au WEBP.";
-        return;
-      }
-
-      if (file.size > 5 * 1024 * 1024) {
-        message.textContent =
-          "Picha imezidi MB 5.";
-        return;
-      }
-
-      button.disabled = true;
-      button.textContent = "Inapakia picha...";
-
-      const ext =
-        file.type === "image/jpeg"
-          ? "jpg"
-          : file.type === "image/png"
-            ? "png"
-            : "webp";
-
-      const path =
-        `${user.id}/${crypto.randomUUID()}.${ext}`;
-
-      const { error: uploadError } = await sb
-        .storage
-        .from(PHOTO_BUCKET)
-        .upload(path, file, {
-          cacheControl: "3600",
-          contentType: file.type,
-          upsert: false
-        });
-
-      if (uploadError) throw uploadError;
-
-      const { data: publicData } = sb
-        .storage
-        .from(PHOTO_BUCKET)
-        .getPublicUrl(path);
-
-      const { error: insertError } = await sb
-        .from("public_photos")
-        .insert({
-          user_id: user.id,
-          title,
-          description,
-          image_url: publicData.publicUrl,
-          storage_path: path,
-          status: "pending",
-          whatsapp_phone: whatsappPhone
-        });
-
-      if (insertError) throw insertError;
-
-      $("publicPhotoForm").reset();
-
-      message.textContent =
-        "Picha imetumwa kwa ukaguzi wa msimamizi.";
-
-      toast("Picha imetumwa kwa ukaguzi.");
-
-      setTimeout(() => {
-        if ($("photoUploadDialog").open) {
-          $("photoUploadDialog").close();
-        }
-      }, 2200);
-
-    } catch (error) {
-      console.error(error);
-
-      message.textContent =
-        error.message || "Imeshindikana kupakia picha.";
-
-    } finally {
-      button.disabled = false;
-      button.textContent = "Tuma picha kwa ukaguzi";
+    if (!title || !file) {
+      msg.textContent = "Weka kichwa na uchague picha.";
+      return;
     }
-  }
-);
 
-/* =====================================================
-   BEI ZA MATANGAZO
-===================================================== */
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+      msg.textContent = "Chagua JPG, PNG au WEBP.";
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      msg.textContent = "Picha imezidi MB 5.";
+      return;
+    }
+
+    button.disabled = true;
+    button.textContent = "Inapakia picha...";
+
+    const ext = file.type === "image/jpeg"
+      ? "jpg"
+      : file.type === "image/png"
+        ? "png"
+        : "webp";
+
+    const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
+
+    const { error: uploadError } = await sb.storage
+      .from(PHOTO_BUCKET)
+      .upload(path, file, {
+        cacheControl: "3600",
+        contentType: file.type,
+        upsert: false
+      });
+
+    if (uploadError) throw uploadError;
+
+    const { data: publicData } = sb.storage
+      .from(PHOTO_BUCKET)
+      .getPublicUrl(path);
+
+    const { error: insertError } = await sb
+      .from("public_photos")
+      .insert({
+        user_id: user.id,
+        title,
+        description,
+        image_url: publicData.publicUrl,
+        storage_path: path,
+        status: "pending"
+      });
+
+    if (insertError) throw insertError;
+
+    $("publicPhotoForm").reset();
+    msg.textContent =
+      "Picha imetumwa kwa ukaguzi wa msimamizi.";
+
+    toast("Picha imetumwa kwa ukaguzi.");
+
+    setTimeout(() => {
+      if ($("photoUploadDialog").open) {
+        $("photoUploadDialog").close();
+      }
+    }, 2200);
+  } catch (error) {
+    console.error(error);
+    msg.textContent =
+      error.message || "Imeshindikana kupakia picha.";
+  } finally {
+    button.disabled = false;
+    button.textContent = "Tuma picha kwa ukaguzi";
+  }
+});
+
+/* =========================
+   MATANGAZO NA MALIPO
+========================= */
 
 function selectedAdPrice() {
   return AD_PRICES[$("advertisementPlan").value] || 0;
@@ -1904,19 +1078,15 @@ function selectedAdPrice() {
 
 function updatePaymentInstructions() {
   const box = document.querySelector(".ad-payment");
-
   if (!box) return;
 
   let line = $("adSelectedPrice");
 
   if (!line) {
     line = document.createElement("p");
-
     line.id = "adSelectedPrice";
-
     line.style.cssText =
       "font-weight:700;color:#07518b;margin:10px 0";
-
     box.append(line);
   }
 
@@ -1937,52 +1107,9 @@ $("advertisementPaymentMethod").addEventListener(
   updatePaymentInstructions
 );
 
-/* =====================================================
-   FIELD YA WHATSAPP YA TANGAZO
-===================================================== */
-
-function ensureAdvertisementWhatsappField() {
-  const form = $("advertisementForm");
-
-  if (!form || $("advertisementWhatsapp")) return;
-
-  const label = document.createElement("label");
-
-  label.textContent =
-    "Namba ya WhatsApp / Simu ya mtangazaji";
-
-  const input = document.createElement("input");
-
-  input.id = "advertisementWhatsapp";
-  input.type = "tel";
-  input.inputMode = "tel";
-
-  input.placeholder =
-    "Mfano: 0788309986";
-
-  const note = document.createElement("small");
-
-  note.className = "ad-note";
-
-  note.textContent =
-    "Hii ndiyo namba ambayo wateja watatumia kuwasiliana nawe. Si namba ya malipo.";
-
-  label.append(input, note);
-
-  const imageField = $("advertisementImage");
-
-  const imageLabel = imageField?.closest("label");
-
-  if (imageLabel) {
-    imageLabel.before(label);
-  } else {
-    form.prepend(label);
-  }
-}
-
-/* =====================================================
-   JARIBIO LA ADMIN LA MATANGAZO
-===================================================== */
+/* =========================
+   JARIBIO LA ADMIN
+========================= */
 
 function createAdminTestControl() {
   const form = $("advertisementForm");
@@ -1990,7 +1117,6 @@ function createAdminTestControl() {
   if (!form || $("advertisementAdminTest")) return;
 
   const wrap = document.createElement("div");
-
   wrap.id = "ebyAdminTestWrap";
   wrap.hidden = true;
 
@@ -2015,31 +1141,22 @@ Hali hii ni kwa majaribio ya msimamizi pekee.
     form.prepend(wrap);
   }
 
-  $("advertisementAdminTest").onchange =
-    updateAdminTestFields;
+  $("advertisementAdminTest").onchange = updateAdminTestFields;
 }
 
 function updateAdminTestVisibility() {
-  const adminButton = $("adminDashboardOpen");
-
-  if (adminButton) {
-    adminButton.hidden = !currentIsAdmin;
-  }
-
   createAdminTestControl();
 
   const wrap = $("ebyAdminTestWrap");
   const checkbox = $("advertisementAdminTest");
 
-  if (wrap && checkbox) {
-    wrap.hidden = !currentIsAdmin;
+  if (!wrap || !checkbox) return;
 
-    if (!currentIsAdmin) {
-      checkbox.checked = false;
-    }
+  wrap.hidden = !currentIsAdmin;
 
-    updateAdminTestFields();
-  }
+  if (!currentIsAdmin) checkbox.checked = false;
+
+  updateAdminTestFields();
 }
 
 function updateAdminTestFields() {
@@ -2084,12 +1201,7 @@ function updateAdminTestFields() {
   }
 }
 
-ensureAdvertisementWhatsappField();
 createAdminTestControl();
-
-/* =====================================================
-   KUFUNGUA FOMU YA TANGAZO
-===================================================== */
 
 $("advertisementOpen").onclick = async () => {
   if (!sb) {
@@ -2101,257 +1213,202 @@ $("advertisementOpen").onclick = async () => {
 
   if (error || !data.session?.user) {
     toast("Ingia kwenye akaunti kwanza.");
-
     setAuthMode("login");
     showDialog("authDialog");
-
     return;
   }
 
   currentUser = data.session.user;
-
   currentIsAdmin = await checkAdmin(currentUser);
 
   $("advertisementForm").reset();
-
   $("advertisementMessage").textContent = "";
 
   updateAdminTestVisibility();
   updatePaymentInstructions();
-
   showDialog("advertisementDialog");
 };
 
-/* =====================================================
+/* =========================
    KUTUMA TANGAZO
-===================================================== */
+========================= */
 
-$("advertisementForm").addEventListener(
-  "submit",
-  async event => {
-    event.preventDefault();
+$("advertisementForm").addEventListener("submit", async event => {
+  event.preventDefault();
 
-    const message = $("advertisementMessage");
+  const msg = $("advertisementMessage");
+  const button = $("advertisementForm")
+    .querySelector('[type="submit"]');
 
-    const button = $("advertisementForm")
-      .querySelector('[type="submit"]');
-
-    if (!sb) {
-      message.textContent =
-        "Supabase haijaunganishwa.";
-      return;
-    }
-
-    const { data: sessionData, error: sessionError } =
-      await sb.auth.getSession();
-
-    if (sessionError) {
-      message.textContent = sessionError.message;
-      return;
-    }
-
-    const user = sessionData.session?.user;
-
-    if (!user) {
-      message.textContent =
-        "Ingia kwenye akaunti kwanza.";
-
-      showDialog("authDialog");
-      return;
-    }
-
-    const title =
-      $("advertisementTitle").value.trim();
-
-    const description =
-      $("advertisementDescription").value.trim();
-
-    const file =
-      $("advertisementImage").files[0];
-
-    const rawWhatsapp =
-      $("advertisementWhatsapp")?.value.trim() || "";
-
-    const whatsappPhone = rawWhatsapp
-      ? normalizeTanzaniaPhone(rawWhatsapp)
-      : null;
-
-    const plan = $("advertisementPlan").value;
-
-    const paymentMethod =
-      $("advertisementPaymentMethod").value;
-
-    const payerName =
-      $("advertisementPayerName").value.trim();
-
-    const payerPhone =
-      $("advertisementPayerPhone").value.trim();
-
-    const transactionId =
-      $("advertisementTransaction").value.trim();
-
-    const testRequested =
-      !!$("advertisementAdminTest")?.checked;
-
-    const isAdmin = await checkAdmin(user);
-
-    currentIsAdmin = isAdmin;
-
-    updateAdminTestVisibility();
-
-    const test = testRequested && isAdmin;
-
-    if (testRequested && !isAdmin) {
-      message.textContent =
-        "Huna ruhusa ya kutumia jaribio la admin.";
-      return;
-    }
-
-    if (
-      rawWhatsapp &&
-      !whatsappPhone
-    ) {
-      message.textContent =
-        "Kagua namba ya WhatsApp. Mfano 0712345678 au +255712345678.";
-      return;
-    }
-
-    if (
-      !title ||
-      !description ||
-      !file ||
-      !AD_PRICES[plan]
-    ) {
-      message.textContent =
-        "Jaza kichwa, maelezo, picha na kifurushi sahihi.";
-      return;
-    }
-
-    if (
-      !test &&
-      (
-        !paymentMethod ||
-        !payerName ||
-        !payerPhone ||
-        !transactionId
-      )
-    ) {
-      message.textContent =
-        "Jaza taarifa zote za malipo na muamala.";
-      return;
-    }
-
-    if (
-      !["image/jpeg", "image/png", "image/webp"]
-        .includes(file.type) ||
-      file.size > 5 * 1024 * 1024
-    ) {
-      message.textContent =
-        "Chagua JPG, PNG au WEBP isiyozidi MB 5.";
-      return;
-    }
-
-    if (
-      !test &&
-      (
-        !/^[A-Za-z0-9+\-\s]{7,25}$/.test(payerPhone) ||
-        transactionId.length < 4
-      )
-    ) {
-      message.textContent =
-        "Kagua namba ya simu na namba ya muamala.";
-      return;
-    }
-
-    button.disabled = true;
-    button.textContent = "Inatuma tangazo...";
-
-    try {
-      const ext =
-        file.type === "image/jpeg"
-          ? "jpg"
-          : file.type === "image/png"
-            ? "png"
-            : "webp";
-
-      const path =
-        `${user.id}/${crypto.randomUUID()}.${ext}`;
-
-      const { error: uploadError } = await sb
-        .storage
-        .from(AD_BUCKET)
-        .upload(path, file, {
-          cacheControl: "3600",
-          contentType: file.type,
-          upsert: false
-        });
-
-      if (uploadError) throw uploadError;
-
-      const { data: publicData } = sb
-        .storage
-        .from(AD_BUCKET)
-        .getPublicUrl(path);
-
-      const payload = {
-        owner_id: user.id,
-        title,
-        description,
-        image_url: publicData.publicUrl,
-        target_url: null,
-        status: "pending",
-        payment_method: test ? null : paymentMethod,
-        payer_name: test ? null : payerName,
-        payer_phone: test ? null : payerPhone,
-        transaction_id: test ? null : transactionId,
-        payment_status: "pending",
-        is_test: test,
-        whatsapp_phone: whatsappPhone
-      };
-
-      const { error: insertError } = await sb
-        .from("advertisements")
-        .insert(payload);
-
-      if (insertError) throw insertError;
-
-      $("advertisementForm").reset();
-
-      updateAdminTestFields();
-      updatePaymentInstructions();
-
-      message.textContent = test
-        ? "Jaribio limehifadhiwa. Halitaonekana kwa umma."
-        : "Ombi limepokelewa. Malipo yanasubiri kuthibitishwa.";
-
-      toast(
-        test
-          ? "Jaribio la admin limetumwa."
-          : "Tangazo limetumwa kwa ukaguzi."
-      );
-
-      setTimeout(() => {
-        if ($("advertisementDialog").open) {
-          $("advertisementDialog").close();
-        }
-      }, 2500);
-
-    } catch (error) {
-      console.error(error);
-
-      message.textContent =
-        error.message || "Imeshindikana kutuma tangazo.";
-
-    } finally {
-      button.disabled = false;
-      updateAdminTestFields();
-    }
+  if (!sb) {
+    msg.textContent = "Supabase haijaunganishwa.";
+    return;
   }
-);
 
-/* =====================================================
-   KUPAKIA MATANGAZO YALIYOIDHINISHWA
-===================================================== */
+  const { data: sessionData, error: sessionError } =
+    await sb.auth.getSession();
+
+  if (sessionError) {
+    msg.textContent = sessionError.message;
+    return;
+  }
+
+  const user = sessionData.session?.user;
+
+  if (!user) {
+    msg.textContent = "Ingia kwenye akaunti kwanza.";
+    showDialog("authDialog");
+    return;
+  }
+
+  const title = $("advertisementTitle").value.trim();
+
+  const descriptionField = $("advertisementDescription");
+  const description = descriptionField?.value.trim() || "";
+
+  const file = $("advertisementImage").files[0];
+  const plan = $("advertisementPlan").value;
+  const paymentMethod = $("advertisementPaymentMethod").value;
+  const payerName = $("advertisementPayerName").value.trim();
+  const payerPhone = $("advertisementPayerPhone").value.trim();
+  const transactionId = $("advertisementTransaction").value.trim();
+
+  const testRequested =
+    !!$("advertisementAdminTest")?.checked;
+
+  const isAdmin = await checkAdmin(user);
+  currentIsAdmin = isAdmin;
+  updateAdminTestVisibility();
+
+  const test = testRequested && isAdmin;
+
+  if (testRequested && !isAdmin) {
+    msg.textContent =
+      "Huna ruhusa ya kutumia jaribio la admin.";
+    return;
+  }
+
+  if (
+    !title ||
+    !file ||
+    !AD_PRICES[plan] ||
+    (descriptionField && !description)
+  ) {
+    msg.textContent =
+      "Jaza kichwa, maelezo yanayopatikana, picha na kifurushi sahihi.";
+    return;
+  }
+
+  if (
+    !test &&
+    (!paymentMethod || !payerName || !payerPhone || !transactionId)
+  ) {
+    msg.textContent =
+      "Jaza taarifa zote za malipo na muamala.";
+    return;
+  }
+
+  if (
+    !["image/jpeg", "image/png", "image/webp"].includes(file.type) ||
+    file.size > 5 * 1024 * 1024
+  ) {
+    msg.textContent =
+      "Chagua JPG, PNG au WEBP isiyozidi MB 5.";
+    return;
+  }
+
+  if (
+    !test &&
+    (
+      !/^[A-Za-z0-9+\-\s]{7,25}$/.test(payerPhone) ||
+      transactionId.length < 4
+    )
+  ) {
+    msg.textContent =
+      "Kagua namba ya simu na namba ya muamala.";
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "Inatuma tangazo...";
+
+  try {
+    const ext = file.type === "image/jpeg"
+      ? "jpg"
+      : file.type === "image/png"
+        ? "png"
+        : "webp";
+
+    const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
+
+    const { error: uploadError } = await sb.storage
+      .from(AD_BUCKET)
+      .upload(path, file, {
+        cacheControl: "3600",
+        contentType: file.type,
+        upsert: false
+      });
+
+    if (uploadError) throw uploadError;
+
+    const { data: publicData } = sb.storage
+      .from(AD_BUCKET)
+      .getPublicUrl(path);
+
+    const payload = {
+      owner_id: user.id,
+      title,
+      description,
+      image_url: publicData.publicUrl,
+      target_url: null,
+      status: "pending",
+      payment_method: test ? null : paymentMethod,
+      payer_name: test ? null : payerName,
+      payer_phone: test ? null : payerPhone,
+      transaction_id: test ? null : transactionId,
+      payment_status: "pending",
+      is_test: test
+    };
+
+    const { error: insertError } = await sb
+      .from("advertisements")
+      .insert(payload);
+
+    if (insertError) throw insertError;
+
+    $("advertisementForm").reset();
+
+    updateAdminTestFields();
+    updatePaymentInstructions();
+
+    msg.textContent = test
+      ? "Jaribio limehifadhiwa. Halitaonekana kwa umma."
+      : "Ombi limepokelewa. Malipo yanasubiri kuthibitishwa.";
+
+    toast(
+      test
+        ? "Jaribio la admin limetumwa."
+        : "Tangazo limetumwa kwa ukaguzi."
+    );
+
+    setTimeout(() => {
+      if ($("advertisementDialog").open) {
+        $("advertisementDialog").close();
+      }
+    }, 2500);
+  } catch (error) {
+    console.error(error);
+    msg.textContent =
+      error.message || "Imeshindikana kutuma tangazo.";
+  } finally {
+    button.disabled = false;
+    updateAdminTestFields();
+  }
+});
+
+/* =========================
+   MATANGAZO YANAYOONEKANA
+========================= */
 
 async function loadAdvertisements() {
   const list = $("advertisementList");
@@ -2364,7 +1421,7 @@ async function loadAdvertisements() {
 
   const { data, error } = await sb
     .from("advertisements")
-    .select("id,owner_id,title,description,image_url,target_url,whatsapp_phone")
+    .select("id,title,description,image_url,target_url")
     .eq("status", "active")
     .eq("payment_status", "approved")
     .eq("is_test", false)
@@ -2373,12 +1430,9 @@ async function loadAdvertisements() {
 
   if (error) {
     console.error(error);
-
     $("advertisementCount").textContent = "Hitilafu";
-
     list.innerHTML =
       '<div class="empty">Matangazo yataonekana baada ya kuidhinishwa.</div>';
-
     return;
   }
 
@@ -2390,7 +1444,6 @@ async function loadAdvertisements() {
   if (!data.length) {
     list.innerHTML =
       '<div class="empty">Bado hakuna matangazo yaliyoidhinishwa.</div>';
-
     return;
   }
 
@@ -2401,24 +1454,21 @@ async function loadAdvertisements() {
   });
 }
 
-/* =====================================================
+/* =========================
    KUANZISHA MFUMO
-===================================================== */
+========================= */
 
 if (sb) {
   loadBusinesses();
+  loadBusinessLocations();
   loadAdvertisements();
   loadPublicPhotos();
-
 } else {
   $("businessCount").textContent =
     $("advertisementCount").textContent =
     $("photoCount").textContent =
       "Inasubiri muunganisho";
 }
-
-ensurePhotoPhoneField();
-ensureAdvertisementWhatsappField();
 
 refreshSession();
 
