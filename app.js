@@ -623,6 +623,222 @@ $("searchForm").addEventListener("submit", event => {
     $("searchInput").value.trim(),
     $("categoryFilter").value
   );
+  /* =====================================================
+   MFUMO MPYA WA UTAFUTAJI: MKOA NA WILAYA
+===================================================== */
+
+const regionFilter = document.createElement("select");
+regionFilter.id = "regionFilter";
+regionFilter.innerHTML = '<option value="">Mikoa yote</option>';
+
+const districtFilter = document.createElement("select");
+districtFilter.id = "districtFilter";
+districtFilter.innerHTML = '<option value="">Wilaya zote</option>';
+
+regionFilter.style.cssText =
+  "width:100%;padding:12px;border:1px solid #ccd6e2;border-radius:9px;font:inherit";
+
+districtFilter.style.cssText =
+  regionFilter.style.cssText;
+
+const searchForm = $("searchForm");
+
+if (searchForm) {
+  const searchButton = searchForm.querySelector('[type="submit"]');
+
+  searchForm.insertBefore(regionFilter, searchButton);
+  searchForm.insertBefore(districtFilter, searchButton);
+}
+
+let approvedBusinessLocations = [];
+
+async function loadBusinessLocations() {
+  if (!sb) return;
+
+  const { data, error } = await sb
+    .from("businesses")
+    .select("region,district")
+    .eq("status", "approved")
+    .limit(1000);
+
+  if (error) {
+    console.error("Locations:", error);
+    return;
+  }
+
+  approvedBusinessLocations = data || [];
+
+  const regions = [
+    ...new Set(
+      approvedBusinessLocations
+        .map(item => item.region?.trim())
+        .filter(Boolean)
+    )
+  ].sort((a, b) => a.localeCompare(b));
+
+  regionFilter.replaceChildren(
+    new Option("Mikoa yote", "")
+  );
+
+  regions.forEach(region => {
+    regionFilter.add(new Option(region, region));
+  });
+
+  updateDistrictOptions();
+}
+
+function updateDistrictOptions() {
+  const selectedRegion = regionFilter.value;
+
+  const districts = [
+    ...new Set(
+      approvedBusinessLocations
+        .filter(item =>
+          !selectedRegion ||
+          item.region?.trim() === selectedRegion
+        )
+        .map(item => item.district?.trim())
+        .filter(Boolean)
+    )
+  ].sort((a, b) => a.localeCompare(b));
+
+  districtFilter.replaceChildren(
+    new Option("Wilaya zote", "")
+  );
+
+  districts.forEach(district => {
+    districtFilter.add(new Option(district, district));
+  });
+}
+
+regionFilter.addEventListener("change", () => {
+  updateDistrictOptions();
+
+  loadBusinesses(
+    $("searchInput").value.trim(),
+    $("categoryFilter").value
+  );
+});
+
+districtFilter.addEventListener("change", () => {
+  loadBusinesses(
+    $("searchInput").value.trim(),
+    $("categoryFilter").value
+  );
+});
+
+const originalLoadBusinesses = loadBusinesses;
+
+loadBusinesses = async function(search = "", category = "") {
+  const list = $("businessList");
+
+  if (!sb) return originalLoadBusinesses(search, category);
+
+  let query = sb
+    .from("businesses")
+    .select("id,name,description,category,phone,whatsapp,region,district,is_verified")
+    .eq("status", "approved")
+    .order("created_at", { ascending: false })
+    .limit(1000);
+
+  if (category) {
+    query = query.ilike("category", category);
+  }
+
+  if (regionFilter.value) {
+    query = query.eq("region", regionFilter.value);
+  }
+
+  if (districtFilter.value) {
+    query = query.eq("district", districtFilter.value);
+  }
+
+  if (search) {
+    const safeSearch = search.replace(/[%_,()]/g, " ").trim();
+
+    if (safeSearch) {
+      query = query.or(
+        `name.ilike.%${safeSearch}%,description.ilike.%${safeSearch}%,region.ilike.%${safeSearch}%,district.ilike.%${safeSearch}%`
+      );
+    }
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error(error);
+
+    $("businessCount").textContent = "Hitilafu ya kupakia";
+
+    list.innerHTML =
+      '<div class="empty">Imeshindikana kupakia biashara.</div>';
+
+    return;
+  }
+
+  $("businessCount").textContent =
+    `${data.length} biashara`;
+
+  list.replaceChildren();
+
+  if (!data.length) {
+    list.innerHTML =
+      '<div class="empty">Hakuna biashara zilizopatikana katika eneo ulilochagua.</div>';
+    return;
+  }
+
+  data.forEach(item => {
+    const card = document.createElement("article");
+    card.className = "business-card";
+
+    const categoryLabel = document.createElement("span");
+    categoryLabel.className = "pill";
+    categoryLabel.textContent = item.category || "Huduma";
+
+    const heading = document.createElement("h3");
+    heading.textContent = item.name;
+
+    const description = document.createElement("p");
+    description.textContent =
+      item.description ||
+      "Wasiliana na mtoa huduma kupata maelezo zaidi.";
+
+    const location = document.createElement("small");
+    location.textContent =
+      [item.district, item.region].filter(Boolean).join(", ");
+
+    card.append(categoryLabel, heading, description, location);
+
+    const contact = item.whatsapp || item.phone;
+
+    if (contact) {
+      const link = document.createElement("a");
+
+      link.className = "contact-link";
+      link.textContent = "Wasiliana";
+
+      link.href = item.whatsapp
+        ? `https://wa.me/${contact.replace(/\D/g, "")}`
+        : `tel:${contact}`;
+
+      link.target = item.whatsapp ? "_blank" : "_self";
+      link.rel = "noopener";
+
+      card.append(link);
+    }
+
+    if (item.is_verified) {
+      const verified = document.createElement("small");
+      verified.className = "verified";
+      verified.textContent = "✓ Imethibitishwa";
+      card.append(verified);
+    }
+
+    list.append(card);
+  });
+};
+
+loadBusinessLocations();
 });
 
 /* =====================================================
