@@ -1,4 +1,4 @@
-
+8
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap');
 
 :root {
@@ -678,5 +678,45 @@ bottom:76px!important;
   #ebyAiPanel .eby-ai-form input{
     min-width:0!important;
     flex:1!important;
+  }
+}
+
+/* EBY AI FINAL MOBILE DESIGN */
+@media (max-width:760px) {
+  #ebyAiOpen {
+    position:fixed!important;
+    right:14px!important;
+    left:auto!important;
+    bottom:100px!important;
+    top:auto!important;
+    background:linear-gradient(135deg,#0757a6,#0b73cf)!important;
+    color:#fff!important;
+    border:0!important;
+    border-radius:30px!important;
+    min-height:48px!important;
+    padding:13px 17px!important;
+    font-size:14px!important;
+    font-weight:800!important;
+    z-index:99998!important;
+  }
+
+  #ebyAiPanel {
+    position:fixed!important;
+    right:12px!important;
+    left:auto!important;
+    bottom:85px!important;
+    top:auto!important;
+    width:min(370px,calc(100vw - 24px))!important;
+    height:min(520px,calc(100dvh - 120px))!important;
+    max-height:calc(100dvh - 120px)!important;
+    display:flex!important;
+    flex-direction:column!important;
+    overflow:hidden!important;
+    border-radius:18px!important;
+    z-index:99999!important;
+  }
+
+  #ebyAiPanel[hidden] {
+    display:none!important;
   }
 }
