@@ -3,7 +3,8 @@
 
 alter table public.businesses
   add column if not exists image_url text,
-  add column if not exists storage_path text;
+  add column if not exists storage_path text,
+  add column if not exists whatsapp text;
 
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values (
