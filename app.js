@@ -1958,7 +1958,7 @@ aiForm?.addEventListener("submit", async event => {
 
   aiInput.value = "";
   aiSend.disabled = true;
-  aiStatus.textContent = EBY AI inakuandalia majibu yako
+  aiStatus.textContent = aiStatus.textContent = "EBY AI inakuandalia majibu yako...";
 
   try {
     const { data, error } = await sb.rpc("eby_ai_chat", {
