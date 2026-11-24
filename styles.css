@@ -384,8 +384,7 @@ dialog h2{font:800 25px Manrope;margin:7px 0 18px}
 }
 
 /* EBY AI ASSISTANT */
-.eby-ai-launcher,
-#ebyAiOpen{
+bottom:100px!important;
   position:fixed!important;
   right:18px!important;
   left:auto!important;
@@ -423,8 +422,7 @@ dialog h2{font:800 25px Manrope;margin:7px 0 18px}
   box-shadow:0 8px 25px #0757a644!important;
 }
 
-.eby-ai-panel,
-#ebyAiPanel{
+bottom:76px!important;
   position:fixed!important;
   right:18px!important;
   left:auto!important;
