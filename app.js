@@ -899,36 +899,50 @@ async function loadBusinesses(
 
     body.append(top, heading, description, place);
 
-    // Kitufe kinatengenezwa baada ya kupatikana kwa picha za folda husika.
-    getBusinessGallery(item).then(gallery => {
-      if (!body.isConnected || !gallery.length) return;
+    // Onyesha kitufe mara moja ikiwa picha kuu ipo.
+    // Picha nyingine za folda huongezwa baada ya Supabase kujibu.
+    let businessGallery = item.image_url ? [{
+      image_url: item.image_url,
+      title: item.name || "Biashara",
+      description: item.description || ""
+    }] : [];
 
-      const galleryButton = document.createElement("button");
+    let galleryReady = Promise.resolve(businessGallery);
+    let galleryButton = null;
+
+    if (item.image_url) {
+      galleryButton = document.createElement("button");
       galleryButton.type = "button";
       galleryButton.className = "business-gallery-button";
-      galleryButton.textContent =
-        `▧ Tazama picha zote (${gallery.length})`;
-
-      galleryButton.style.display = "inline-flex";
-      galleryButton.style.alignItems = "center";
-      galleryButton.style.justifyContent = "center";
-      galleryButton.style.gap = "8px";
-      galleryButton.style.marginTop = "12px";
-      galleryButton.style.padding = "10px 14px";
-      galleryButton.style.border = "1px solid #1976d2";
-      galleryButton.style.borderRadius = "10px";
-      galleryButton.style.background = "#eef6ff";
-      galleryButton.style.color = "#1259a7";
-      galleryButton.style.fontWeight = "700";
-      galleryButton.style.cursor = "pointer";
-
-      galleryButton.addEventListener("click", () => {
-        openViewer(gallery, 0);
+      galleryButton.textContent = "▧ Tazama picha zote (1)";
+      galleryButton.style.cssText = "display:inline-flex;align-items:center;justify-content:center;gap:8px;margin-top:12px;padding:10px 14px;border:1px solid #1976d2;border-radius:10px;background:#eef6ff;color:#1259a7;font-weight:700;cursor:pointer";
+      galleryButton.addEventListener("click", async () => {
+        galleryButton.disabled = true;
+        const oldText = galleryButton.textContent;
+        galleryButton.textContent = "Inafungua picha...";
+        try {
+          const gallery = await galleryReady;
+          openViewer(gallery.length ? gallery : businessGallery, 0);
+        } catch (error) {
+          console.error("Business gallery open:", error);
+          openViewer(businessGallery, 0);
+        } finally {
+          galleryButton.disabled = false;
+          galleryButton.textContent = oldText;
+        }
       });
-
       body.append(galleryButton);
+    }
+
+    galleryReady = getBusinessGallery(item).then(gallery => {
+      if (gallery.length) businessGallery = gallery;
+      if (galleryButton) {
+        galleryButton.textContent = `▧ Tazama picha zote (${businessGallery.length})`;
+      }
+      return businessGallery;
     }).catch(error => {
       console.error("Business gallery:", error);
+      return businessGallery;
     });
 
     const actions = document.createElement("div");
