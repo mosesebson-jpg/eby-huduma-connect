@@ -20,7 +20,6 @@ button{font:inherit;cursor:pointer}
 h1,h2,h3,p{margin-top:0}
 
 /* HEADER */
-
 .topbar{
   height:78px;padding:0 max(5vw,20px);
   display:flex;align-items:center;justify-content:space-between;
@@ -43,7 +42,6 @@ nav a:hover{color:var(--blue)}
 .menu-btn{display:none;border:0;background:#edf4fb;border-radius:9px;padding:9px 12px}
 
 /* HERO */
-
 .hero{
   padding:75px max(7vw,22px) 68px;
   display:grid;grid-template-columns:1.2fr .8fr;gap:55px;
@@ -80,7 +78,6 @@ h1{font:800 clamp(38px,6vw,68px)/1.06 Manrope,sans-serif;letter-spacing:-.055em;
 .hero-tags span{font-size:12px;border:1px solid #ffffff55;border-radius:30px;padding:6px 10px;color:#e5f4ff}
 
 /* SEARCH */
-
 .search-panel{
   margin:-1px auto 0;padding:30px max(7vw,22px);background:#fff;
   display:flex;align-items:center;justify-content:space-between;
@@ -99,7 +96,6 @@ input:focus,select:focus,textarea:focus{outline:2px solid #8fc4ff;border-color:#
 .search-form select{width:160px}
 
 /* MAIN SECTIONS */
-
 .section{padding:64px max(7vw,22px)}
 .section-heading{display:flex;align-items:end;justify-content:space-between;margin-bottom:23px}
 .muted{color:var(--muted);font-size:13px}
@@ -117,7 +113,6 @@ input:focus,select:focus,textarea:focus{outline:2px solid #8fc4ff;border-color:#
 .empty{grid-column:1/-1;background:#fff;border:1px dashed #c7d7e8;border-radius:15px;padding:27px;text-align:center;color:#687c92}
 
 /* FEATURES */
-
 .split-section{
   background:#eef5fc;display:grid;grid-template-columns:.9fr 1.1fr;
   gap:55px;align-items:center
@@ -133,7 +128,6 @@ input:focus,select:focus,textarea:focus{outline:2px solid #8fc4ff;border-color:#
 .feature-list small{color:#718197;margin-top:3px}
 
 /* CTA AND FOOTER */
-
 .cta-band{
   margin:55px max(7vw,22px);padding:34px 38px;border-radius:20px;
   background:linear-gradient(110deg,#0757a6,#0879ce);color:#fff;
@@ -152,7 +146,6 @@ footer p,footer>small{margin:0;color:#a9bfd5;font-size:12px}
 .footer-brand small{color:#a9bfd5}
 
 /* DIALOGS AND FORMS */
-
 dialog{
   border:0;border-radius:20px;padding:30px;width:min(92vw,460px);
   box-shadow:0 25px 100px #00152d55;color:var(--ink)
@@ -180,7 +173,6 @@ dialog h2{font:800 25px Manrope;margin:7px 0 18px}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 
 /* ADVERTISEMENTS */
-
 #matangazo{padding-top:45px;padding-bottom:45px}
 .ad-intro{
   background:linear-gradient(135deg,#eaf4ff,#f7fbff);border:1px solid #d6e8fa;
@@ -249,7 +241,6 @@ dialog h2{font:800 25px Manrope;margin:7px 0 18px}
 #advertisementMessage{line-height:1.6;overflow-wrap:anywhere}
 
 /* PUBLIC PHOTOS */
-
 .photo-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:14px 0 20px}
 .photo-upload-btn{background:#0757a6;color:#fff;border:0;border-radius:10px;padding:13px 20px;font-weight:700;cursor:pointer}
 .photo-card-image{
@@ -269,7 +260,6 @@ dialog h2{font:800 25px Manrope;margin:7px 0 18px}
 }
 
 /* LIKE NA MAONI */
-
 .engagement,.engagement-bar{
   margin-top:0;border-top:1px solid #e5edf6;padding:14px 16px 17px;background:#fff
 }
@@ -295,7 +285,6 @@ dialog h2{font:800 25px Manrope;margin:7px 0 18px}
 .comment-hint{font-size:12px;color:#64748b}
 
 /* PHOTO UPLOAD DIALOG */
-
 .photo-upload-dialog{width:min(95%,520px);max-height:90vh;overflow-y:auto;border:0;border-radius:18px;padding:24px}
 .photo-upload-dialog::backdrop{background:#000a}
 .photo-upload-dialog label{display:block;font-weight:600;margin:12px 0}
@@ -304,11 +293,7 @@ dialog h2{font:800 25px Manrope;margin:7px 0 18px}
   border:1px solid #ccd8e5;border-radius:9px;box-sizing:border-box
 }
 
-/* =====================================
-   FULL SCREEN PHOTO VIEWER
-   EBY MEDIA BLUE STYLE
-===================================== */
-
+/* FULL SCREEN PHOTO VIEWER */
 .photo-dialog{
   position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important;
   max-width:none!important;max-height:none!important;margin:0!important;padding:0!important;
@@ -320,9 +305,6 @@ dialog h2{font:800 25px Manrope;margin:7px 0 18px}
   position:relative;width:100%;height:100%;display:flex;flex-direction:column;
   background:#0757a6;overflow:hidden
 }
-
-/* JUU YA VIEWER */
-
 .viewer-top{
   position:relative;z-index:8;display:flex;justify-content:space-between;
   align-items:center;padding:15px 18px;min-height:75px;
@@ -332,17 +314,11 @@ dialog h2{font:800 25px Manrope;margin:7px 0 18px}
   background:#06366f;color:#fff;padding:12px 22px;
   border-radius:35px;font-weight:900;font-size:16px
 }
-
-/* X INAACHWA NA MUONEKANO WAKE */
-
 .viewer-close{
   width:55px;height:55px;border:0;border-radius:50%;
   background:#06366f;color:#fff;font-size:32px;font-weight:bold;
   display:grid;place-items:center
 }
-
-/* ENEO LA PICHA */
-
 .viewer-stage{
   position:relative;flex:1;min-height:0;display:flex;
   align-items:center;justify-content:center;
@@ -354,9 +330,6 @@ dialog h2{font:800 25px Manrope;margin:7px 0 18px}
   border-left:4px solid #1686ff;border-right:4px solid #1686ff;
   user-select:none;-webkit-user-drag:none
 }
-
-/* MISHale YA PICHA: BLUU ANG'AVU */
-
 .viewer-arrow{
   position:absolute!important;z-index:20!important;top:50%!important;
   transform:translateY(-50%)!important;width:50px!important;height:50px!important;
@@ -373,26 +346,14 @@ dialog h2{font:800 25px Manrope;margin:7px 0 18px}
 }
 .viewer-prev{left:14px!important}
 .viewer-next{right:14px!important}
-
-/* KISANDUKU CHA MAANDISHI */
-
 .viewer-caption{
-  position:absolute!important;
-  z-index:15!important;
-  left:16%!important;
-  right:16%!important;
-  bottom:22px!important;
-  width:auto!important;
-  max-height:23vh!important;
-  overflow-y:auto!important;
-  padding:12px 15px!important;
-  border:1px solid #3e8ed6!important;
-  border-radius:17px!important;
-  background:rgba(3,30,62,.92)!important;
-  color:#fff!important;
-  text-align:center!important;
-  backdrop-filter:blur(7px)!important;
-  -webkit-backdrop-filter:blur(7px)!important;
+  position:absolute!important;z-index:15!important;
+  left:16%!important;right:16%!important;bottom:22px!important;
+  width:auto!important;max-height:23vh!important;overflow-y:auto!important;
+  padding:12px 15px!important;border:1px solid #3e8ed6!important;
+  border-radius:17px!important;background:rgba(3,30,62,.92)!important;
+  color:#fff!important;text-align:center!important;
+  backdrop-filter:blur(7px)!important;-webkit-backdrop-filter:blur(7px)!important;
   box-shadow:0 8px 25px #00152d66!important
 }
 .viewer-caption h3{
@@ -401,16 +362,101 @@ dialog h2{font:800 25px Manrope;margin:7px 0 18px}
 }
 .viewer-caption p{
   margin:0!important;color:#e5f0ff!important;
-  font-size:14px!important;line-height:1.6!important;
-  overflow-wrap:anywhere
+  font-size:14px!important;line-height:1.6!important;overflow-wrap:anywhere
+}
+
+/* ADMIN DASHBOARD */
+.admin-dashboard-section{
+  width:100%;padding:18px;max-width:1500px;margin:0 auto
+}
+.admin-dashboard-heading{
+  display:flex;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:12px;margin-bottom:15px
+}
+.admin-dashboard-heading h2{margin:0;color:#0757a6}
+.admin-dashboard-back{
+  border:0;border-radius:10px;padding:12px 18px;
+  background:#0757a6;color:#fff;font-weight:800;cursor:pointer
+}
+.admin-dashboard-frame{
+  display:block;width:100%;height:85vh;min-height:750px;
+  border:1px solid #dce5ef;border-radius:16px;background:#fff
+}
+
+/* EBY AI ASSISTANT */
+.eby-ai-launcher{
+  position:fixed;right:18px;bottom:20px;z-index:9998;
+  background:linear-gradient(135deg,#0757a6,#0b73cf);
+  color:#fff;border:0;border-radius:30px;
+  padding:15px 20px;font-weight:800;
+  box-shadow:0 5px 20px #0003;cursor:pointer;
+  display:flex;align-items:center;gap:8px
+}
+.eby-ai-launcher:hover{transform:translateY(-2px);box-shadow:0 8px 25px #0757a644}
+.eby-ai-panel{
+  position:fixed;right:18px;bottom:85px;z-index:9999;
+  width:min(370px,calc(100vw - 30px));
+  height:min(520px,calc(100dvh - 120px));
+  background:#fff;border:1px solid #dce5ef;
+  border-radius:18px;box-shadow:0 12px 40px #0003;
+  overflow:hidden;flex-direction:column
+}
+.eby-ai-panel:not([hidden]){display:flex}
+.eby-ai-header{
+  background:linear-gradient(120deg,#0757a6,#0879ce);
+  color:#fff;padding:16px;display:flex;
+  justify-content:space-between;align-items:center;
+  flex:none
+}
+.eby-ai-header strong,.eby-ai-header small{display:block}
+.eby-ai-header strong{font-size:15px;letter-spacing:.04em}
+.eby-ai-header small{opacity:.85;margin-top:4px;font-size:11px}
+.eby-ai-header button{
+  background:#ffffff20;color:#fff;border:0;
+  border-radius:50%;width:36px;height:36px;
+  font-size:25px;line-height:1;cursor:pointer
+}
+.eby-ai-messages{
+  flex:1;min-height:0;overflow-y:auto;padding:14px;
+  display:flex;flex-direction:column;gap:10px;
+  background:#f8fbff
+}
+.eby-ai-bubble{
+  max-width:88%;padding:11px 13px;border-radius:13px;
+  font-size:14px;line-height:1.6;overflow-wrap:anywhere;
+  white-space:pre-wrap
+}
+.eby-ai-bubble.assistant{
+  align-self:flex-start;background:#edf5ff;
+  color:#173b60;border:1px solid #dcecff;
+  border-bottom-left-radius:4px
+}
+.eby-ai-bubble.user{
+  align-self:flex-end;background:#0757a6;
+  color:#fff;border-bottom-right-radius:4px
+}
+.eby-ai-form{
+  display:flex;gap:7px;padding:12px;
+  border-top:1px solid #e5edf6;background:#fff;flex:none
+}
+.eby-ai-form input{
+  min-width:0;flex:1;width:auto;
+  border:1px solid #d2deeb;border-radius:10px;padding:12px;
+  font-size:14px
+}
+.eby-ai-form button{
+  background:#0757a6;color:#fff;border:0;
+  border-radius:10px;padding:0 15px;font-weight:800
+}
+.eby-ai-form button:disabled{opacity:.5;cursor:not-allowed}
+.eby-ai-status{
+  margin:0;padding:0 12px 9px;
+  color:#64748b;font-size:12px;background:#fff
 }
 
 /* MOBILE RESPONSIVE */
-
 @media(max-width:760px){
-
   .topbar{height:68px}
-
   nav{
     display:none;position:absolute;top:68px;left:0;right:0;
     background:#fff;padding:18px 22px 22px;border-bottom:1px solid var(--line);
@@ -418,7 +464,6 @@ dialog h2{font:800 25px Manrope;margin:7px 0 18px}
   }
   nav.open{display:flex}
   .menu-btn{display:block}
-
   .hero{grid-template-columns:1fr;gap:28px;padding-top:48px}
   .hero-card{min-height:240px}
   .search-panel{display:block}
@@ -433,74 +478,62 @@ dialog h2{font:800 25px Manrope;margin:7px 0 18px}
     align-items:flex-start;flex-direction:column
   }
   footer{align-items:flex-start;flex-direction:column}
-
   .ad-intro{padding:20px}
   .ad-prices{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
   .ad-price{padding:14px}
   .ad-price strong{font-size:19px}
   .ad-action{width:100%}
   .ad-dialog{padding:19px;width:95%}
-
   .photo-card-image{
     width:100%!important;height:auto!important;max-height:none!important;
     object-fit:contain!important
   }
-
   .engagement{padding:13px 14px 16px}
   .engagement-actions{gap:17px}
   .like-btn,.comments-toggle,.like-button,.comment-button{font-size:16px}
   .comment-form{gap:6px}
   .comment-form input{padding:10px;font-size:14px}
   .comment-form button{padding:10px 12px}
-
-  /* PHOTO VIEWER KWENYE SIMU */
-
   .viewer-top{padding:12px 15px;min-height:68px}
   .viewer-counter{padding:11px 19px}
   .viewer-close{width:50px;height:50px}
-
   .viewer-stage{padding:8px 12px 80px!important}
   .viewer-image{
     max-width:100%;max-height:100%;
     border-left-width:4px;border-right-width:4px
   }
-
-  .viewer-arrow{
-    width:44px!important;height:44px!important;
-    font-size:29px!important
-  }
+  .viewer-arrow{width:44px!important;height:44px!important;font-size:29px!important}
   .viewer-prev{left:10px!important}
   .viewer-next{right:10px!important}
-
-  /* Kisanduku kimesogezwa chini na kupunguzwa upana */
-
   .viewer-caption{
-    left:14%!important;
-    right:14%!important;
-    bottom:18px!important;
-    max-height:22vh!important;
-    padding:10px 12px!important
+    left:14%!important;right:14%!important;
+    bottom:18px!important;max-height:22vh!important;padding:10px 12px!important
   }
   .viewer-caption h3{font-size:16px!important}
   .viewer-caption p{font-size:13px!important;line-height:1.55!important}
+  .admin-dashboard-section{padding:10px}
+  .admin-dashboard-frame{height:80vh;min-height:700px}
+
+  .eby-ai-launcher{
+    right:14px;bottom:16px;padding:13px 17px;
+    font-size:14px
+  }
+  .eby-ai-panel{
+    right:10px;bottom:76px;
+    width:calc(100vw - 20px);
+    height:min(540px,calc(100dvh - 100px));
+    border-radius:16px
+  }
 }
 
 /* SIMU NDOGO */
-
 @media(max-width:360px){
-
   .ad-prices{grid-template-columns:1fr}
-
   .viewer-caption{
-    left:12%!important;
-    right:12%!important;
-    bottom:15px!important;
-    padding:9px 10px!important
+    left:12%!important;right:12%!important;
+    bottom:15px!important;padding:9px 10px!important
   }
-
-  .viewer-arrow{
-    width:40px!important;height:40px!important
-  }
-
+  .viewer-arrow{width:40px!important;height:40px!important}
   .viewer-counter{font-size:14px}
+  .eby-ai-launcher{font-size:13px;padding:12px 14px}
 }
