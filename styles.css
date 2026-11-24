@@ -1,4 +1,4 @@
-8
+
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap');
 
 :root {
@@ -719,4 +719,45 @@ bottom:76px!important;
   #ebyAiPanel[hidden] {
     display:none!important;
   }
+}
+/* =================================
+   EBY HUDUMA CONNECT
+   EBY AI BUTTON FINAL POSITION
+================================= */
+
+@media screen and (max-width: 760px) {
+
+  #ebyAiOpen,
+  .eby-ai-launcher {
+    position: fixed !important;
+
+    right: 14px !important;
+    left: auto !important;
+
+    bottom: 35px !important;
+    top: auto !important;
+
+    z-index: 99998 !important;
+
+    background: linear-gradient(
+      135deg,
+      #0757a6,
+      #0b73cf
+    ) !important;
+
+    color: #ffffff !important;
+
+    border: none !important;
+    border-radius: 30px !important;
+
+    padding: 13px 18px !important;
+
+    font-size: 15px !important;
+    font-weight: 800 !important;
+
+    box-shadow: 0 6px 18px rgba(0,0,0,0.20) !important;
+
+    cursor: pointer !important;
+  }
+
 }
