@@ -726,31 +726,9 @@ async function loadBusinesses(
     return;
   }
 
-  for (const item of data) {
+  data.forEach(item => {
     const card = document.createElement("article");
     card.className = "business-card business-card-premium";
-
-    // White House Motel gallery: read the three original images uploaded
-    // to the public business-images bucket, without altering the files.
-    let galleryItems = [];
-    if (/white\s*house\s*motel/i.test(item.name || "")) {
-      const { data: galleryFiles, error: galleryError } = await sb.storage
-        .from(BUSINESS_BUCKET)
-        .list("", { limit: 100, search: "white-house-motel" });
-
-      if (!galleryError && Array.isArray(galleryFiles)) {
-        galleryItems = galleryFiles
-          .filter(file => file.name && /\.(jpg|jpeg|png|webp)$/i.test(file.name))
-          .sort((a, b) => a.name.localeCompare(b.name))
-          .map(file => ({
-            image_url: sb.storage.from(BUSINESS_BUCKET).getPublicUrl(file.name).data.publicUrl,
-            title: item.name,
-            description: "Picha za White House Motel"
-          }));
-      } else if (galleryError) {
-        console.warn("White House Motel gallery haikupatikana:", galleryError);
-      }
-    }
 
     const cover = document.createElement("div");
     cover.className = "business-cover";
@@ -801,15 +779,6 @@ async function loadBusinesses(
 
     body.append(top, heading, description, place);
 
-    if (galleryItems.length > 1) {
-      const galleryButton = document.createElement("button");
-      galleryButton.type = "button";
-      galleryButton.className = "business-gallery-button";
-      galleryButton.textContent = `▧ Tazama picha zote (${galleryItems.length})`;
-      galleryButton.addEventListener("click", () => openViewer(galleryItems, 0));
-      body.append(galleryButton);
-    }
-
     const actions = document.createElement("div");
     actions.className = "business-card-actions";
 
@@ -842,7 +811,7 @@ async function loadBusinesses(
 
     card.append(cover, body, actions);
     list.append(card);
-  }
+  });
 }
 
 createLocationFilters();
@@ -858,20 +827,51 @@ $("searchForm")?.addEventListener("submit", event => {
   );
 });
 
-// Makundi ya haraka yanayobadilisha kichujio cha biashara.
-document.querySelectorAll(".quick-category").forEach(button => {
-  button.addEventListener("click", () => {
-    document.querySelectorAll(".quick-category").forEach(item => item.classList.remove("active"));
-    button.classList.add("active");
-    const category = button.dataset.category || "";
-    const filter = $("categoryFilter");
-    if (filter) {
-      const matchingOption = [...filter.options].find(option => option.value.toLowerCase() === category.toLowerCase() || option.textContent.toLowerCase() === category.toLowerCase());
-      if (matchingOption) filter.value = matchingOption.value;
-      else filter.value = "";
-    }
-    loadBusinesses($("searchInput")?.value.trim() || "", filter?.value || "", regionFilter?.value || "", districtFilter?.value || "");
+// VITufe 5 VYA MAKUNDI: kichujio kimoja kinachoshirikiana na utafutaji.
+const quickCategoryButtons = [...document.querySelectorAll(".quick-category")];
+
+function setQuickCategoryActive(category) {
+  const selected = String(category || "").trim().toLocaleLowerCase();
+
+  quickCategoryButtons.forEach(button => {
+    const buttonCategory = String(button.dataset.category || "").trim().toLocaleLowerCase();
+    button.classList.toggle("active", buttonCategory === selected);
   });
+}
+
+function applyBusinessFilters() {
+  loadBusinesses(
+    $("searchInput")?.value.trim() || "",
+    $("categoryFilter")?.value || "",
+    regionFilter?.value || "",
+    districtFilter?.value || ""
+  );
+}
+
+quickCategoryButtons.forEach(button => {
+  button.addEventListener("click", () => {
+    // data-category="" kwa Zote huondoa kichujio cha kundi.
+    const category = String(button.dataset.category || "").trim();
+    const filter = $("categoryFilter");
+
+    if (filter) {
+      const matchingOption = [...filter.options].find(option =>
+        String(option.value).trim().toLocaleLowerCase() === category.toLocaleLowerCase()
+      );
+
+      // Usitumie kundi lisilokuwepo kwenye orodha ya kichujio.
+      filter.value = matchingOption ? matchingOption.value : "";
+    }
+
+    setQuickCategoryActive(filter?.value || "");
+    applyBusinessFilters();
+  });
+});
+
+// Kichujio cha orodha pia kinasawazisha hali ya vitufe vitano.
+$("categoryFilter")?.addEventListener("change", () => {
+  setQuickCategoryActive($("categoryFilter").value);
+  applyBusinessFilters();
 });
 
 /* =========================
