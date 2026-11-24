@@ -662,6 +662,75 @@ async function loadBusinessLocations() {
   updateDistrictOptions();
 }
 
+async function getBusinessGallery(business) {
+  if (!sb || !business) return [];
+
+  const slug = String(business.name || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+
+  if (!slug) return [];
+
+  const bucket = sb.storage.from(BUSINESS_BUCKET);
+  const found = [];
+
+  const { data: rootItems, error: rootError } = await bucket.list("", {
+    limit: 1000
+  });
+
+  if (rootError) {
+    console.error("Business gallery listing:", rootError);
+    return business.image_url ? [{
+      image_url: business.image_url,
+      title: business.name || "Biashara",
+      description: business.description || ""
+    }] : [];
+  }
+
+  const roots = rootItems || [];
+  const rootFiles = roots.filter(file =>
+    file.id && file.name && file.name.toLowerCase().startsWith(slug)
+  );
+
+  rootFiles.forEach(file => found.push(file.name));
+
+  // Pia tafuta picha zilizohifadhiwa ndani ya folder za bucket.
+  const folders = roots.filter(item => !item.id && item.name);
+  if (!rootFiles.length && folders.length) {
+    const folderResults = await Promise.all(folders.map(async folder => {
+      const { data, error } = await bucket.list(folder.name, { limit: 1000 });
+      if (error) {
+        console.warn("Business gallery folder:", folder.name, error);
+        return [];
+      }
+      return (data || [])
+        .filter(file => file.id && file.name && file.name.toLowerCase().startsWith(slug))
+        .map(file => `${folder.name}/${file.name}`);
+    }));
+    folderResults.flat().forEach(path => found.push(path));
+  }
+
+  const uniquePaths = [...new Set(found)];
+  const gallery = uniquePaths.map(path => ({
+    image_url: bucket.getPublicUrl(path).data.publicUrl,
+    title: business.name || "Biashara",
+    description: business.description || ""
+  }));
+
+  if (business.image_url && !gallery.some(photo => photo.image_url === business.image_url)) {
+    gallery.unshift({
+      image_url: business.image_url,
+      title: business.name || "Biashara",
+      description: business.description || ""
+    });
+  }
+
+  return gallery;
+}
+
 async function loadBusinesses(
   search = "",
   category = "",
@@ -779,6 +848,29 @@ async function loadBusinesses(
 
     body.append(top, heading, description, place);
 
+    getBusinessGallery(item).then(gallery => {
+      if (!gallery.length || !body.isConnected) return;
+
+      const galleryButton = document.createElement("button");
+      galleryButton.type = "button";
+      galleryButton.className = "business-gallery-button";
+      galleryButton.textContent = `▧ Tazama picha zote (${gallery.length})`;
+      galleryButton.style.display = "inline-flex";
+      galleryButton.style.alignItems = "center";
+      galleryButton.style.justifyContent = "center";
+      galleryButton.style.gap = "8px";
+      galleryButton.style.marginTop = "12px";
+      galleryButton.style.padding = "10px 14px";
+      galleryButton.style.border = "1px solid #1976d2";
+      galleryButton.style.borderRadius = "10px";
+      galleryButton.style.background = "#eef6ff";
+      galleryButton.style.color = "#1259a7";
+      galleryButton.style.fontWeight = "700";
+      galleryButton.style.cursor = "pointer";
+      galleryButton.addEventListener("click", () => openViewer(gallery, 0));
+      body.append(galleryButton);
+    }).catch(error => console.error("Business gallery:", error));
+
     const actions = document.createElement("div");
     actions.className = "business-card-actions";
 
@@ -827,51 +919,20 @@ $("searchForm")?.addEventListener("submit", event => {
   );
 });
 
-// VITufe 5 VYA MAKUNDI: kichujio kimoja kinachoshirikiana na utafutaji.
-const quickCategoryButtons = [...document.querySelectorAll(".quick-category")];
-
-function setQuickCategoryActive(category) {
-  const selected = String(category || "").trim().toLocaleLowerCase();
-
-  quickCategoryButtons.forEach(button => {
-    const buttonCategory = String(button.dataset.category || "").trim().toLocaleLowerCase();
-    button.classList.toggle("active", buttonCategory === selected);
-  });
-}
-
-function applyBusinessFilters() {
-  loadBusinesses(
-    $("searchInput")?.value.trim() || "",
-    $("categoryFilter")?.value || "",
-    regionFilter?.value || "",
-    districtFilter?.value || ""
-  );
-}
-
-quickCategoryButtons.forEach(button => {
+// Makundi ya haraka yanayobadilisha kichujio cha biashara.
+document.querySelectorAll(".quick-category").forEach(button => {
   button.addEventListener("click", () => {
-    // data-category="" kwa Zote huondoa kichujio cha kundi.
-    const category = String(button.dataset.category || "").trim();
+    document.querySelectorAll(".quick-category").forEach(item => item.classList.remove("active"));
+    button.classList.add("active");
+    const category = button.dataset.category || "";
     const filter = $("categoryFilter");
-
     if (filter) {
-      const matchingOption = [...filter.options].find(option =>
-        String(option.value).trim().toLocaleLowerCase() === category.toLocaleLowerCase()
-      );
-
-      // Usitumie kundi lisilokuwepo kwenye orodha ya kichujio.
-      filter.value = matchingOption ? matchingOption.value : "";
+      const matchingOption = [...filter.options].find(option => option.value.toLowerCase() === category.toLowerCase() || option.textContent.toLowerCase() === category.toLowerCase());
+      if (matchingOption) filter.value = matchingOption.value;
+      else filter.value = "";
     }
-
-    setQuickCategoryActive(filter?.value || "");
-    applyBusinessFilters();
+    loadBusinesses($("searchInput")?.value.trim() || "", filter?.value || "", regionFilter?.value || "", districtFilter?.value || "");
   });
-});
-
-// Kichujio cha orodha pia kinasawazisha hali ya vitufe vitano.
-$("categoryFilter")?.addEventListener("change", () => {
-  setQuickCategoryActive($("categoryFilter").value);
-  applyBusinessFilters();
 });
 
 /* =========================
@@ -1958,7 +2019,7 @@ aiForm?.addEventListener("submit", async event => {
 
   aiInput.value = "";
   aiSend.disabled = true;
-  aiStatus.textContent = aiStatus.textContent = "EBY AI inakuandalia majibu yako...";
+  aiStatus.textContent = "EBY AI inakuandalia majibu yako...";
 
   try {
     const { data, error } = await sb.rpc("eby_ai_chat", {
