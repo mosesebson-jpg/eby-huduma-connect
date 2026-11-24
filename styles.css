@@ -651,3 +651,32 @@ bottom:76px!important;
 /* Business photo gallery action */
 .business-gallery-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;margin:4px 0 16px;padding:11px 16px;border:1px solid #cfe0f4;border-radius:12px;background:#edf5ff;color:#0757a6;font-weight:700;font-size:14px;font-family:inherit;cursor:pointer}
 .business-gallery-button:active{transform:scale(.98)}
+/* EBY AI MOBILE FINAL FIX */
+@media(max-width:760px){
+  #ebyAiPanel{
+    position:fixed!important;
+    width:min(370px,calc(100vw - 24px))!important;
+    max-width:370px!important;
+    height:min(520px,calc(100dvh - 130px))!important;
+    max-height:calc(100dvh - 130px)!important;
+    right:12px!important;
+    left:auto!important;
+    bottom:85px!important;
+    top:auto!important;
+    box-sizing:border-box!important;
+    display:flex!important;
+    flex-direction:column!important;
+    overflow:hidden!important;
+  }
+
+  #ebyAiPanel .eby-ai-form{
+    width:100%!important;
+    box-sizing:border-box!important;
+    flex:none!important;
+  }
+
+  #ebyAiPanel .eby-ai-form input{
+    min-width:0!important;
+    flex:1!important;
+  }
+}
