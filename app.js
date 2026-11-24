@@ -1795,6 +1795,7 @@ if (sb) {
 }
 
 refreshSession();
+
 /* =========================
    EBY AI ASSISTANT
 ========================= */
@@ -1820,38 +1821,52 @@ function getAiVisitorId() {
 }
 
 function addAiMessage(message, sender) {
+  if (!aiMessages) return;
+
   const bubble = document.createElement("div");
   bubble.className = `eby-ai-bubble ${sender}`;
   bubble.textContent = message;
+
   aiMessages.append(bubble);
   aiMessages.scrollTop = aiMessages.scrollHeight;
 }
 
+/* Fungua chat bila ujumbe wa mwanzo */
 aiOpen?.addEventListener("click", () => {
+  if (aiMessages) {
+    aiMessages.replaceChildren();
+  }
+
+  if (aiStatus) aiStatus.textContent = "";
+
   aiPanel.hidden = false;
   aiInput?.focus();
 });
 
+/* Funga chat */
 aiClose?.addEventListener("click", () => {
   aiPanel.hidden = true;
 });
 
+/* Jibu ujumbe wa mteja */
 aiForm?.addEventListener("submit", async event => {
   event.preventDefault();
 
-  const message = aiInput.value.trim();
+  const message = aiInput?.value.trim();
 
   if (!message) return;
 
   if (!sb) {
-    aiStatus.textContent = "Huduma haijaunganishwa. Jaribu tena baadaye.";
+    aiStatus.textContent =
+      "Huduma haijaunganishwa. Jaribu tena baadaye.";
     return;
   }
 
   addAiMessage(message, "user");
+
   aiInput.value = "";
   aiSend.disabled = true;
-  aiStatus.textContent = "EBY AI inatafuta jibu...";
+  aiStatus.textContent = "Inatafuta jibu...";
 
   try {
     const { data, error } = await sb.rpc("eby_ai_chat", {
@@ -1876,11 +1891,12 @@ aiForm?.addEventListener("submit", async event => {
       "assistant"
     );
 
-    aiStatus.textContent = "Imeshindikana kuwasiliana na mfumo.";
+    aiStatus.textContent =
+      "Imeshindikana kuwasiliana na mfumo.";
 
   } finally {
     aiSend.disabled = false;
-    aiInput.focus();
+    aiInput?.focus();
   }
 });
 })();
