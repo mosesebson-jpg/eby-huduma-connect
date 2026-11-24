@@ -726,9 +726,31 @@ async function loadBusinesses(
     return;
   }
 
-  data.forEach(item => {
+  for (const item of data) {
     const card = document.createElement("article");
     card.className = "business-card business-card-premium";
+
+    // White House Motel gallery: read the three original images uploaded
+    // to the public business-images bucket, without altering the files.
+    let galleryItems = [];
+    if (/white\s*house\s*motel/i.test(item.name || "")) {
+      const { data: galleryFiles, error: galleryError } = await sb.storage
+        .from(BUSINESS_BUCKET)
+        .list("", { limit: 100, search: "white-house-motel" });
+
+      if (!galleryError && Array.isArray(galleryFiles)) {
+        galleryItems = galleryFiles
+          .filter(file => file.name && /\.(jpg|jpeg|png|webp)$/i.test(file.name))
+          .sort((a, b) => a.name.localeCompare(b.name))
+          .map(file => ({
+            image_url: sb.storage.from(BUSINESS_BUCKET).getPublicUrl(file.name).data.publicUrl,
+            title: item.name,
+            description: "Picha za White House Motel"
+          }));
+      } else if (galleryError) {
+        console.warn("White House Motel gallery haikupatikana:", galleryError);
+      }
+    }
 
     const cover = document.createElement("div");
     cover.className = "business-cover";
@@ -779,6 +801,15 @@ async function loadBusinesses(
 
     body.append(top, heading, description, place);
 
+    if (galleryItems.length > 1) {
+      const galleryButton = document.createElement("button");
+      galleryButton.type = "button";
+      galleryButton.className = "business-gallery-button";
+      galleryButton.textContent = `▧ Tazama picha zote (${galleryItems.length})`;
+      galleryButton.addEventListener("click", () => openViewer(galleryItems, 0));
+      body.append(galleryButton);
+    }
+
     const actions = document.createElement("div");
     actions.className = "business-card-actions";
 
@@ -811,7 +842,7 @@ async function loadBusinesses(
 
     card.append(cover, body, actions);
     list.append(card);
-  });
+  }
 }
 
 createLocationFilters();

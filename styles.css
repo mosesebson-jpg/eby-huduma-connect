@@ -648,3 +648,8 @@ dialog h2{font:800 25px Manrope;margin:7px 0 18px}
 .business-call{border:1px solid #cfe2fb}
 .business-whatsapp{border:1px solid #c8efd9}
 @media(max-width:600px){.business-cover{height:215px;min-height:190px}.business-card-actions{grid-template-columns:1fr 1fr}}
+
+
+/* Business photo gallery action */
+.business-gallery-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;margin:4px 0 16px;padding:11px 16px;border:1px solid #cfe0f4;border-radius:12px;background:#edf5ff;color:#0757a6;font-weight:700;font-size:14px;font-family:inherit;cursor:pointer}
+.business-gallery-button:active{transform:scale(.98)}
