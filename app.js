@@ -14,6 +14,7 @@ let touchStartX = 0;
 
 const AD_BUCKET = "advertisement-images";
 const PHOTO_BUCKET = "public-photos";
+const BUSINESS_BUCKET = "business-images";
 
 const AD_PRICES = {
   "7": 5000,
@@ -452,59 +453,65 @@ $("businessForm")?.addEventListener("submit", async event => {
   event.preventDefault();
 
   if (!sb) {
-    $("businessMessage").textContent =
-      "Kwanza unganisha Supabase kwenye config.js.";
+    $("businessMessage").textContent = "Kwanza unganisha Supabase kwenye config.js.";
     return;
   }
 
   const { data } = await sb.auth.getSession();
   const user = data.session?.user;
-
   if (!user) {
-    $("businessMessage").textContent =
-      "Tafadhali ingia au jisajili kwanza.";
-
+    $("businessMessage").textContent = "Tafadhali ingia au jisajili kwanza.";
     showDialog("authDialog");
     return;
   }
 
-  const button = $("businessForm")
-    .querySelector('[type="submit"]');
-
+  const form = $("businessForm");
+  const button = form.querySelector('[type="submit"]');
+  const file = $("businessImageFile")?.files?.[0] || null;
+  let uploadedPath = null;
   button.disabled = true;
+  $("businessMessage").textContent = "Inatuma taarifa za biashara...";
 
   try {
+    if (file) {
+      const allowed = ["image/jpeg", "image/png", "image/webp"];
+      if (!allowed.includes(file.type)) throw new Error("Tumia picha ya JPG, PNG au WEBP.");
+      if (file.size > 5 * 1024 * 1024) throw new Error("Picha imezidi MB 5. Chagua picha ndogo zaidi.");
+      const ext = file.type === "image/png" ? "png" : file.type === "image/webp" ? "webp" : "jpg";
+      uploadedPath = `${user.id}/${crypto.randomUUID()}.${ext}`;
+      const { error: uploadError } = await sb.storage
+        .from(BUSINESS_BUCKET)
+        .upload(uploadedPath, file, { cacheControl: "3600", contentType: file.type, upsert: false });
+      if (uploadError) throw uploadError;
+    }
+
     const payload = {
       owner_id: user.id,
       name: $("businessName").value.trim(),
       category: $("businessCategory").value,
       phone: $("businessPhone").value.trim() || null,
+      whatsapp: $("businessWhatsapp").value.trim() || null,
       region: $("businessRegion").value.trim(),
       district: $("businessDistrict").value.trim() || null,
       description: $("businessDescription").value.trim() || null,
+      image_url: uploadedPath ? sb.storage.from(BUSINESS_BUCKET).getPublicUrl(uploadedPath).data.publicUrl : null,
+      storage_path: uploadedPath,
       status: "pending",
       is_verified: false
     };
 
-    const { error } = await sb
-      .from("businesses")
-      .insert(payload);
-
+    const { error } = await sb.from("businesses").insert(payload);
     if (error) throw error;
 
-    $("businessForm").reset();
-
-    $("businessMessage").textContent =
-      "Ombi lako limepokelewa na litasubiri ukaguzi.";
-
+    form.reset();
+    $("businessMessage").textContent = "Ombi lako limepokelewa. Biashara na picha yake vitasubiri ukaguzi.";
     toast("Usajili wa biashara umetumwa.");
-
     loadBusinessLocations();
-
   } catch (error) {
-    $("businessMessage").textContent =
-      error.message || "Imeshindikana kutuma ombi.";
-
+    if (uploadedPath) {
+      await sb.storage.from(BUSINESS_BUCKET).remove([uploadedPath]).catch(() => {});
+    }
+    $("businessMessage").textContent = error.message || "Imeshindikana kutuma ombi.";
   } finally {
     button.disabled = false;
   }
@@ -675,7 +682,7 @@ async function loadBusinesses(
   let query = sb
     .from("businesses")
     .select(
-      "id,name,description,category,phone,whatsapp,region,district,is_verified"
+      "id,name,description,category,phone,whatsapp,region,district,is_verified,image_url"
     )
     .eq("status", "approved")
     .order("created_at", { ascending: false })
@@ -721,50 +728,88 @@ async function loadBusinesses(
 
   data.forEach(item => {
     const card = document.createElement("article");
-    card.className = "business-card";
+    card.className = "business-card business-card-premium";
+
+    const cover = document.createElement("div");
+    cover.className = "business-cover";
+    if (item.image_url) {
+      const image = document.createElement("img");
+      image.src = item.image_url;
+      image.alt = `Picha ya ${item.name || "biashara"}`;
+      image.loading = "lazy";
+      image.className = "business-cover-image";
+      cover.append(image);
+    } else {
+      const coverIcon = document.createElement("span");
+      coverIcon.textContent = /hotel|motel|malazi/i.test(item.category || "")
+        ? "⌂" : /chakula|mgahawa/i.test(item.category || "")
+          ? "♨" : /afya/i.test(item.category || "") ? "+" : "▦";
+      cover.append(coverIcon);
+    }
+
+    const body = document.createElement("div");
+    body.className = "business-card-body";
+    const top = document.createElement("div");
+    top.className = "business-card-top";
 
     const cat = document.createElement("span");
     cat.className = "pill";
     cat.textContent = item.category || "Huduma";
-
-    const heading = document.createElement("h3");
-    heading.textContent = item.name;
-
-    const description = document.createElement("p");
-    description.textContent =
-      item.description ||
-      "Wasiliana na mtoa huduma kupata maelezo zaidi.";
-
-    const place = document.createElement("small");
-    place.textContent =
-      [item.district, item.region].filter(Boolean).join(", ");
-
-    card.append(cat, heading, description, place);
-
-    const contact = item.whatsapp || item.phone;
-
-    if (contact) {
-      const link = document.createElement("a");
-      link.className = "contact-link";
-      link.textContent = "Wasiliana";
-
-      link.href = item.whatsapp
-        ? `https://wa.me/${contact.replace(/\D/g, "")}`
-        : `tel:${contact}`;
-
-      link.target = item.whatsapp ? "_blank" : "_self";
-      link.rel = "noopener";
-
-      card.append(link);
-    }
+    top.append(cat);
 
     if (item.is_verified) {
-      const verified = document.createElement("small");
-      verified.className = "verified";
+      const verified = document.createElement("span");
+      verified.className = "business-verified";
       verified.textContent = "✓ Imethibitishwa";
-      card.append(verified);
+      top.append(verified);
     }
 
+    const heading = document.createElement("h3");
+    heading.textContent = item.name || "Biashara";
+
+    const description = document.createElement("p");
+    description.className = "business-description";
+    description.textContent = item.description ||
+      "Wasiliana na biashara hii kupata maelezo zaidi.";
+
+    const place = document.createElement("div");
+    place.className = "business-location";
+    place.textContent = "📍 " +
+      ([item.district, item.region].filter(Boolean).join(", ") || "Tanzania");
+
+    body.append(top, heading, description, place);
+
+    const actions = document.createElement("div");
+    actions.className = "business-card-actions";
+
+    if (item.phone) {
+      const call = document.createElement("a");
+      call.className = "business-call";
+      call.href = `tel:${item.phone}`;
+      call.textContent = "☎ Piga simu";
+      actions.append(call);
+    }
+
+    if (item.whatsapp) {
+      const wa = document.createElement("a");
+      const digits = item.whatsapp.replace(/\D/g, "");
+      const intl = digits.startsWith("0") ? `255${digits.slice(1)}` : digits;
+      wa.className = "business-whatsapp";
+      wa.href = `https://wa.me/${intl}`;
+      wa.target = "_blank";
+      wa.rel = "noopener noreferrer";
+      wa.textContent = "WhatsApp";
+      actions.append(wa);
+    }
+
+    if (!item.phone && !item.whatsapp) {
+      const noContact = document.createElement("span");
+      noContact.className = "business-no-contact";
+      noContact.textContent = "Mawasiliano hayajawekwa";
+      actions.append(noContact);
+    }
+
+    card.append(cover, body, actions);
     list.append(card);
   });
 }
@@ -780,6 +825,22 @@ $("searchForm")?.addEventListener("submit", event => {
     regionFilter?.value || "",
     districtFilter?.value || ""
   );
+});
+
+// Makundi ya haraka yanayobadilisha kichujio cha biashara.
+document.querySelectorAll(".quick-category").forEach(button => {
+  button.addEventListener("click", () => {
+    document.querySelectorAll(".quick-category").forEach(item => item.classList.remove("active"));
+    button.classList.add("active");
+    const category = button.dataset.category || "";
+    const filter = $("categoryFilter");
+    if (filter) {
+      const matchingOption = [...filter.options].find(option => option.value.toLowerCase() === category.toLowerCase() || option.textContent.toLowerCase() === category.toLowerCase());
+      if (matchingOption) filter.value = matchingOption.value;
+      else filter.value = "";
+    }
+    loadBusinesses($("searchInput")?.value.trim() || "", filter?.value || "", regionFilter?.value || "", districtFilter?.value || "");
+  });
 });
 
 /* =========================

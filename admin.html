@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>EBY HUDUMA CONNECT | Admin Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,sans-serif;background:#f1f5fb;color:#17243b}
@@ -56,6 +57,63 @@ th{background:#edf4fb}
 .revenue-filter{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .revenue-filter select{max-width:220px}
 @media(max-width:600px){.layout{padding:12px}.login{margin:25px 12px}.panel{padding:14px}.stat{padding:14px}}
+
+/* MODERN ADMIN EXPERIENCE */
+.record-card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:13px}
+.record-card{min-width:0;background:#fff;border:1px solid #e2eaf3;border-radius:15px;padding:15px;box-shadow:0 5px 18px #1234560a}
+.record-card h3{font-size:16px;color:#12385e;margin:0 0 12px;overflow-wrap:anywhere}
+.record-field{font-size:12px;line-height:1.55;padding:6px 0;border-top:1px solid #eef2f7;overflow-wrap:anywhere}
+.record-field strong{text-transform:capitalize;color:#50657c}
+
+body{background:linear-gradient(180deg,#edf5ff 0,#f6f9fd 260px,#f4f7fb 100%)}
+header{background:linear-gradient(110deg,#052b54,#0757a6 72%,#0b79c9);padding:20px max(18px,calc((100% - 1280px)/2));box-shadow:0 8px 25px #06345e22}
+.layout{max-width:1320px;padding:22px}
+.layout>h2{font-size:27px;color:#102b4a;margin:12px 0 4px}
+.layout>p{color:#64748b}
+nav{gap:9px;margin:22px 0;position:sticky;top:0;background:#f4f8fded;padding:10px 0;z-index:5;backdrop-filter:blur(10px)}
+nav button{border:1px solid #dce8f5;border-radius:12px;padding:12px 15px;box-shadow:0 3px 10px #12345608}
+nav button.active{background:linear-gradient(135deg,#0757a6,#0b79ce);box-shadow:0 6px 16px #0757a633}
+.grid{grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px}
+.stat,.panel{border:1px solid #e2eaf3;border-radius:19px;box-shadow:0 10px 30px rgba(15,55,95,.07)}
+.stat{padding:22px;background:linear-gradient(145deg,#fff,#f8fbff)}
+.stat strong{font-size:30px}
+.panel{padding:22px;margin-top:20px}
+.panel h2,.panel h3{color:#12385e}
+.panel table{min-width:720px}
+#tableContent{width:100%}
+.business-admin-toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:10px 0 18px}
+.business-admin-toolbar input{flex:1;min-width:190px;margin:0}
+.business-admin-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr));gap:16px}
+.business-admin-card{background:#fff;border:1px solid #e0e9f3;border-radius:17px;padding:18px;box-shadow:0 8px 24px #1234560d;min-width:0}
+.business-admin-card h3{margin:10px 0 6px;font-size:19px;overflow-wrap:anywhere}
+.business-admin-card p{color:#607187;font-size:13px;line-height:1.6;overflow-wrap:anywhere}
+.business-admin-meta{display:flex;gap:7px;flex-wrap:wrap;margin:9px 0}
+.business-admin-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:13px}
+.business-admin-actions button{flex:1;min-width:85px}
+.business-admin-card .payment-info{overflow-wrap:anywhere}
+@media(max-width:600px){
+ .layout{padding:12px}
+ .layout>h2{font-size:22px}
+ nav{position:static}
+ nav button{flex:1 1 calc(50% - 8px);font-size:12px}
+ .panel{padding:14px}
+ .stat{padding:15px}
+ .stat strong{font-size:25px}
+ .business-admin-grid{grid-template-columns:1fr}
+}
+
+
+.business-admin-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:6px 0 18px}
+.business-admin-count{background:#fff;border:1px solid #e0e9f3;border-radius:14px;padding:13px 16px;box-shadow:0 5px 16px #12345609}
+.business-admin-count small{display:block;color:#64748b;font-size:12px}
+.business-admin-count strong{display:block;font-size:25px;color:#07518d;margin-top:5px}
+.business-admin-count.pending strong{color:#946200}
+.business-admin-count.approved strong{color:#15803d}
+.business-admin-count.rejected strong{color:#b91c1c}
+.business-admin-toolbar select{width:auto;min-width:150px;margin:0;background:#fff}
+.business-admin-result-count{font-size:13px;color:#64748b;margin:0 0 12px}
+@media(max-width:600px){.business-admin-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.business-admin-toolbar select{width:100%}}
+
 </style>
 </head>
 <body>
@@ -205,11 +263,16 @@ th{background:#edf4fb}
 <script>
 "use strict";
 
-const SUPABASE_URL="https://noruvqqesdzlwfijxerq.supabase.co";
-const SUPABASE_ANON_KEY="sb_publishable__3ThPNKCLJghRDsCCL_4ig_9ZfFUKHD";
-
-const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 const $=id=>document.getElementById(id);
+const cfg=window.EBY_CONFIG||{};
+const SUPABASE_URL=cfg.SUPABASE_URL||"";
+const SUPABASE_ANON_KEY=cfg.SUPABASE_ANON_KEY||"";
+
+if(!window.supabase||!SUPABASE_URL||!SUPABASE_ANON_KEY){
+  $("message").textContent="Mipangilio ya Supabase haijapatikana. Hakikisha config.js ipo pamoja na admin.html.";
+  throw new Error("Supabase configuration missing");
+}
+const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
 const tables={
 profiles:"Wanachama",
@@ -365,6 +428,142 @@ $(id).style.display="none";
 });
 }
 
+function renderBusinessAdminCards(data){
+ const host=$("tableContent");
+ host.innerHTML="";
+
+ const summary=document.createElement("div");
+ summary.className="business-admin-summary";
+ const counts=[
+  ["Jumla",data.length,"total"],
+  ["Zinasubiri",data.filter(x=>(x.status||"pending")==="pending").length,"pending"],
+  ["Zimeidhinishwa",data.filter(x=>x.status==="approved").length,"approved"],
+  ["Zimekataliwa",data.filter(x=>x.status==="rejected").length,"rejected"]
+ ];
+ counts.forEach(([label,value,kind])=>{
+  const card=document.createElement("div");
+  card.className="business-admin-count "+kind;
+  const name=document.createElement("small");name.textContent=label;
+  const number=document.createElement("strong");number.textContent=String(value);
+  card.append(name,number);summary.append(card);
+ });
+
+ const toolbar=document.createElement("div");
+ toolbar.className="business-admin-toolbar";
+ const search=document.createElement("input");
+ search.type="search"; search.placeholder="Tafuta biashara, kundi, simu au eneo...";
+ search.setAttribute("aria-label","Tafuta biashara");
+ const filter=document.createElement("select");
+ filter.setAttribute("aria-label","Chuja kwa hali");
+ [
+  ["all","Hali zote"],
+  ["pending","Zinasubiri"],
+  ["approved","Zimeidhinishwa"],
+  ["rejected","Zimekataliwa"]
+ ].forEach(([value,label])=>{
+  const option=document.createElement("option");
+  option.value=value;option.textContent=label;filter.append(option);
+ });
+ const refresh=document.createElement("button");
+ refresh.className="edit"; refresh.textContent="↻ Sasisha";
+ toolbar.append(search,filter,refresh);
+
+ const resultCount=document.createElement("p");
+ resultCount.className="business-admin-result-count";
+ const grid=document.createElement("div");
+ grid.className="business-admin-grid";
+ host.append(summary,toolbar,resultCount,grid);
+
+ const draw=()=>{
+  const term=search.value.trim().toLowerCase();
+  const selected=filter.value;
+  const rows=data.filter(item=>{
+   const matchesText=[item.name,item.category,item.region,item.district,item.description,item.phone,item.whatsapp,item.status]
+    .some(v=>String(v||"").toLowerCase().includes(term));
+   const matchesStatus=selected==="all" ? true : (item.status||"pending")===selected;
+   return matchesText&&matchesStatus;
+  });
+  resultCount.textContent=`Inaonyesha biashara ${rows.length} kati ya ${data.length}`;
+  grid.innerHTML="";
+  if(!rows.length){
+   const empty=document.createElement("div");empty.className="empty";
+   empty.textContent="Hakuna biashara inayolingana na utafutaji au kichujio hiki.";
+   grid.append(empty);return;
+  }
+  rows.forEach(item=>{
+   const card=document.createElement("article"); card.className="business-admin-card";
+   if(item.image_url){
+    const preview=document.createElement("img");
+    preview.src=item.image_url;preview.alt="Picha ya "+(item.name||"biashara");
+    preview.loading="lazy";preview.className="business-admin-preview";
+    card.append(preview);
+   }
+   const top=document.createElement("div"); top.className="business-admin-meta";
+   const category=document.createElement("span"); category.className="badge"; category.textContent=item.category||"Biashara";
+   const currentStatus=item.status||"pending";
+   const state=document.createElement("span"); state.className="badge "+(currentStatus==="approved"?"approved":currentStatus==="rejected"?"rejected":"pending"); state.textContent=currentStatus;
+   top.append(category,state);
+   const title=document.createElement("h3"); title.textContent=item.name||"Biashara bila jina";
+   const location=document.createElement("p"); location.textContent="📍 "+[item.district,item.region].filter(Boolean).join(", ");
+   const desc=document.createElement("p"); desc.textContent=item.description||"Hakuna maelezo yaliyowekwa.";
+   const contacts=document.createElement("p"); contacts.className="payment-info"; contacts.textContent=[item.phone?`Simu: ${item.phone}`:"",item.whatsapp?`WhatsApp: ${item.whatsapp}`:""].filter(Boolean).join(" • ")||"Hakuna mawasiliano";
+   const actions=document.createElement("div"); actions.className="business-admin-actions";
+
+   const approve=document.createElement("button"); approve.className="approve"; approve.textContent="✓ Idhinisha";
+   approve.disabled=currentStatus==="approved";
+   approve.addEventListener("click",()=>updateBusinessStatus(item.id,"approved"));
+   const reject=document.createElement("button"); reject.className="reject"; reject.textContent="✕ Kataa";
+   reject.disabled=currentStatus==="rejected";
+   reject.addEventListener("click",()=>updateBusinessStatus(item.id,"rejected"));
+
+   const edit=document.createElement("button"); edit.className="edit"; edit.textContent="Hariri";
+   edit.addEventListener("click",async()=>{
+    const fields=[
+     ["name","Jina la biashara",item.name],
+     ["category","Aina ya biashara",item.category],
+     ["region","Mkoa",item.region],
+     ["district","Wilaya",item.district],
+     ["phone","Namba ya simu",item.phone],
+     ["whatsapp","Namba ya WhatsApp",item.whatsapp],
+     ["description","Maelezo",item.description],
+     ["image_url","Link ya picha (usiibadilishe bila sababu)",item.image_url]
+    ];
+    const updates={};
+    for(const [key,label,value] of fields){
+     const next=prompt(label+" (acha kama ilivyo ikiwa hutaki kubadilisha):",value||"");
+     if(next===null)return;
+     if(next.trim()!==(value||""))updates[key]=next.trim()||null;
+    }
+    if(!Object.keys(updates).length){alert("Hakuna mabadiliko yaliyofanywa.");return;}
+    const {error}=await db.from("businesses").update(updates).eq("id",item.id);
+    if(error){alert("Imeshindikana kuhifadhi mabadiliko: "+error.message);return;}
+    alert("Taarifa za biashara zimehifadhiwa.");
+    await loadTable("businesses");
+   });
+
+   const del=document.createElement("button"); del.className="delete"; del.textContent="Futa";
+   del.addEventListener("click",async()=>{
+    if(!confirm(`Una uhakika unataka kufuta ${item.name||"biashara hii"}?`))return;
+    const {error}=await db.from("businesses").delete().eq("id",item.id);
+    if(error){alert("Imeshindikana kufuta: "+error.message);return;}
+    await loadTable("businesses");
+   });
+   actions.append(approve,reject,edit,del);
+   card.append(top,title,location,desc,contacts,actions);grid.append(card);
+  });
+ };
+ search.addEventListener("input",draw);
+ filter.addEventListener("change",draw);
+ refresh.addEventListener("click",()=>loadTable("businesses"));
+ draw();
+}
+
+async function updateBusinessStatus(id,status){
+ const {error}=await db.from("businesses").update({status:status,is_verified:status==="approved"}).eq("id",id);
+ if(error){alert("Imeshindikana kubadilisha hali: "+error.message);return;}
+ await loadTable("businesses");
+}
+
 async function loadTable(table){
 hideAllSections();
 $("records").style.display="block";
@@ -385,33 +584,31 @@ $("tableContent").textContent="Hakuna taarifa zilizopatikana.";
 return;
 }
 
-const t=document.createElement("table");
-const thead=document.createElement("thead");
-const head=document.createElement("tr");
+if(table==="businesses"){
+ renderBusinessAdminCards(data);
+ return;
+}
 
-Object.keys(data[0]).forEach(key=>{
-const th=document.createElement("th");
-th.textContent=key;
-head.appendChild(th);
+const cards=document.createElement("div");
+cards.className="record-card-grid";
+data.forEach((record,index)=>{
+const card=document.createElement("article");
+card.className="record-card";
+const heading=document.createElement("h3");
+heading.textContent=record.name||record.title||record.full_name||("Taarifa #"+(index+1));
+card.appendChild(heading);
+Object.entries(record).forEach(([key,value])=>{
+if(["name","title","full_name"].includes(key))return;
+const line=document.createElement("div");
+line.className="record-field";
+const label=document.createElement("strong");label.textContent=key.replace(/_/g," ")+": ";
+const content=document.createElement("span");
+content.textContent=value===null?"-":typeof value==="object"?JSON.stringify(value):String(value);
+line.append(label,content);card.appendChild(line);
 });
-
-thead.appendChild(head);
-t.appendChild(thead);
-
-const tbody=document.createElement("tbody");
-data.forEach(record=>{
-const tr=document.createElement("tr");
-Object.keys(record).forEach(key=>{
-const td=document.createElement("td");
-const value=record[key];
-td.textContent=value===null?"-":typeof value==="object"?JSON.stringify(value):String(value);
-tr.appendChild(td);
+cards.appendChild(card);
 });
-tbody.appendChild(tr);
-});
-
-t.appendChild(tbody);
-$("tableContent").appendChild(t);
+$("tableContent").appendChild(cards);
 }
 
 /* VIBANDIKO NA FEDHA */

@@ -40,3 +40,10 @@ GitHub Pages ni static hosting. Hakuna malipo ya Netlify yanayotumika, lakini tu
 
 ## 5. Usalama
 `anon/public key` imekusudiwa kutumika kwenye frontend ikiwa RLS imewekwa kwa usahihi. **Usiweke** `service_role`, secret key, database password, au token binafsi kwenye `config.js`, GitHub, screenshot au chat.
+
+## Picha za biashara (hatua ya 3)
+1. Fungua `business-images-migration.sql` na utekeleze SQL yote mara moja kwenye Supabase SQL Editor.
+2. Hakikisha bucket `business-images` imeundwa na columns `image_url` na `storage_path` zipo kwenye `businesses`.
+3. Kisha pakia mafaili yote ya kifurushi hiki kwenye root ya GitHub Pages.
+4. Picha ni ya hiari wakati wa usajili; ukubwa wa juu ni MB 5, JPG/PNG/WEBP.
+5. Picha itaonekana kwenye tovuti kuu baada ya biashara kuidhinishwa.

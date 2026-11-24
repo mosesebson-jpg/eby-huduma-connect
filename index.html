@@ -169,6 +169,55 @@
   .admin-dashboard-frame{height:80vh;min-height:700px}
 }
 </style>
+
+<style>
+/* EBY HUDUMA CONNECT: muonekano wa directory unaoelekea kwenye rejea ya mteja */
+:root{--blue:#0757a6;--blue2:#0877d1;--ink:#10213d;--bg:#f2f6fc}
+body{background:#f2f6fc}
+.topbar{height:88px;padding:10px max(3vw,16px);box-shadow:0 4px 18px #082e5710}
+.brand-mark{width:68px;height:68px;display:grid;place-items:center;border-radius:17px;font-size:23px}
+.brand strong{font-size:20px;letter-spacing:0}
+.brand small{font-size:12px;letter-spacing:.08em}
+.hero{padding:40px max(4vw,16px);grid-template-columns:1fr 0.72fr;gap:24px;background:linear-gradient(120deg,#06458e,#0875cc);color:#fff}
+.hero .eyebrow,.hero-card .eyebrow{color:#d5eaff}
+.hero h1{font-size:clamp(34px,5vw,54px);color:#fff;margin:10px 0}
+.hero h1 em{color:#c4e5ff}
+.hero-copy>p{color:#e2efff;font-size:16px}
+.hero-card{min-height:220px;background:linear-gradient(145deg,#07366f,#0b62b4);border:1px solid #ffffff25;box-shadow:none}
+.hero-card h2{font-size:29px}
+.search-panel{margin:0;padding:24px max(4vw,16px);background:#0757a6;color:#fff;border:0;display:block}
+.search-panel .eyebrow{color:#c9e5ff}
+.search-panel h2{color:#fff;margin:3px 0 15px}
+.search-form{width:100%;max-width:100%;background:#fff;padding:7px;border-radius:15px;box-shadow:0 8px 24px #002b5b35}
+.search-form input{border:0;padding:13px 15px}
+.search-form select{max-width:190px;border-color:#e4ebf4}
+.search-form .btn{min-width:105px}
+.quick-categories{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;padding:16px max(4vw,16px);background:#fff;border-bottom:1px solid #e2eaf3}
+.quick-category{min-height:76px;border:1px solid #e2eaf3;border-radius:14px;background:#fff;color:#3d536e;font-size:24px;font-weight:800;box-shadow:0 4px 12px #102b4a0a}
+.quick-category span{display:block;font-size:13px;margin-top:3px}
+.quick-category.active{background:#0757a6;color:#fff;border-color:#0757a6}
+.section{padding:38px max(4vw,16px)}
+.section-heading{margin-bottom:17px}
+.section-heading h2{color:#10213d}
+#businessList.card-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:17px}
+.business-card-premium{border-radius:18px!important}
+.business-cover{height:190px}
+.business-cover-image{min-height:190px;max-height:240px}
+.business-card-body{padding:17px 18px 9px}
+.business-card-premium h3{font-size:21px;margin:9px 0 6px}
+.business-card-premium .business-description{min-height:0}
+.business-card-actions{padding:10px 18px 17px}
+.business-card-actions a{padding:12px 8px}
+@media(max-width:700px){
+ .topbar{height:76px;padding:8px 14px}.brand-mark{width:54px;height:54px;font-size:19px}.brand strong{font-size:16px}
+ .hero{grid-template-columns:1fr;padding:28px 17px;gap:16px}.hero-card{min-height:170px;padding:23px}
+ .search-panel{padding:22px 15px}.search-form{display:grid;grid-template-columns:1fr auto}.search-form select{grid-column:1/-1;grid-row:2;width:100%;max-width:none}.search-form .btn{grid-column:2;grid-row:1}
+ .quick-categories{gap:7px;padding:12px 10px}.quick-category{min-height:66px;font-size:20px;border-radius:11px}.quick-category span{font-size:11px}
+ .section{padding:30px 14px}
+}
+@media(max-width:380px){.quick-category span{font-size:10px}.quick-category{font-size:18px}}
+</style>
+
 </head>
 
 <body>
@@ -215,10 +264,18 @@
 <input id="searchInput" type="search" placeholder="Mfano: fundi umeme, poster, website..." aria-label="Tafuta huduma">
 <select id="categoryFilter" aria-label="Chagua kundi">
 <option value="">Makundi yote</option>
-<option>Biashara</option><option>Matangazo</option><option>Ufundi</option><option>Elimu</option><option>Teknolojia</option><option>Nyaraka</option><option>Afya</option><option>Usafiri</option><option>Nyingine</option>
+<option>Biashara</option><option>Hoteli</option><option>Mikahawa</option><option>Huduma</option><option>Matangazo</option><option>Ufundi</option><option>Elimu</option><option>Teknolojia</option><option>Nyaraka</option><option>Afya</option><option>Usafiri</option><option>Nyingine</option>
 </select>
 <button class="btn primary" type="submit">Tafuta</button>
 </form>
+</section>
+
+<section class="quick-categories" aria-label="Makundi ya huduma">
+  <button type="button" class="quick-category active" data-category="">▦<span>Zote</span></button>
+  <button type="button" class="quick-category" data-category="Hoteli">▣<span>Hoteli</span></button>
+  <button type="button" class="quick-category" data-category="Mikahawa">♨<span>Mikahawa</span></button>
+  <button type="button" class="quick-category" data-category="Huduma">⚙<span>Huduma</span></button>
+  <button type="button" class="quick-category" data-category="Nyingine">•••<span>Nyingine</span></button>
 </section>
 
 <section class="section" id="biashara">
@@ -325,11 +382,14 @@
 <p class="muted">Ingia kwanza. Usajili utatumwa kwa ukaguzi wa msimamizi kabla ya kuonekana hadharani.</p>
 <form id="businessForm" class="stack">
 <label>Jina la biashara / mtoa huduma<input id="businessName" required maxlength="120"></label>
-<label>Kundi la huduma<select id="businessCategory" required><option value="">Chagua kundi</option><option>Biashara</option><option>Matangazo</option><option>Ufundi</option><option>Elimu</option><option>Teknolojia</option><option>Nyaraka</option><option>Afya</option><option>Usafiri</option><option>Nyingine</option></select></label>
+<label>Kundi la huduma<select id="businessCategory" required><option value="">Chagua kundi</option><option>Biashara</option><option>Hoteli</option><option>Mikahawa</option><option>Huduma</option><option>Matangazo</option><option>Ufundi</option><option>Elimu</option><option>Teknolojia</option><option>Nyaraka</option><option>Afya</option><option>Usafiri</option><option>Nyingine</option></select></label>
 <label>Namba ya simu<input id="businessPhone" type="tel" placeholder="Mfano: 07XXXXXXXX"></label>
+<label>Namba ya WhatsApp<input id="businessWhatsapp" type="tel" placeholder="Mfano: 07XXXXXXXX"></label>
 <label>Mkoa<input id="businessRegion" required placeholder="Mfano: Pwani"></label>
 <label>Wilaya<input id="businessDistrict" placeholder="Mfano: Bagamoyo"></label>
 <label>Maelezo<textarea id="businessDescription" rows="3" maxlength="1000" placeholder="Eleza huduma unazotoa"></textarea></label>
+<label>Picha kuu ya biashara (si lazima)<input id="businessImageFile" type="file" accept="image/jpeg,image/png,image/webp"></label>
+<small class="ad-note">JPG, PNG au WEBP. Ukubwa wa juu MB 5. Picha itaonekana baada ya biashara kuidhinishwa.</small>
 <button class="btn primary full" type="submit">Tuma kwa ukaguzi</button>
 </form>
 <p id="businessMessage" class="form-message" aria-live="polite"></p>

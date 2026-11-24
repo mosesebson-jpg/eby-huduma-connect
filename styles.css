@@ -604,3 +604,36 @@ dialog h2{font:800 25px Manrope;margin:7px 0 18px}
     padding:12px 14px!important;
   }
 }
+
+
+/* EBY BUSINESS DIRECTORY: PREMIUM RESPONSIVE CARDS */
+#businessList.card-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,285px),1fr));gap:22px}
+.business-card-premium{padding:0!important;overflow:hidden;border-radius:22px!important;box-shadow:0 14px 38px rgba(10,55,103,.11)!important;transition:transform .2s,box-shadow .2s}
+.business-card-premium:hover{transform:translateY(-4px);box-shadow:0 20px 46px rgba(10,55,103,.16)!important}
+.business-cover{height:145px;display:grid;place-items:center;background:radial-gradient(circle at 80% 15%,#62b8ff88,transparent 30%),linear-gradient(135deg,#073d7c,#087bd2 68%,#52b5ef);position:relative;overflow:hidden}
+.business-cover:before,.business-cover:after{content:"";position:absolute;border:1px solid #ffffff35;border-radius:50%;width:180px;height:180px}
+.business-cover:before{right:-45px;top:-105px;box-shadow:0 0 0 22px #ffffff0c,0 0 0 48px #ffffff0a}
+.business-cover:after{left:-100px;bottom:-145px;width:210px;height:210px}
+.business-cover span{position:relative;z-index:1;color:#fff;font-size:64px;font-weight:800;text-shadow:0 5px 20px #00264e66}
+.business-card-body{padding:19px 20px 10px}
+.business-card-top{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.business-card-premium h3{font:800 21px Manrope,sans-serif;margin:13px 0 8px;color:#10233b}
+.business-card-premium .business-description{font-size:14px;line-height:1.65;color:#607187;min-height:48px;margin:0 0 13px}
+.business-location{font-size:13px;font-weight:700;color:#536b85}
+.business-verified{font-size:11px;color:#087c55;font-weight:800}
+.business-card-actions{display:flex;gap:9px;padding:13px 20px 19px}
+.business-card-actions a{flex:1;text-align:center;text-decoration:none;padding:11px 10px;border-radius:11px;font-weight:800;font-size:13px}
+.business-call{background:#eaf3ff;color:#0757a6}
+.business-whatsapp{background:#e5f8ed;color:#087b45}
+.business-no-contact{font-size:12px;color:#78889a}
+@media(max-width:600px){
+ #businessList.card-grid{grid-template-columns:1fr;gap:16px}
+ .business-cover{height:125px}
+ .business-card-body{padding:16px 17px 8px}
+ .business-card-actions{padding:12px 17px 16px}
+}
+
+/* Business listing image support */
+.business-cover{position:relative;overflow:hidden}
+.business-cover-image{display:block;width:100%;height:100%;min-height:190px;max-height:260px;object-fit:cover}
+.business-admin-preview{display:block;width:100%;height:170px;object-fit:cover;border-radius:12px;margin-bottom:12px;background:#edf3f9}
