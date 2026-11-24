@@ -672,54 +672,77 @@ async function getBusinessGallery(business) {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
 
-  if (!slug) return [];
+  if (!slug) return business.image_url ? [{
+    image_url: business.image_url,
+    title: business.name || "Biashara",
+    description: business.description || ""
+  }] : [];
 
   const bucket = sb.storage.from(BUSINESS_BUCKET);
-  const found = [];
+  const imageExtensions = /\.(jpg|jpeg|png|webp|gif|avif)$/i;
+  const paths = new Set();
+  const foldersToScan = [""];
+  const scannedFolders = new Set();
 
-  const { data: rootItems, error: rootError } = await bucket.list("", {
-    limit: 1000
-  });
+  // Soma root na folda zake. Usisimamishe utafutaji baada ya kupata picha root.
+  // Hii inaruhusu picha za biashara moja kuwa root na pia ndani ya folda.
+  while (foldersToScan.length) {
+    const folderPath = foldersToScan.shift();
+    if (scannedFolders.has(folderPath)) continue;
+    scannedFolders.add(folderPath);
 
-  if (rootError) {
-    console.error("Business gallery listing:", rootError);
-    return business.image_url ? [{
-      image_url: business.image_url,
-      title: business.name || "Biashara",
-      description: business.description || ""
-    }] : [];
-  }
+    const { data: entries, error } = await bucket.list(folderPath, {
+      limit: 1000,
+      sortBy: { column: "name", order: "asc" }
+    });
 
-  const roots = rootItems || [];
-  const rootFiles = roots.filter(file =>
-    file.id && file.name && file.name.toLowerCase().startsWith(slug)
-  );
+    if (error) {
+      console.warn("Business gallery listing:", folderPath, error);
+      continue;
+    }
 
-  rootFiles.forEach(file => found.push(file.name));
+    (entries || []).forEach(entry => {
+      if (!entry || !entry.name) return;
 
-  // Pia tafuta picha zilizohifadhiwa ndani ya folder za bucket.
-  const folders = roots.filter(item => !item.id && item.name);
-  if (!rootFiles.length && folders.length) {
-    const folderResults = await Promise.all(folders.map(async folder => {
-      const { data, error } = await bucket.list(folder.name, { limit: 1000 });
-      if (error) {
-        console.warn("Business gallery folder:", folder.name, error);
-        return [];
+      const isFolder = entry.id == null && !entry.metadata;
+      const fullPath = folderPath
+        ? `${folderPath}/${entry.name}`
+        : entry.name;
+
+      if (isFolder) {
+        // Kagua folda za ndani hadi ngazi mbili ili kuepuka kusoma bucket nzima.
+        const depth = fullPath.split("/").length;
+        if (depth <= 2 && !scannedFolders.has(fullPath)) {
+          foldersToScan.push(fullPath);
+        }
+        return;
       }
-      return (data || [])
-        .filter(file => file.id && file.name && file.name.toLowerCase().startsWith(slug))
-        .map(file => `${folder.name}/${file.name}`);
-    }));
-    folderResults.flat().forEach(path => found.push(path));
+
+      const mime = String(entry.metadata?.mimetype || entry.metadata?.contentType || "").toLowerCase();
+      const isImage = mime.startsWith("image/") || imageExtensions.test(entry.name);
+      if (!isImage) return;
+
+      const fileSlug = entry.name
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "");
+
+      // Jina la picha lazima lihusiane na jina la biashara.
+      if (fileSlug.includes(slug) || slug.includes(fileSlug.replace(/-\d+$/, ""))) {
+        paths.add(fullPath);
+      }
+    });
   }
 
-  const uniquePaths = [...new Set(found)];
-  const gallery = uniquePaths.map(path => ({
+  const gallery = [...paths].map(path => ({
     image_url: bucket.getPublicUrl(path).data.publicUrl,
     title: business.name || "Biashara",
     description: business.description || ""
   }));
 
+  // Picha kuu ya kadi iwepo pia, lakini isiwekwe mara mbili.
   if (business.image_url && !gallery.some(photo => photo.image_url === business.image_url)) {
     gallery.unshift({
       image_url: business.image_url,
@@ -849,7 +872,15 @@ async function loadBusinesses(
     body.append(top, heading, description, place);
 
     getBusinessGallery(item).then(gallery => {
-      if (!gallery.length || !body.isConnected) return;
+      if (!body.isConnected) return;
+      if (!gallery.length && item.image_url) {
+        gallery.push({
+          image_url: item.image_url,
+          title: item.name || "Biashara",
+          description: item.description || ""
+        });
+      }
+      if (!gallery.length) return;
 
       const galleryButton = document.createElement("button");
       galleryButton.type = "button";
