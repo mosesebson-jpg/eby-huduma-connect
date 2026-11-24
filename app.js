@@ -1795,5 +1795,92 @@ if (sb) {
 }
 
 refreshSession();
+/* =========================
+   EBY AI ASSISTANT
+========================= */
 
+const aiOpen = $("ebyAiOpen");
+const aiClose = $("ebyAiClose");
+const aiPanel = $("ebyAiPanel");
+const aiForm = $("ebyAiForm");
+const aiInput = $("ebyAiInput");
+const aiMessages = $("ebyAiMessages");
+const aiSend = $("ebyAiSend");
+const aiStatus = $("ebyAiStatus");
+
+function getAiVisitorId() {
+  let id = localStorage.getItem("eby_ai_visitor_id");
+
+  if (!id) {
+    id = crypto.randomUUID();
+    localStorage.setItem("eby_ai_visitor_id", id);
+  }
+
+  return id;
+}
+
+function addAiMessage(message, sender) {
+  const bubble = document.createElement("div");
+  bubble.className = `eby-ai-bubble ${sender}`;
+  bubble.textContent = message;
+  aiMessages.append(bubble);
+  aiMessages.scrollTop = aiMessages.scrollHeight;
+}
+
+aiOpen?.addEventListener("click", () => {
+  aiPanel.hidden = false;
+  aiInput?.focus();
+});
+
+aiClose?.addEventListener("click", () => {
+  aiPanel.hidden = true;
+});
+
+aiForm?.addEventListener("submit", async event => {
+  event.preventDefault();
+
+  const message = aiInput.value.trim();
+
+  if (!message) return;
+
+  if (!sb) {
+    aiStatus.textContent = "Huduma haijaunganishwa. Jaribu tena baadaye.";
+    return;
+  }
+
+  addAiMessage(message, "user");
+  aiInput.value = "";
+  aiSend.disabled = true;
+  aiStatus.textContent = "EBY AI inatafuta jibu...";
+
+  try {
+    const { data, error } = await sb.rpc("eby_ai_chat", {
+      p_visitor_id: getAiVisitorId(),
+      p_message: message
+    });
+
+    if (error) throw error;
+
+    if (!data?.answer) {
+      throw new Error("Hakuna jibu lililopatikana.");
+    }
+
+    addAiMessage(data.answer, "assistant");
+    aiStatus.textContent = "";
+
+  } catch (error) {
+    console.error("EBY AI:", error);
+
+    addAiMessage(
+      "Samahani, kumetokea tatizo. Tafadhali jaribu tena.",
+      "assistant"
+    );
+
+    aiStatus.textContent = "Imeshindikana kuwasiliana na mfumo.";
+
+  } finally {
+    aiSend.disabled = false;
+    aiInput.focus();
+  }
+});
 })();
