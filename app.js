@@ -662,96 +662,122 @@ async function loadBusinessLocations() {
   updateDistrictOptions();
 }
 
-async function getBusinessGallery(business) {
-  if (!sb || !business) return [];
+/* =========================
+   BUSINESS PHOTO GALLERY
+   Folda ya kila biashara ina jina la biashara
+========================= */
 
-  const slug = String(business.name || "")
+function normalizeBusinessFolderName(value) {
+  return String(value || "")
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
+    .replace(/[^a-z0-9]+/g, "")
+    .trim();
+}
 
-  if (!slug) return business.image_url ? [{
-    image_url: business.image_url,
-    title: business.name || "Biashara",
-    description: business.description || ""
-  }] : [];
+async function getBusinessGallery(business) {
+  if (!sb || !business?.name) return [];
 
   const bucket = sb.storage.from(BUSINESS_BUCKET);
+  const targetName = normalizeBusinessFolderName(business.name);
   const imageExtensions = /\.(jpg|jpeg|png|webp|gif|avif)$/i;
   const paths = new Set();
-  const foldersToScan = [""];
-  const scannedFolders = new Set();
 
-  // Soma root na folda zake. Usisimamishe utafutaji baada ya kupata picha root.
-  // Hii inaruhusu picha za biashara moja kuwa root na pia ndani ya folda.
-  while (foldersToScan.length) {
-    const folderPath = foldersToScan.shift();
-    if (scannedFolders.has(folderPath)) continue;
-    scannedFolders.add(folderPath);
+  try {
+    // Folda za biashara zinatarajiwa kuwa kwenye root ya business-images.
+    const { data: rootEntries, error: rootError } =
+      await bucket.list("", {
+        limit: 1000,
+        sortBy: { column: "name", order: "asc" }
+      });
 
-    const { data: entries, error } = await bucket.list(folderPath, {
-      limit: 1000,
-      sortBy: { column: "name", order: "asc" }
+    if (rootError) throw rootError;
+
+    const matchingFolder = (rootEntries || []).find(entry => {
+      const isFolder = entry && entry.id == null && !entry.metadata;
+      return isFolder &&
+        normalizeBusinessFolderName(entry.name) === targetName;
     });
 
-    if (error) {
-      console.warn("Business gallery listing:", folderPath, error);
-      continue;
+    if (matchingFolder) {
+      const foldersToScan = [matchingFolder.name];
+      const scannedFolders = new Set();
+
+      while (foldersToScan.length) {
+        const folderPath = foldersToScan.shift();
+        if (scannedFolders.has(folderPath)) continue;
+        scannedFolders.add(folderPath);
+
+        const { data: entries, error } = await bucket.list(folderPath, {
+          limit: 1000,
+          sortBy: { column: "name", order: "asc" }
+        });
+
+        if (error) {
+          console.warn("Business gallery folder:", folderPath, error);
+          continue;
+        }
+
+        (entries || []).forEach(entry => {
+          if (!entry?.name) return;
+
+          const fullPath = `${folderPath}/${entry.name}`;
+          const isFolder = entry.id == null && !entry.metadata;
+
+          if (isFolder) {
+            // Ruhusu folda ndogo ndani ya folda ya biashara.
+            const depth = fullPath.split("/").length -
+              matchingFolder.name.split("/").length;
+
+            if (depth <= 2 && !scannedFolders.has(fullPath)) {
+              foldersToScan.push(fullPath);
+            }
+            return;
+          }
+
+          const mime = String(
+            entry.metadata?.mimetype ||
+            entry.metadata?.contentType ||
+            ""
+          ).toLowerCase();
+
+          if (mime.startsWith("image/") || imageExtensions.test(entry.name)) {
+            paths.add(fullPath);
+          }
+        });
+      }
     }
 
-    (entries || []).forEach(entry => {
-      if (!entry || !entry.name) return;
-
-      const isFolder = entry.id == null && !entry.metadata;
-      const fullPath = folderPath
-        ? `${folderPath}/${entry.name}`
-        : entry.name;
-
-      if (isFolder) {
-        // Kagua folda za ndani hadi ngazi mbili ili kuepuka kusoma bucket nzima.
-        const depth = fullPath.split("/").length;
-        if (depth <= 2 && !scannedFolders.has(fullPath)) {
-          foldersToScan.push(fullPath);
-        }
-        return;
-      }
-
-      const mime = String(entry.metadata?.mimetype || entry.metadata?.contentType || "").toLowerCase();
-      const isImage = mime.startsWith("image/") || imageExtensions.test(entry.name);
-      if (!isImage) return;
-
-      const fileSlug = entry.name
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-|-$/g, "");
-
-      // Jina la picha lazima lihusiane na jina la biashara.
-      if (fileSlug.includes(slug) || slug.includes(fileSlug.replace(/-\d+$/, ""))) {
-        paths.add(fullPath);
-      }
-    });
-  }
-
-  const gallery = [...paths].map(path => ({
-    image_url: bucket.getPublicUrl(path).data.publicUrl,
-    title: business.name || "Biashara",
-    description: business.description || ""
-  }));
-
-  // Picha kuu ya kadi iwepo pia, lakini isiwekwe mara mbili.
-  if (business.image_url && !gallery.some(photo => photo.image_url === business.image_url)) {
-    gallery.unshift({
-      image_url: business.image_url,
-      title: business.name || "Biashara",
+    const gallery = [...paths].map(path => ({
+      image_url: bucket.getPublicUrl(path).data.publicUrl,
+      title: business.name,
       description: business.description || ""
-    });
-  }
+    }));
 
-  return gallery;
+    // Hakikisha picha kuu ya biashara inaonekana pia, bila kurudiwa.
+    if (
+      business.image_url &&
+      !gallery.some(photo => photo.image_url === business.image_url)
+    ) {
+      gallery.unshift({
+        image_url: business.image_url,
+        title: business.name,
+        description: business.description || ""
+      });
+    }
+
+    return gallery;
+
+  } catch (error) {
+    console.error("Business gallery error:", error);
+
+    return business.image_url ? [{
+      image_url: business.image_url,
+      title: business.name,
+      description: business.description || ""
+    }] : [];
+  }
 }
 
 async function loadBusinesses(
@@ -824,6 +850,7 @@ async function loadBusinesses(
 
     const cover = document.createElement("div");
     cover.className = "business-cover";
+
     if (item.image_url) {
       const image = document.createElement("img");
       image.src = item.image_url;
@@ -841,6 +868,7 @@ async function loadBusinesses(
 
     const body = document.createElement("div");
     body.className = "business-card-body";
+
     const top = document.createElement("div");
     top.className = "business-card-top";
 
@@ -871,21 +899,16 @@ async function loadBusinesses(
 
     body.append(top, heading, description, place);
 
+    // Kitufe kinatengenezwa baada ya kupatikana kwa picha za folda husika.
     getBusinessGallery(item).then(gallery => {
-      if (!body.isConnected) return;
-      if (!gallery.length && item.image_url) {
-        gallery.push({
-          image_url: item.image_url,
-          title: item.name || "Biashara",
-          description: item.description || ""
-        });
-      }
-      if (!gallery.length) return;
+      if (!body.isConnected || !gallery.length) return;
 
       const galleryButton = document.createElement("button");
       galleryButton.type = "button";
       galleryButton.className = "business-gallery-button";
-      galleryButton.textContent = `▧ Tazama picha zote (${gallery.length})`;
+      galleryButton.textContent =
+        `▧ Tazama picha zote (${gallery.length})`;
+
       galleryButton.style.display = "inline-flex";
       galleryButton.style.alignItems = "center";
       galleryButton.style.justifyContent = "center";
@@ -898,9 +921,15 @@ async function loadBusinesses(
       galleryButton.style.color = "#1259a7";
       galleryButton.style.fontWeight = "700";
       galleryButton.style.cursor = "pointer";
-      galleryButton.addEventListener("click", () => openViewer(gallery, 0));
+
+      galleryButton.addEventListener("click", () => {
+        openViewer(gallery, 0);
+      });
+
       body.append(galleryButton);
-    }).catch(error => console.error("Business gallery:", error));
+    }).catch(error => {
+      console.error("Business gallery:", error);
+    });
 
     const actions = document.createElement("div");
     actions.className = "business-card-actions";
@@ -916,7 +945,10 @@ async function loadBusinesses(
     if (item.whatsapp) {
       const wa = document.createElement("a");
       const digits = item.whatsapp.replace(/\D/g, "");
-      const intl = digits.startsWith("0") ? `255${digits.slice(1)}` : digits;
+      const intl = digits.startsWith("0")
+        ? `255${digits.slice(1)}`
+        : digits;
+
       wa.className = "business-whatsapp";
       wa.href = `https://wa.me/${intl}`;
       wa.target = "_blank";
@@ -958,11 +990,19 @@ document.querySelectorAll(".quick-category").forEach(button => {
     const category = button.dataset.category || "";
     const filter = $("categoryFilter");
     if (filter) {
-      const matchingOption = [...filter.options].find(option => option.value.toLowerCase() === category.toLowerCase() || option.textContent.toLowerCase() === category.toLowerCase());
+      const matchingOption = [...filter.options].find(option =>
+        option.value.toLowerCase() === category.toLowerCase() ||
+        option.textContent.toLowerCase() === category.toLowerCase()
+      );
       if (matchingOption) filter.value = matchingOption.value;
       else filter.value = "";
     }
-    loadBusinesses($("searchInput")?.value.trim() || "", filter?.value || "", regionFilter?.value || "", districtFilter?.value || "");
+    loadBusinesses(
+      $("searchInput")?.value.trim() || "",
+      filter?.value || "",
+      regionFilter?.value || "",
+      districtFilter?.value || ""
+    );
   });
 });
 
