@@ -424,6 +424,36 @@ placeholder="Mfano: 0788309986"
 </div>
 </dialog>
 
+<!-- EBY AI ASSISTANT -->
+<button id="ebyAiOpen" class="eby-ai-launcher" type="button">
+  💬 Uliza EBY AI
+</button>
+
+<section id="ebyAiPanel" class="eby-ai-panel" hidden>
+  <header class="eby-ai-header">
+    <div>
+      <strong>EBY AI ASSISTANT</strong>
+      <small>EBY HUDUMA CONNECT</small>
+    </div>
+    <button id="ebyAiClose" type="button">×</button>
+  </header>
+
+  <div id="ebyAiMessages" class="eby-ai-messages" aria-live="polite">
+    <div class="eby-ai-bubble assistant">
+      Karibu EBY HUDUMA CONNECT! 👋
+      Naweza kukusaidia kupata taarifa kuhusu huduma zetu.
+      Una swali gani?
+    </div>
+  </div>
+
+  <form id="ebyAiForm" class="eby-ai-form">
+    <input id="ebyAiInput" type="text"
+      maxlength="1000" placeholder="Andika swali lako..." required>
+    <button id="ebyAiSend" type="submit">Tuma</button>
+  </form>
+  <p id="ebyAiStatus" class="eby-ai-status"></p>
+</section>
+
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 </body>
 </html>
